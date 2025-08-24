@@ -499,6 +499,30 @@
           pentatonic: [0,2,4,7,9]
         };
 
+        const PRESET_PROGRESSIONS = {
+          "I-V-vi-IV": ["I", "V", "vi", "IV"],
+          "vi-IV-I-V": ["vi", "IV", "I", "V"],
+          "I-vi-ii-V": ["I", "vi", "ii", "V"],
+          "ii-V-I": ["ii", "V", "I"]
+        };
+
+        const SONG_DATABASE_BY_PROGRESSION = {
+            'I-V-vi-IV': ['Let It Be - The Beatles', 'Don\'t Stop Believin\' - Journey', 'Someone Like You - Adele'],
+            'vi-IV-I-V': ['Counting Stars - OneRepublic', 'Despacito - Luis Fonsi', 'What\'s Up - 4 Non Blondes'],
+            'I-vi-ii-V': ['Heart and Soul - Hoagy Carmichael', 'Blue Moon - Richard Rodgers'],
+            'ii-V-I': ['Autumn Leaves - Jazz Standard', 'Fly Me to the Moon - Frank Sinatra']
+        };
+
+        const ACHIEVEMENT_DATA = {
+            'FIRST_CHORD': { name: 'First Chord Learned', desc: 'You learned your first chord!' },
+            'FIVE_CHORDS': { name: 'Chord Collector', desc: 'You learned five different chords!' },
+            'FIRST_LESSON': { name: 'First Steps', desc: 'Completed your first lesson.' },
+            'PIANO_PATH': { name: 'Piano Novice', desc: 'Completed the Piano Fundamentals path.' },
+            'GUITAR_PATH': { name: 'Guitar Novice', desc: 'Completed the Guitar Essentials path.' },
+            'SPEED_DEMON': { name: 'Speed Demon', desc: 'Set a new record in Challenge Mode.' },
+            'SONG_SUGGESTER': { name: 'Progression Pro', desc: 'Found a progression used in real songs.' }
+        };
+
         const ChordWheel = ({ activeKey, onChordSelect }) => {
             const size = 580, cx = size / 2, cy = size / 2, rOuter = 260, rMid = 188, rInner = 116;
             const TWO_PI = Math.PI * 2, step = TWO_PI / 12;
@@ -1295,6 +1319,38 @@
             );
         );
 
+        const SongSuggestions = ({ progression, activeKey, triggerAchievement }) => {
+            if (!progression || progression.length < 2) {
+                return null;
+            }
+
+            const keyChords = KEY_DEGREES[activeKey] || {};
+            const invDegrees = Object.fromEntries(Object.entries(keyChords).map(([k, v]) => [v, k]));
+            const progressionString = progression.map(chord => invDegrees[chord] || '?').join('-');
+
+            const songs = SONG_DATABASE_BY_PROGRESSION[progressionString];
+
+            if (!songs || songs.length === 0) {
+                return null;
+            }
+
+            // Trigger achievement when suggestions are found
+            useEffect(() => {
+                if(songs.length > 0) {
+                    triggerAchievement('SONG_SUGGESTER');
+                }
+            }, [songs]);
+
+            return (
+                <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                    <h4 className="font-semibold text-blue-800 mb-2">🎵 Songs that use this progression:</h4>
+                    <ul className="list-disc list-inside text-blue-700 text-sm">
+                        {songs.map(song => <li key={song}>{song}</li>)}
+                    </ul>
+                </div>
+            );
+        };
+
 
         const LearningPathView = ({ onExit, triggerAchievement }) => {
             const [userProfile, setUserProfile] = useState({
@@ -1397,6 +1453,41 @@
             );
         };
 
+        const ProfileView = ({ userProfile, bestChallengeTime }) => {
+            const unlockedAchievements = userProfile.unlockedAchievements || [];
+
+            return (
+                <div className="max-w-4xl mx-auto p-4">
+                    <h2 className="text-3xl font-bold font-readex text-gray-800 mb-6">Your Profile & Stats</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="bg-white rounded-xl shadow-lg p-6">
+                            <h3 className="text-xl font-semibold mb-4">Practice Statistics</h3>
+                            <div className="space-y-3">
+                                <div className="flex justify-between"><span>Chords Learned:</span> <span className="font-bold">{userProfile.chords.length}</span></div>
+                                <div className="flex justify-between"><span>Songs Completed:</span> <span className="font-bold">{userProfile.songsCompleted.length}</span></div>
+                                <div className="flex justify-between"><span>Best Challenge Time:</span> <span className="font-bold">{bestChallengeTime ? formatTime(bestChallengeTime) : 'N/A'}</span></div>
+                            </div>
+                        </div>
+                        <div className="bg-white rounded-xl shadow-lg p-6">
+                            <h3 className="text-xl font-semibold mb-4">🏅 Unlocked Achievements</h3>
+                            <div className="space-y-2">
+                                {Object.keys(ACHIEVEMENT_DATA).map(key => {
+                                    const achievement = ACHIEVEMENT_DATA[key];
+                                    const isUnlocked = unlockedAchievements.includes(key);
+                                    return (
+                                        <div key={key} className={`p-3 rounded-lg transition-all ${isUnlocked ? 'bg-green-100' : 'bg-gray-100 opacity-60'}`}>
+                                            <p className={`font-bold ${isUnlocked ? 'text-green-800' : 'text-gray-700'}`}>{achievement.name}</p>
+                                            <p className="text-xs text-gray-600">{achievement.desc}</p>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
         // --- Main App Component ---
         function UltimateChordApp() {
             const [confidenceLevel, setConfidenceLevel] = useState(null);
@@ -1406,7 +1497,10 @@
             const [selectedInstrument, setSelectedInstrument] = useState('guitar'); // Default instrument
             const [currentView, setCurrentView] = useState('dashboard');
             const [currentChord, setCurrentChord] = useState('C');
-            const [userProgress, setUserProgress] = useState({ chords: [], songsCompleted: [], level: 1 });
+            const [userProgress, setUserProgress] = useState(() => {
+                const savedProgress = localStorage.getItem('ultimateUserProgress');
+                return savedProgress ? JSON.parse(savedProgress) : { chords: [], songsCompleted: [], unlockedAchievements: [] };
+            });
             const [showCelebration, setShowCelebration] = useState(false);
             const [selectedSong, setSelectedSong] = useState(null);
 
@@ -1423,9 +1517,20 @@
             const [darkMode, setDarkMode] = useState(false);
             const [lastAchievement, setLastAchievement] = useState(null);
 
-            const triggerAchievement = (achievement) => {
-                setLastAchievement(achievement);
-                setTimeout(() => setLastAchievement(null), 4100); // A bit longer than the toast animation
+            // State for Challenge Mode
+            const [isChallengeActive, setIsChallengeActive] = useState(false);
+            const [challengeTime, setChallengeTime] = useState(0);
+            const [bestChallengeTime, setBestChallengeTime] = useState(() => localStorage.getItem('ultimateBestTime'));
+            const challengeIntervalRef = useRef(null);
+
+
+            const triggerAchievement = (achievementKey) => {
+                if (!userProgress.unlockedAchievements.includes(achievementKey)) {
+                    const newAchievements = [...userProgress.unlockedAchievements, achievementKey];
+                    setUserProgress(prev => ({ ...prev, unlockedAchievements: newAchievements }));
+                    setLastAchievement(ACHIEVEMENT_DATA[achievementKey].name);
+                    setTimeout(() => setLastAchievement(null), 4100);
+                }
             };
 
             useEffect(() => {
@@ -1438,22 +1543,10 @@
                 }
             }, [darkMode]);
 
-            const saveProgress = () => {
-                const saveData = { activeKey, progression, selectedInstrument };
-                localStorage.setItem('ultimate-chord-lab', JSON.stringify(saveData));
-                alert('Progress Saved!');
-            };
-
-            const loadProgress = () => {
-                const savedData = localStorage.getItem('ultimate-chord-lab');
-                if (savedData) {
-                    const { activeKey, progression, selectedInstrument } = JSON.parse(savedData);
-                    setActiveKey(activeKey || 'C Major');
-                    setProgression(progression || []);
-                    setSelectedInstrument(selectedInstrument || 'guitar');
-                    alert('Progress Loaded!');
-                }
-            };
+            // Effect to save user progress whenever it changes
+            useEffect(() => {
+                localStorage.setItem('ultimateUserProgress', JSON.stringify(userProgress));
+            }, [userProgress]);
 
             // Onboarding function from Gemini
             const handleSetConfidence = (level) => {
@@ -1482,6 +1575,48 @@
 
             const handleDragOver = (e) => {
                 e.preventDefault();
+            };
+
+            const startChallenge = () => {
+                setIsChallengeActive(true);
+                setChallengeTime(0);
+                const startTime = Date.now();
+                challengeIntervalRef.current = setInterval(() => {
+                    setChallengeTime(Date.now() - startTime);
+                }, 100);
+            };
+
+            const stopChallenge = () => {
+                setIsChallengeActive(false);
+                clearInterval(challengeIntervalRef.current);
+                if (!bestChallengeTime || challengeTime < bestChallengeTime) {
+                    setBestChallengeTime(challengeTime);
+                    localStorage.setItem('ultimateBestTime', challengeTime);
+                    triggerAchievement('SPEED_DEMON');
+                }
+            };
+
+            const formatTime = (ms) => {
+                if (!ms) return '0:00.0';
+                const minutes = Math.floor(ms / 60000);
+                const seconds = ((ms % 60000) / 1000).toFixed(1);
+                return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            };
+
+            const loadPresetProgression = (degrees) => {
+                const keyChords = KEY_DEGREES[activeKey];
+                if (!keyChords) return;
+
+                // This logic needs to handle both major (I, ii) and minor (i, bIII) keys
+                const romanNumerals = Object.keys(keyChords);
+                const newProgression = degrees.map(degree => {
+                    // Find the correct chord name for the given roman numeral in the current key
+                    const upperDegree = degree.toUpperCase();
+                    const matchingRoman = romanNumerals.find(rn => rn.toUpperCase() === upperDegree);
+                    return keyChords[matchingRoman];
+                }).filter(Boolean); // Filter out any undefined chords
+
+                setProgression(newProgression);
             };
 
             // Functions from Enhanced version, useful for Explorer mode
@@ -1569,8 +1704,6 @@
                                 </div>
 
                                 <div className="flex items-center gap-2">
-                                    <button onClick={saveProgress} className="px-3 py-1 text-xs rounded-md bg-green-500 hover:bg-green-600 text-white font-semibold">Save</button>
-                                    <button onClick={loadProgress} className="px-3 py-1 text-xs rounded-md bg-yellow-400 hover:bg-yellow-500 text-black font-semibold">Load</button>
                                     <button onClick={() => setDarkMode(!darkMode)} className="p-2 text-xs rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
                                         {darkMode ? '☀️' : '🌙'}
                                     </button>
@@ -1617,7 +1750,7 @@
                     <nav className="bg-blue-50 border-b border-blue-200">
                         <div className="max-w-7xl mx-auto px-4 py-2">
                             <div className="flex gap-6">
-                                {['dashboard', 'practice', 'songs', 'theory'].map(view => (
+                                {['dashboard', 'practice', 'songs', 'theory', 'profile'].map(view => (
                                     <button key={view}
                                             onClick={() => setCurrentView(view)}
                                             className={`py-2 px-4 font-medium capitalize transition-colors ${
@@ -1704,6 +1837,21 @@
                                                 Practice
                                             </button>
                                         </div>
+                                        <div className="mt-4 border-t pt-4">
+                                            <h4 className="font-semibold text-sm mb-2 text-gray-600">Quick Progressions:</h4>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                {Object.entries(PRESET_PROGRESSIONS).map(([name, degrees]) => (
+                                                    <button
+                                                        key={name}
+                                                        onClick={() => loadPresetProgression(degrees)}
+                                                        className="p-2 text-xs bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
+                                                    >
+                                                        {name}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <SongSuggestions progression={progression} activeKey={activeKey} triggerAchievement={triggerAchievement} />
                                     </div>
                                 </div>
                             </div>
@@ -1729,12 +1877,31 @@
                             <div className="max-w-5xl mx-auto">
                                 <div className="flex justify-between items-center mb-8">
                                     <h2 className="text-3xl font-bold font-readex text-gray-800">Practice Mode</h2>
-                                    <button
-                                        onClick={() => markChordLearned(currentChord)}
-                                        className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-medium">
-                                        Mark as Learned ✓
-                                    </button>
+                                    <div className="flex items-center gap-4">
+                                        <button
+                                            onClick={() => markChordLearned(currentChord)}
+                                            className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-medium">
+                                            Mark as Learned ✓
+                                        </button>
+                                        {!isChallengeActive ? (
+                                            <button onClick={startChallenge} className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-medium">
+                                                🏆 Start Challenge
+                                            </button>
+                                        ) : (
+                                            <button onClick={stopChallenge} className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded-lg font-medium">
+                                                ⏹️ Stop Challenge
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
+
+                                {isChallengeActive && (
+                                    <div className="text-center mb-6 bg-red-100 p-4 rounded-lg">
+                                        <h3 className="text-2xl font-bold text-red-700">Challenge Active!</h3>
+                                        <div className="text-5xl font-mono my-2">{formatTime(challengeTime)}</div>
+                                        <p className="text-sm text-gray-600">Best Time: {bestChallengeTime ? formatTime(bestChallengeTime) : 'N/A'}</p>
+                                    </div>
+                                )}
 
                                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                                     <div>
@@ -1835,6 +2002,10 @@
                                     </div>
                                 </div>
                             </div>
+                        )}
+
+                        {currentView === 'profile' && (
+                            <ProfileView userProfile={userProgress} bestChallengeTime={bestChallengeTime} />
                         )}
 
                         {currentView === 'songs' && (
