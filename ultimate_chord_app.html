@@ -203,7 +203,49 @@
     <div id="root"></div>
 
     <script type="text/babel">
+        const index = 0; // Defensive guard for stray index references
         const { useState, useEffect, useRef, useMemo, useCallback } = React;
+
+        class ErrorBoundary extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = { hasError: false, error: null, errorInfo: null };
+            }
+
+            static getDerivedStateFromError(error) {
+                // Update state so the next render will show the fallback UI.
+                return { hasError: true };
+            }
+
+            componentDidCatch(error, errorInfo) {
+                // Log the error to the console
+                console.error("Uncaught error in component:", error, errorInfo);
+                this.setState({ error: error, errorInfo: errorInfo });
+            }
+
+            render() {
+                if (this.state.hasError) {
+                    // Render any custom fallback UI
+                    return (
+                        <div className="p-4 m-4 bg-red-100 border-2 border-red-400 rounded-lg text-red-800">
+                            <h2 className="font-bold text-lg mb-2">Component Crashed</h2>
+                            <p className="text-sm">This part of the app has encountered an error. Other parts may still be functional.</p>
+                            {this.state.error && (
+                                <details className="mt-2 text-xs whitespace-pre-wrap bg-red-50 p-2 rounded">
+                                    <summary className="cursor-pointer font-medium">Error Details</summary>
+                                    <p className="mt-2 font-mono">{this.state.error.toString()}</p>
+                                    {this.state.errorInfo && this.state.errorInfo.componentStack &&
+                                        <p className="mt-2 font-mono">{this.state.errorInfo.componentStack}</p>
+                                    }
+                                </details>
+                            )}
+                        </div>
+                    );
+                }
+
+                return this.props.children;
+            }
+        }
 
         // --- Data Structures from various versions ---
 
@@ -616,10 +658,13 @@
             </div>
         );
 
-        const EnhancedGuitarDiagram = ({ chord, onPlay, onInteract, mirrored = false, interactive = true }) => {
+        const EnhancedGuitarDiagram = ({ chord, onPlay, onInteract }) => {
             const chordData = CHORD_DATA.guitar[chord];
             if (!chordData) return <div>Chord not found</div>;
 
+            const [mirrored, setMirrored] = useState(false);
+            const [interactive, setInteractive] = useState(true);
+            const [leftHanded, setLeftHanded] = useState(false);
             const [strumming, setStrumming] = useState(false);
             const [strumDirection, setStrumDirection] = useState('down');
             const [highlights, setHighlights] = useState([]);
@@ -631,22 +676,22 @@
                 setTimeout(() => setStrumming(false), 400);
             };
 
-            const handleFretClick = (stringIndex, fret) => {
+            const handleFretClick = (visualStringIndex, fret) => {
                 if (!interactive) return;
 
-                const note = chordData.notes[stringIndex];
+                const note = chordData.notes[visualStringIndex];
+
                 if (note) {
                     playNote(note, 0.8, 'guitar');
 
-                    // Add visual highlight
-                    const highlightId = Date.now() + stringIndex;
+                    const highlightId = Date.now() + visualStringIndex;
                     const highlight = {
                         id: highlightId,
-                        stringIndex,
+                        stringIndex: visualStringIndex,
                         fret,
                         style: mirrored ?
-                            { top: `${(stringIndex / 5) * 85 + 7.5}%`, left: `${((fret - 0.5) / 6) * 100}%` } :
-                            { left: `${(stringIndex / 5) * 85 + 7.5}%`, top: `${((fret - 0.5) / 6) * 100}%` }
+                            { top: `${(visualStringIndex / 5) * 85 + 7.5}%`, left: `${((fret - 0.5) / 6) * 100}%` } :
+                            { left: `${(visualStringIndex / 5) * 85 + 7.5}%`, top: `${((fret - 0.5) / 6) * 100}%` }
                     };
 
                     setHighlights(prev => [...prev, highlight]);
@@ -654,7 +699,7 @@
                         setHighlights(prev => prev.filter(h => h.id !== highlightId));
                     }, 600);
 
-                    if (onInteract) onInteract(stringIndex, fret, note);
+                    if (onInteract) onInteract(visualStringIndex, fret, note);
                 }
             };
 
@@ -672,188 +717,121 @@
                                 <span key={i} className="text-yellow-400 text-xl">⭐</span>
                             ))}
                         </div>
-                        <div className="flex justify-center gap-2 mt-2">
-                            <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-                                {mirrored ? 'Left-handed' : 'Right-handed'}
-                            </span>
-                            {interactive && <span className="text-xs bg-blue-100 px-2 py-1 rounded">Interactive</span>}
-                        </div>
+                        {/* Redundant labels removed */}
                     </div>
 
-                    <div className={`guitar-fretboard relative mx-auto max-w-sm ${mirrored ? 'h-80 w-96' : 'h-96 w-80'}`}>
+                    <div className={`guitar-fretboard relative mx-auto ${mirrored ? 'h-80 w-[480px]' : 'h-[480px] w-80'}`} style={{ transform: leftHanded && mirrored ? 'scaleX(-1)' : 'none' }}>
                         {strumming && (
                             <div className={`strum-line strum-animate-${strumDirection} ${mirrored ? 'h-full w-1 left-0' : 'w-full h-1 top-0'}`}
                                  style={mirrored ? {left: '50%'} : {top: '50%'}}></div>
                         )}
 
-                        {/* Nut */}
                         <div className={`guitar-nut absolute ${mirrored ? 'w-4 h-full left-0' : 'h-3 w-full top-0'} z-20`}></div>
 
-                        {/* Frets */}
                         {[1, 2, 3, 4, 5].map(fret => (
                             <div key={fret}
                                  className={`guitar-fret absolute ${mirrored ? 'w-0.5 h-full' : 'h-0.5 w-full'} z-10`}
-                                 style={mirrored ?
-                                     { left: `${(fret / 6) * 100}%` } :
-                                     { top: `${(fret / 6) * 100}%` }
-                                 }>
+                                 style={mirrored ? { left: `${(fret / 6) * 100}%` } : { top: `${(fret / 6) * 100}%` }}>
                             </div>
                         ))}
 
-                        {/* Strings */}
-                        {[0, 1, 2, 3, 4, 5].map(string => {
-                            const thickness = mirrored ? [6, 5, 4, 3, 2.5, 2] : [2, 2.5, 3, 4, 5, 6];
-                            const isMuted = chordData.frets[string] === -1;
+                        {[0, 1, 2, 3, 4, 5].map(stringIndex => {
+                            const thicknessMap = [2, 2.5, 3, 4, 5, 6];
+                            const isMuted = chordData.frets[stringIndex] === -1;
                             return (
-                                <div key={string}
+                                <div key={stringIndex}
                                      className="guitar-string absolute z-5"
-                                     style={mirrored ? {
-                                         top: `${(string / 5) * 85 + 7.5}%`,
-                                         left: 0,
-                                         right: 0,
-                                         height: `${thickness[string]}px`,
-                                         background: isMuted ? '#bfbfbf' : undefined
-                                     } : {
-                                         left: `${(string / 5) * 85 + 7.5}%`,
-                                         top: 0,
-                                         bottom: 0,
-                                         width: `${thickness[string]}px`,
-                                         background: isMuted ? '#bfbfbf' : undefined
-                                     }}>
+                                     style={mirrored ? { top: `${(stringIndex / 5) * 85 + 7.5}%`, left: 0, right: 0, height: `${thicknessMap[stringIndex]}px`, background: isMuted ? '#bfbfbf' : undefined } : { left: `${(stringIndex / 5) * 85 + 7.5}%`, top: 0, bottom: 0, width: `${thicknessMap[stringIndex]}px`, background: isMuted ? '#bfbfbf' : undefined }}>
                                 </div>
                             );
                         })}
 
-                        {/* Interactive fret areas */}
                         {interactive && (
                             <div className="absolute inset-0 z-30 grid"
-                                 style={mirrored ? {
-                                     gridTemplateColumns: `repeat(${fretCount}, 1fr)`,
-                                     gridTemplateRows: `repeat(${stringCount}, 1fr)`
-                                 } : {
-                                     gridTemplateColumns: `repeat(${stringCount}, 1fr)`,
-                                     gridTemplateRows: `repeat(${fretCount}, 1fr)`
-                                 }}>
+                                 style={mirrored ? { gridTemplateColumns: `repeat(${fretCount}, 1fr)`, gridTemplateRows: `repeat(${stringCount}, 1fr)` } : { gridTemplateColumns: `repeat(${stringCount}, 1fr)`, gridTemplateRows: `repeat(${fretCount}, 1fr)` }}>
                                 {[...Array(stringCount * fretCount)].map((_, i) => {
-                                    const stringIndex = mirrored ? Math.floor(i / fretCount) : i % stringCount;
+                                    const visualStringIndex = mirrored ? Math.floor(i / fretCount) : i % stringCount;
                                     const fret = mirrored ? (i % fretCount) + 1 : Math.floor(i / stringCount) + 1;
-                                    return (
-                                        <div key={i}
-                                             className="cursor-pointer hover:bg-blue-200 hover:bg-opacity-30"
-                                             onClick={() => handleFretClick(stringIndex, fret)}>
-                                        </div>
-                                    );
+                                    return <div key={i} className="cursor-pointer hover:bg-blue-200 hover:bg-opacity-30" onClick={() => handleFretClick(visualStringIndex, fret)}></div>;
                                 })}
                             </div>
                         )}
 
-                        {/* Barre */}
                         {chordData.barre && (
-                             <div className="guitar-barre" style={{
-                                top: `${((chordData.barre.fret - 0.5) / 6) * 100}%`,
-                                left: `${(chordData.barre.from / 5) * 85 + 7.5}%`,
-                                width: `${((chordData.barre.to - chordData.barre.from) / 5) * 85}%`,
-                                backgroundColor: chordData.color,
-                             }}>1</div>
+                             <div className="guitar-barre" style={{ top: `${((chordData.barre.fret - 0.5) / 6) * 100}%`, left: `${(chordData.barre.from / 5) * 85 + 7.5}%`, width: `${((chordData.barre.to - chordData.barre.from) / 5) * 85}%`, backgroundColor: chordData.color, transform: `translateY(-50%) ${leftHanded && mirrored ? 'scaleX(-1)' : ''}` }}>1</div>
                         )}
 
-                        {/* Finger positions */}
-                        {chordData.frets.map((fret, string) => {
-                            // Don't render a dot for the barre finger itself
-                            if (fret <= 0 || (chordData.barre && chordData.fingers[string] === 1)) {
-                                return null;
-                            }
+                        {chordData.frets.map((fret, stringIndex) => {
+                            if (fret <= 0 || (chordData.barre && chordData.fingers[stringIndex] === 1)) return null;
                             return (
-                                <div key={string}
+                                <div key={stringIndex}
                                      className="guitar-dot absolute rounded-full flex items-center justify-center text-white font-bold text-sm z-40"
-                                     style={mirrored ? {
-                                         width: '32px',
-                                         height: '32px',
-                                         top: `${(string / 5) * 85 + 7.5}%`,
-                                         left: `${((fret - 0.5) / 6) * 100}%`,
-                                         transform: 'translate(-50%, -50%)',
-                                         backgroundColor: chordData.color
-                                     } : {
-                                         width: '32px',
-                                         height: '32px',
-                                         left: `${(string / 5) * 85 + 7.5}%`,
-                                         top: `${((fret - 0.5) / 6) * 100}%`,
-                                         transform: 'translate(-50%, -50%)',
-                                         backgroundColor: chordData.color
-                                     }}>
-                                    {chordData.fingers[string]}
+                                     style={mirrored ? { width: '32px', height: '32px', top: `${(stringIndex / 5) * 85 + 7.5}%`, left: `${((fret - 0.5) / 6) * 100}%`, transform: `translate(-50%, -50%) ${leftHanded && mirrored ? 'scaleX(-1)' : ''}`, backgroundColor: chordData.color } : { width: '32px', height: '32px', left: `${(stringIndex / 5) * 85 + 7.5}%`, top: `${((fret - 0.5) / 6) * 100}%`, transform: `translate(-50%, -50%) ${leftHanded && mirrored ? 'scaleX(-1)' : ''}`, backgroundColor: chordData.color }}>
+                                    {chordData.fingers[stringIndex]}
                                 </div>
                             );
                         })}
 
-                        {/* Open/Muted indicators */}
-                        {chordData.frets.map((fret, string) => {
+                        {chordData.frets.map((fret, stringIndex) => {
                             const symbol = fret === 0 ? 'O' : fret === -1 ? 'X' : '';
                             if (!symbol) return null;
                             return (
-                                <div key={string}
+                                <div key={stringIndex}
                                      className={`absolute z-40`}
-                                     style={mirrored ? {
-                                         top: `${(string / 5) * 85 + 7.5}%`,
-                                         left: '-8%',
-                                         transform: 'translate(-50%, -50%)',
-                                         fontSize: '32px',
-                                         fontWeight: '800',
-                                         color: fret === 0 ? '#16a34a' : '#dc2626'
-                                     } : {
-                                         left: `${(string / 5) * 85 + 7.5}%`,
-                                         top: '-8%',
-                                         transform: 'translate(-50%, -50%)',
-                                         fontSize: '32px',
-                                         fontWeight: '800',
-                                         color: fret === 0 ? '#16a34a' : '#dc2626'
-                                     }}>
+                                     style={mirrored ? { top: `${(stringIndex / 5) * 85 + 7.5}%`, left: '-8%', transform: `translate(-50%, -50%) ${leftHanded && mirrored ? 'scaleX(-1)' : ''}`, fontSize: '32px', fontWeight: '800', color: fret === 0 ? '#16a34a' : '#dc2626' } : { left: `${(stringIndex / 5) * 85 + 7.5}%`, top: '-8%', transform: `translate(-50%, -50%) ${leftHanded && mirrored ? 'scaleX(-1)' : ''}`, fontSize: '32px', fontWeight: '800', color: fret === 0 ? '#16a34a' : '#dc2626' }}>
                                     {symbol}
                                 </div>
                             );
                         })}
 
-                        {/* Note highlights */}
                         {highlights.map(highlight => (
-                            <div key={highlight.id}
-                                 className="note-highlight absolute"
-                                 style={{
-                                     ...highlight.style,
-                                     width: '40px',
-                                     height: '40px',
-                                     transform: 'translate(-50%, -50%)'
-                                 }}>
-                            </div>
+                            <div key={highlight.id} className="note-highlight absolute" style={{ ...highlight.style, width: '40px', height: '40px', transform: 'translate(-50%, -50%)' }}></div>
                         ))}
                     </div>
 
                     <div className="mt-6 space-y-3">
                         <div className="flex gap-2">
-                            <button
-                                onClick={() => handleStrum('down')}
-                                className="flex-1 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold rounded-lg hover:from-green-600 hover:to-blue-600 transform transition-transform hover:scale-105">
-                                🎸 Strum Down
-                            </button>
-                            <button
-                                onClick={() => handleStrum('up')}
-                                className="flex-1 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-lg hover:from-blue-600 hover:to-purple-600 transform transition-transform hover:scale-105">
-                                🎸 Strum Up
-                            </button>
+                            <button onClick={() => handleStrum('down')} className="flex-1 py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold rounded-lg hover:from-green-600 hover:to-blue-600 transform transition-transform hover:scale-105">🎸 Strum Down</button>
+                            <button onClick={() => handleStrum('up')} className="flex-1 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-lg hover:from-blue-600 hover:to-purple-600 transform transition-transform hover:scale-105">🎸 Strum Up</button>
                         </div>
 
                         <div className="text-center">
                             <div className="text-sm text-gray-600 mb-2">Notes: {chordData.notes.filter(n => n).join(' - ')}</div>
                             {interactive && <div className="text-xs text-blue-600">Click frets to hear individual notes!</div>}
                         </div>
+
+                        <div className="flex justify-center gap-2 border-t pt-4 mt-4">
+                            {mirrored && (
+                                <button
+                                    onClick={() => setLeftHanded(prev => !prev)}
+                                    className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${leftHanded ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                                >
+                                    Left-Handed
+                                </button>
+                            )}
+                            <button
+                                onClick={() => setMirrored(prev => !prev)}
+                                className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${mirrored ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                            >
+                                Mirror View
+                            </button>
+                            <button
+                                onClick={() => setInteractive(prev => !prev)}
+                                className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${interactive ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                            >
+                                Interactive
+                            </button>
+                        </div>
                     </div>
                 </div>
             );
         };
 
-        const EnhancedPianoDiagram = ({ chord, onPlay, hand = 'rightHand', interactive = true }) => {
+        const EnhancedPianoDiagram = ({ chord, onPlay, hand = 'rightHand' }) => {
             const chordData = CHORD_DATA.piano[chord];
             if (!chordData) return <div>Chord not found</div>;
 
+            const [interactive, setInteractive] = useState(true);
             const handData = chordData[hand];
             const [activeKeys, setActiveKeys] = useState([]);
             const [playingNotes, setPlayingNotes] = useState([]);
@@ -870,23 +848,21 @@
                 const fullNote = key + octave;
                 playNote(fullNote, 1.0, 'piano');
 
-                // Visual feedback
                 setActiveKeys(prev => [...prev, fullNote]);
                 setTimeout(() => {
                     setActiveKeys(prev => prev.filter(k => k !== fullNote));
                 }, 300);
 
-                // Show playing animation
                 setPlayingNotes(prev => [...prev, fullNote]);
                 setTimeout(() => {
                     setPlayingNotes(prev => prev.filter(n => n !== fullNote));
                 }, 1000);
             };
 
-            const isChordNote = (note) => handData.notes.some(n => n.startsWith(note));
-            const getFingerNumber = (note) => {
-                const index = handData.notes.findIndex(n => n.startsWith(note));
-                return index >= 0 ? handData.fingers[index] : null;
+            const isChordNote = (fullNote) => handData.notes.includes(fullNote);
+            const getFingerNumber = (fullNote) => {
+                const noteIndex = handData.notes.indexOf(fullNote);
+                return noteIndex >= 0 ? handData.fingers[noteIndex] : null;
             };
 
             return (
@@ -903,16 +879,15 @@
                     </div>
 
                     <div className="piano-keyboard relative mx-auto max-w-4xl h-48 rounded-lg overflow-hidden">
-                        {/* White keys */}
                         {whiteKeys.map((key, index) => {
                             const octave = index >= 7 ? 5 : 4;
                             const fullNote = key + octave;
-                            const isChord = isChordNote(key);
-                            const fingerNumber = isChord ? getFingerNumber(key) : null;
+                            const isChord = isChordNote(fullNote);
+                            const fingerNumber = isChord ? getFingerNumber(fullNote) : null;
                             const isActive = activeKeys.includes(fullNote);
 
                             return (
-                                <div key={`${key}-${index}`}
+                                <div key={`white-${key}-${index}`}
                                      className={`piano-white-key absolute h-full cursor-pointer`}
                                      style={{
                                          left: `${(index / 11) * 100}%`,
@@ -922,36 +897,35 @@
                                      onClick={() => interactive && handleKeyClick(key, octave)}>
 
                                     {fingerNumber && (
-                                        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full flex items-center justify-center font-bold text-white text-sm"
+                                        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full flex items-center justify-center font-bold text-white text-sm"
                                              style={{ backgroundColor: chordData.color }}>
                                             {fingerNumber}
                                         </div>
                                     )}
 
-                                    <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-sm font-semibold text-gray-600">
+                                    <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 text-sm font-semibold text-gray-600">
                                         {key}
                                     </div>
                                 </div>
                             );
                         })}
 
-                        {/* Black keys */}
-                        {blackKeys.map(({ note, position }, index) => {
-                            const octave = position >= 7 ? 5 : 4;
-                            const fullNote = note + octave;
-                            const isChord = isChordNote(note);
+                        {blackKeys.map((item, index) => {
+                            const octave = item.position >= 7 ? 5 : 4;
+                            const fullNote = item.note + octave;
+                            const isChord = isChordNote(fullNote);
                             const isActive = activeKeys.includes(fullNote);
 
                             return (
-                                <div key={`${note}-${index}`}
+                                <div key={`black-${item.note}-${index}`}
                                      className={`piano-black-key absolute cursor-pointer z-10`}
                                      style={{
-                                         left: `${(position / 11) * 100}%`,
+                                         left: `${(item.position / 11) * 100}%`,
                                          width: `${80 / 11}%`,
                                          height: '60%',
                                          backgroundColor: isChord ? chordData.color : (isActive ? '#a5b4fc' : undefined)
                                      }}
-                                     onClick={() => interactive && handleKeyClick(note.replace('#', '#'), octave)}>
+                                     onClick={() => interactive && handleKeyClick(item.note.replace('#', '#'), octave)}>
                                 </div>
                             );
                         })}
@@ -959,22 +933,22 @@
 
                     <div className="mt-6 space-y-3">
                         <div className="flex gap-2">
-                            <button
-                                onClick={() => onPlay('block', hand)}
-                                className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-lg hover:from-purple-600 hover:to-pink-600 transform transition-transform hover:scale-105">
-                                🎹 Play Chord
-                            </button>
-                            <button
-                                onClick={() => onPlay('arpeggio', hand)}
-                                className="flex-1 py-3 bg-gradient-to-r from-pink-500 to-red-500 text-white font-bold rounded-lg hover:from-pink-600 hover:to-red-600 transform transition-transform hover:scale-105">
-                                🎹 Play Arpeggio
-                            </button>
+                            <button onClick={() => onPlay('block', hand)} className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-lg hover:from-purple-600 hover:to-pink-600 transform transition-transform hover:scale-105">🎹 Play Chord</button>
+                            <button onClick={() => onPlay('arpeggio', hand)} className="flex-1 py-3 bg-gradient-to-r from-pink-500 to-red-500 text-white font-bold rounded-lg hover:from-pink-600 hover:to-red-600 transform transition-transform hover:scale-105">🎹 Play Arpeggio</button>
                         </div>
 
                         <div className="text-center">
                             <div className="text-sm text-gray-600">
                                 Notes: {handData.notes.join(' - ')}
                             </div>
+                        </div>
+                        <div className="flex justify-center gap-2 border-t pt-4 mt-4">
+                            <button
+                                onClick={() => setInteractive(prev => !prev)}
+                                className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${interactive ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                            >
+                                Interactive
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1530,28 +1504,12 @@
             const [selectedInstrument, setSelectedInstrument] = useState('guitar'); // Default instrument
             const [currentView, setCurrentView] = useState('dashboard');
             const [currentChord, setCurrentChord] = useState('C');
-            const [userProgress, setUserProgress] = useState(() => {
-                try {
-                    const savedProgress = localStorage.getItem('ultimateUserProgress');
-                    // Ensure that the parsed object has the expected keys. If not, reset.
-                    const progress = savedProgress ? JSON.parse(savedProgress) : null;
-                    if (progress && progress.chords && progress.songsCompleted && progress.unlockedAchievements) {
-                        return progress;
-                    }
-                    // If data is null, malformed, or missing keys, return default.
-                    return { chords: [], songsCompleted: [], unlockedAchievements: [] };
-                } catch (error) {
-                    console.error("Failed to parse userProgress from localStorage, resetting.", error);
-                    return { chords: [], songsCompleted: [], unlockedAchievements: [] };
-                }
-            });
+            const [userProgress, setUserProgress] = useState({ chords: [], songsCompleted: [], unlockedAchievements: [] });
             const [showCelebration, setShowCelebration] = useState(false);
             const [selectedSong, setSelectedSong] = useState(null);
 
             // Settings from Enhanced version
             const [pianoHand, setPianoHand] = useState('rightHand');
-            const [guitarMirrored, setGuitarMirrored] = useState(false);
-            const [interactiveMode, setInteractiveMode] = useState(true);
 
             // State for Chord Wheel and Progression Builder
             const [activeKey, setActiveKey] = useState('C Major');
@@ -1564,17 +1522,21 @@
             // State for Challenge Mode
             const [isChallengeActive, setIsChallengeActive] = useState(false);
             const [challengeTime, setChallengeTime] = useState(0);
-            const [bestChallengeTime, setBestChallengeTime] = useState(() => localStorage.getItem('ultimateBestTime'));
+            const [bestChallengeTime, setBestChallengeTime] = useState(null);
             const challengeIntervalRef = useRef(null);
 
 
-            const triggerAchievement = (achievementKey) => {
-                if (!userProgress.unlockedAchievements.includes(achievementKey)) {
-                    const newAchievements = [...userProgress.unlockedAchievements, achievementKey];
+            const triggerAchievement = (keyOrMessage) => {
+                const achievement = ACHIEVEMENT_DATA[keyOrMessage];
+                const message = achievement ? achievement.name : keyOrMessage;
+
+                if (achievement && !userProgress.unlockedAchievements.includes(keyOrMessage)) {
+                    const newAchievements = [...userProgress.unlockedAchievements, keyOrMessage];
                     setUserProgress(prev => ({ ...prev, unlockedAchievements: newAchievements }));
-                    setLastAchievement(ACHIEVEMENT_DATA[achievementKey].name);
-                    setTimeout(() => setLastAchievement(null), 4100);
                 }
+
+                setLastAchievement(message);
+                setTimeout(() => setLastAchievement(null), 4100);
             };
 
             useEffect(() => {
@@ -1588,9 +1550,9 @@
             }, [darkMode]);
 
             // Effect to save user progress whenever it changes
-            useEffect(() => {
-                localStorage.setItem('ultimateUserProgress', JSON.stringify(userProgress));
-            }, [userProgress]);
+            // useEffect(() => {
+            //     localStorage.setItem('ultimateUserProgress', JSON.stringify(userProgress));
+            // }, [userProgress]);
 
             // Onboarding function from Gemini
             const handleSetConfidence = (level) => {
@@ -1603,9 +1565,9 @@
                 }
             };
 
-            const removeChordFromProgression = (index) => {
+            const removeChordFromProgression = (i) => {
                 const newProgression = [...progression];
-                newProgression.splice(index, 1);
+                newProgression.splice(i, 1);
                 setProgression(newProgression);
             };
 
@@ -1635,7 +1597,7 @@
                 clearInterval(challengeIntervalRef.current);
                 if (!bestChallengeTime || challengeTime < bestChallengeTime) {
                     setBestChallengeTime(challengeTime);
-                    localStorage.setItem('ultimateBestTime', challengeTime);
+                    // localStorage.setItem('ultimateBestTime', challengeTime);
                     triggerAchievement('SPEED_DEMON');
                 }
             };
@@ -1710,7 +1672,11 @@
 
             // Beginner Path
             if (confidenceLevel === 'beginner') {
-                return <LearningPathView onExit={() => setConfidenceLevel(null)} triggerAchievement={triggerAchievement} />;
+                return (
+                    <ErrorBoundary>
+                        <LearningPathView onExit={() => setConfidenceLevel(null)} triggerAchievement={triggerAchievement} />
+                    </ErrorBoundary>
+                );
             }
 
             // Explorer Path (The original app from Enhanced)
@@ -1758,25 +1724,7 @@
                                         </select>
                                     )}
 
-                                    {selectedInstrument === 'guitar' && (
-                                        <label className="flex items-center gap-1">
-                                            <input
-                                                type="checkbox"
-                                                checked={guitarMirrored}
-                                                onChange={(e) => setGuitarMirrored(e.target.checked)}
-                                            />
-                                            <span>Left-handed</span>
-                                        </label>
-                                    )}
-
-                                    <label className="flex items-center gap-1">
-                                        <input
-                                            type="checkbox"
-                                            checked={interactiveMode}
-                                            onChange={(e) => setInteractiveMode(e.target.checked)}
-                                        />
-                                        <span>Interactive</span>
-                                    </label>
+                                    {/* The guitarMirrored and interactiveMode settings are now managed within their respective components */}
                                      <button onClick={() => setConfidenceLevel(null)} className="ml-4 text-xs text-blue-500 hover:underline">Exit</button>
                                 </div>
                             </div>
@@ -1803,9 +1751,10 @@
                     </nav>
 
                     <main className="max-w-7xl mx-auto px-4 py-8">
-                        {/* Dashboard View */}
-                        {currentView === 'dashboard' && (
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <ErrorBoundary>
+                            {/* Dashboard View */}
+                            {currentView === 'dashboard' && (
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                                 <div className="lg:col-span-2">
                                     <h2 className="text-3xl font-bold font-readex text-gray-800 mb-6">Your Learning Journey</h2>
 
@@ -1951,8 +1900,6 @@
                                                     onInteract={(stringIndex, fret, note) => {
                                                         console.log(`Played string ${stringIndex}, fret ${fret}, note ${note}`);
                                                     }}
-                                                    mirrored={guitarMirrored}
-                                                    interactive={interactiveMode}
                                                 />
                                             )}
 
@@ -1961,7 +1908,6 @@
                                                     chord={currentChord}
                                                     onPlay={(style, hand) => playChord(currentChord, selectedInstrument, hand, style)}
                                                     hand={pianoHand}
-                                                    interactive={interactiveMode}
                                                 />
                                             )}
                                         </div>
@@ -2008,22 +1954,25 @@
                                             <div className="bg-yellow-50 rounded-xl p-6">
                                                 <h3 className="text-lg font-semibold text-yellow-800 mb-3">💡 Practice Tips</h3>
                                                 <ul className="text-yellow-700 space-y-2 text-sm">
-                                                    {selectedInstrument === 'guitar' ? [
+                                                  {(selectedInstrument === 'guitar'
+                                                    ? [
                                                         "Press strings just behind the frets, not on them",
                                                         "Keep your thumb on the back of the neck",
                                                         "Curve your fingers to avoid touching other strings",
-                                                        "Practice switching between chords slowly at first"
-                                                    ] : [
+                                                        "Practice switching between chords slowly at first",
+                                                      ]
+                                                    : [
                                                         "Keep your wrists level with your hands",
                                                         "Curve your fingers like you're holding a small ball",
                                                         "Use the correct fingering - it builds muscle memory",
-                                                        "Practice playing the chord smoothly and evenly"
-                                                    ]}.map((tip, index) => (
-                                                        <li key={index} className="flex items-start gap-2">
-                                                            <span className="text-yellow-500 mt-1">•</span>
-                                                            <span>{tip}</span>
-                                                        </li>
-                                                    ))}
+                                                        "Practice playing the chord smoothly and evenly",
+                                                      ]
+                                                  ).map((tip, index) => (
+                                                    <li key={index} className="flex items-start gap-2">
+                                                      <span className="text-yellow-500 mt-1">•</span>
+                                                      <span>{tip}</span>
+                                                    </li>
+                                                  ))}
                                                 </ul>
                                             </div>
 
@@ -2071,8 +2020,6 @@
                                             <EnhancedGuitarDiagram
                                                 chord={currentChord}
                                                 onPlay={(direction) => playChord(currentChord, selectedInstrument, 'rightHand', 'strum')}
-                                                mirrored={guitarMirrored}
-                                                interactive={interactiveMode}
                                             />
                                         )}
 
@@ -2081,7 +2028,6 @@
                                                 chord={currentChord}
                                                 onPlay={(style, hand) => playChord(currentChord, selectedInstrument, hand, style)}
                                                 hand={pianoHand}
-                                                interactive={interactiveMode}
                                             />
                                         )}
                                     </div>
@@ -2152,6 +2098,7 @@
                                 </div>
                             </div>
                         )}
+                        </ErrorBoundary>
                     </main>
 
                     {/* Celebration Modal */}
