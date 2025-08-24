@@ -1,0 +1,1542 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chord Lab – Combined Edition</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@700;800&family=Inclusive+Sans:opsz,wght@8..32,400;8..32,700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Tailwind dark mode configuration
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
+  <!-- React and ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <!-- Babel for JSX transpilation -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Custom Styles -->
+  <style>
+    body {
+      font-family: 'Inclusive Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    h1, h2, h3, h4, .font-readex {
+      font-family: 'Readex Pro', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    .strum-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 8px;
+      background-color: rgba(59,130,246,0.7);
+      border-radius: 4px;
+      opacity: 0;
+      transition: all 0.2s ease-out;
+    }
+    .strum-down { animation: strum-down 0.2s ease-out; }
+    .strum-up { animation: strum-up 0.2s ease-out; }
+    @keyframes strum-down {
+      0% { top: 0; opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+    @keyframes strum-up {
+      0% { top: 100%; opacity: 1; }
+      100% { top: 0; opacity: 0; }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen">
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useMemo } = React;
+
+    /*
+      ============================
+      Data and Constants
+      ============================
+    */
+    // Colour palette matching the school's chord colours
+    const PALETTE = {
+      "C Major": "#cc39bc", "A Minor": "#ab369e", "G Major": "#714faa", "E Minor": "#624890",
+      "D Major": "#3b8bf9", "B Minor": "#3777cf", "A Major": "#02c7f9", "F# Minor": "#08a6cf",
+      "E Major": "#00e3e2", "C# Minor": "#06bebe", "B Major": "#00d48e", "G# Minor": "#05b17a",
+      "F# Major": "#37b838", "D# Minor": "#339c35", "Db Major": "#79c505", "Bb Minor": "#69a50b",
+      "Ab Major": "#fdd500", "F Minor": "#d2b207", "Eb Major": "#ff6813", "C Minor": "#d45a16",
+      "Bb Major": "#ff4b2c", "G Minor": "#d4442a", "F Major": "#ff2a44", "D Minor": "#d4293f"
+    };
+    // Roman numerals and functional mapping for harmony analysis
+    const CHORD_FUNCTIONS = {
+      "I": "tonic", "i": "tonic",
+      "ii": "predominant", "ii°": "predominant", "II": "predominant",
+      "iii": "tonic", "III": "tonic", "bIII": "predominant",
+      "IV": "predominant", "iv": "predominant",
+      "V": "dominant", "v": "dominant", "V7": "dominant",
+      "vi": "tonic", "VI": "predominant", "bVI": "predominant",
+      "vii°": "dominant", "VII": "substitute", "bVII": "substitute"
+    };
+    // Scales for scale visualizer
+    const SCALES = {
+      major: [0,2,4,5,7,9,11],
+      minor: [0,2,3,5,7,8,10],
+      dorian: [0,2,3,5,7,9,10],
+      mixolydian: [0,2,4,5,7,9,10],
+      pentatonic: [0,2,4,7,9]
+    };
+    // Chord extensions for chord builder (major, minor, seventh etc.)
+    const CHORD_EXTENSIONS = {
+      "Major": { suffix: " Major", intervals: [0,4,7] },
+      "Minor": { suffix: " Minor", intervals: [0,3,7] },
+      "7": { suffix: "7", intervals: [0,4,7,10] },
+      "maj7": { suffix: " maj7", intervals: [0,4,7,11] },
+      "m7": { suffix: " m7", intervals: [0,3,7,10] },
+      "sus2": { suffix: " sus2", intervals: [0,2,7] },
+      "sus4": { suffix: " sus4", intervals: [0,5,7] },
+      "dim": { suffix: " dim", intervals: [0,3,6] },
+      "aug": { suffix: " aug", intervals: [0,4,8] }
+    };
+    // Key degrees for major and minor keys – mapping roman numerals to chord names
+    const KEY_DEGREES = {
+      "C Major": { I:"C Major", ii:"D Minor", iii:"E Minor", IV:"F Major", V:"G Major", vi:"A Minor", vii:"B dim", bVII:"Bb Major" },
+      "G Major": { I:"G Major", ii:"A Minor", iii:"B Minor", IV:"C Major", V:"D Major", vi:"E Minor", vii:"F# dim", bVII:"F Major" },
+      "D Major": { I:"D Major", ii:"E Minor", iii:"F# Minor", IV:"G Major", V:"A Major", vi:"B Minor", vii:"C# dim", bVII:"C Major" },
+      "A Major": { I:"A Major", ii:"B Minor", iii:"C# Minor", IV:"D Major", V:"E Major", vi:"F# Minor", vii:"G# dim", bVII:"G Major" },
+      "E Major": { I:"E Major", ii:"F# Minor", iii:"G# Minor", IV:"A Major", V:"B Major", vi:"C# Minor", vii:"D# dim", bVII:"D Major" },
+      "B Major": { I:"B Major", ii:"C# Minor", iii:"D# Minor", IV:"E Major", V:"F# Major", vi:"G# Minor", vii:"A# dim", bVII:"A Major" },
+      "F# Major": { I:"F# Major", ii:"G# Minor", iii:"A# Minor", IV:"B Major", V:"C# Major", vi:"D# Minor", vii:"E# dim", bVII:"E Major" },
+      "Db Major": { I:"Db Major", ii:"Eb Minor", iii:"F Minor", IV:"Gb Major", V:"Ab Major", vi:"Bb Minor", vii:"C dim", bVII:"B Major" },
+      "Ab Major": { I:"Ab Major", ii:"Bb Minor", iii:"C Minor", IV:"Db Major", V:"Eb Major", vi:"F Minor", vii:"G dim", bVII:"Gb Major" },
+      "Eb Major": { I:"Eb Major", ii:"F Minor", iii:"G Minor", IV:"Ab Major", V:"Bb Major", vi:"C Minor", vii:"D dim", bVII:"Db Major" },
+      "Bb Major": { I:"Bb Major", ii:"C Minor", iii:"D Minor", IV:"Eb Major", V:"F Major", vi:"G Minor", vii:"A dim", bVII:"Ab Major" },
+      "F Major": { I:"F Major", ii:"G Minor", iii:"A Minor", IV:"Bb Major", V:"C Major", vi:"D Minor", vii:"E dim", bVII:"Eb Major" },
+      // Minor keys (natural minor)
+      "A Minor": { i:"A Minor", ii:"B dim", bIII:"C Major", iv:"D Minor", v:"E Minor", bVI:"F Major", bVII:"G Major" },
+      "E Minor": { i:"E Minor", ii:"F# dim", bIII:"G Major", iv:"A Minor", v:"B Minor", bVI:"C Major", bVII:"D Major" },
+      "B Minor": { i:"B Minor", ii:"C# dim", bIII:"D Major", iv:"E Minor", v:"F# Minor", bVI:"G Major", bVII:"A Major" },
+      "F# Minor": { i:"F# Minor", ii:"G# dim", bIII:"A Major", iv:"B Minor", v:"C# Minor", bVI:"D Major", bVII:"E Major" },
+      "C# Minor": { i:"C# Minor", ii:"D# dim", bIII:"E Major", iv:"F# Minor", v:"G# Minor", bVI:"A Major", bVII:"B Major" },
+      "G# Minor": { i:"G# Minor", ii:"A# dim", bIII:"B Major", iv:"C# Minor", v:"D# Minor", bVI:"E Major", bVII:"F# Major" },
+      "D# Minor": { i:"D# Minor", ii:"E# dim", bIII:"F# Major", iv:"G# Minor", v:"A# Minor", bVI:"B Major", bVII:"C# Major" },
+      "Bb Minor": { i:"Bb Minor", ii:"C dim", bIII:"Db Major", iv:"Eb Minor", v:"F Minor", bVI:"Gb Major", bVII:"Ab Major" },
+      "F Minor": { i:"F Minor", ii:"G dim", bIII:"Ab Major", iv:"Bb Minor", v:"C Minor", bVI:"Db Major", bVII:"Eb Major" },
+      "C Minor": { i:"C Minor", ii:"D dim", bIII:"Eb Major", iv:"F Minor", v:"G Minor", bVI:"Ab Major", bVII:"Bb Major" },
+      "G Minor": { i:"G Minor", ii:"A dim", bIII:"Bb Major", iv:"C Minor", v:"D Minor", bVI:"Eb Major", bVII:"F Major" },
+      "D Minor": { i:"D Minor", ii:"E dim", bIII:"F Major", iv:"G Minor", v:"A Minor", bVI:"Bb Major", bVII:"C Major" }
+    };
+    // Song library for practise page
+    const SONG_LIBRARY = [
+      {
+        title: "Let It Be",
+        artist: "The Beatles",
+        progression: [
+          { chord: "C Major", beats: 4 }, { chord: "G Major", beats: 4 },
+          { chord: "A Minor", beats: 4 }, { chord: "F Major", beats: 4 },
+          { chord: "C Major", beats: 4 }, { chord: "G Major", beats: 4 },
+          { chord: "F Major", beats: 2 }, { chord: "C Major", beats: 6 },
+        ]
+      },
+      {
+        title: "Stand By Me",
+        artist: "Ben E. King",
+        progression: [
+          { chord: "G Major", beats: 4 }, { chord: "E Minor", beats: 4 },
+          { chord: "C Major", beats: 4 }, { chord: "D Major", beats: 4 },
+        ]
+      },
+      {
+        title: "Riptide",
+        artist: "Vance Joy",
+        progression: [
+          { chord: "A Minor", beats: 4 }, { chord: "G Major", beats: 4 },
+          { chord: "C Major", beats: 8 },
+        ]
+      },
+      {
+        title: "Perfect",
+        artist: "Ed Sheeran",
+        progression: [
+          { chord: "G Major", beats: 4 }, { chord: "E Minor", beats: 4 },
+          { chord: "C Major", beats: 4 }, { chord: "D Major", beats: 4 },
+        ]
+      },
+      {
+        title: "Twinkle Twinkle Little Star",
+        artist: "Traditional",
+        progression: [
+          { chord: "C Major", beats: 4 }, { chord: "C Major", beats: 4 },
+          { chord: "G Major", beats: 4 }, { chord: "G Major", beats: 4 },
+          { chord: "A Minor", beats: 4 }, { chord: "A Minor", beats: 4 },
+          { chord: "G Major", beats: 4 },
+          { chord: "F Major", beats: 4 }, { chord: "F Major", beats: 4 },
+          { chord: "C Major", beats: 4 }, { chord: "C Major", beats: 4 },
+          { chord: "G Major", beats: 4 }, { chord: "G Major", beats: 4 },
+          { chord: "C Major", beats: 4 },
+        ]
+      }
+    ];
+    // Note index for pitch conversion
+    const NOTE_INDEX = { "C":0, "C#":1, "Db":1, "D":2, "D#":3, "Eb":3, "E":4, "F":5, "F#":6, "Gb":6, "G":7, "G#":8, "Ab":8, "A":9, "A#":10, "Bb":10, "B":11 };
+
+    /*
+      ============================
+      Utility Functions
+      ============================
+    */
+    // Convert note name (e.g. C4) to MIDI number
+    const noteToMidi = (note) => {
+      const match = note.match(/^([A-G](?:#|b)?)(-?\d+)$/);
+      if (!match) return 60;
+      const pc = match[1];
+      const oct = parseInt(match[2], 10);
+      return 12 * (oct + 1) + NOTE_INDEX[pc];
+    };
+    // Convert MIDI number to frequency (Hz)
+    const midiToFreq = (midi) => 440 * Math.pow(2, (midi - 69) / 12);
+    // Given open string and fret, return note name (pitch class with octave)
+    const noteNameAt = (open, fret) => {
+      const midi = noteToMidi(open) + fret;
+      const pcs = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+      const octave = Math.floor(midi / 12) - 1;
+      const pc = pcs[midi % 12];
+      return pc + octave;
+    };
+
+    /*
+      =============================================================
+      Melody Guide Component
+      -------------------------------------------------------------
+      For students who have learned individual chords, this
+      component provides a simple scale reference to inspire melody
+      creation.  It analyses the current chord name to determine
+      whether it is major or minor, derives the appropriate scale
+      (Ionian/Major or Aeolian/Natural Minor) and highlights the
+      chord tones (root, third and fifth) within the scale.  The
+      highlighted notes are shown in green, while other scale
+      degrees are shown in blue.  Students can use this palette to
+      experiment with melodic ideas that complement their chord
+      progressions.
+    */
+    const MelodyGuide = ({ chordName }) => {
+      if (!chordName) return null;
+      // Split into root and quality; expect format "Root Major" or "Root Minor"
+      const parts = chordName.split(' ');
+      const rootPc = parts[0];
+      const qual = parts[1] || 'Major';
+      // Determine scale type
+      const scaleType = qual === 'Minor' ? 'minor' : 'major';
+      // Determine root index in chromatic scale
+      const pcs = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+      const rootIdx = pcs.indexOf(rootPc.replace('♯','C#').replace('♭','b'));
+      // Derive scale notes
+      const intervals = SCALES[scaleType] || [];
+      const scaleNotes = intervals.map(iv => pcs[(rootIdx + iv) % 12]);
+      // Determine chord tones intervals (major triad [0,4,7], minor triad [0,3,7])
+      const chordIntervals = qual === 'Minor' ? [0,3,7] : [0,4,7];
+      const chordTones = chordIntervals.map(iv => pcs[(rootIdx + iv) % 12]);
+      return (
+        <div className="space-y-2 mt-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+          <h3 className="text-lg font-bold">Melody Guide for {chordName}</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300">Use these notes to create simple melodies that fit over this chord.</p>
+          <div className="flex flex-wrap gap-2">
+            {scaleNotes.map((n, idx) => {
+              const isChordTone = chordTones.includes(n);
+              // Assign a default octave: for root of C or lower use 4, else 4 as well
+              const octave = 4;
+              const noteName = `${n}${octave}`;
+              return (
+                <span
+                  key={idx}
+                  className="px-3 py-1 rounded-full font-bold text-white cursor-pointer"
+                  style={{ backgroundColor: isChordTone ? '#4ade80' : '#60a5fa' }}
+                  onClick={() => {
+                    // Play the note when clicked
+                    const ctx = ensureAudioContext();
+                    const freq = midiToFreq(noteToMidi(noteName));
+                    const t = ctx.currentTime + 0.05;
+                    makeVoice(freq, t, 0.6, 'sine');
+                  }}
+                >
+                  {n}
+                </span>
+              );
+            })}
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400">Chord tones (root, 3rd, 5th) are highlighted in green.</p>
+        </div>
+      );
+    };
+
+    // Audio context management
+    let audioCtx;
+    const ensureAudioContext = () => {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      return audioCtx;
+    };
+    // Play a single voice
+    const makeVoice = (freq, t0, dur = 1.2, type = 'triangle') => {
+      const ctx = ensureAudioContext();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, t0);
+      gain.gain.setValueAtTime(0.0001, t0);
+      gain.gain.linearRampToValueAtTime(0.32, t0 + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t0);
+      osc.stop(t0 + dur + 0.05);
+    };
+
+    /*
+      ============================
+      Chord and Scale Components
+      ============================
+    */
+    /**
+     * ChordWheel – displays the circle of fifths with major and relative minor chords.
+     * Shows roman numerals for diatonic chords of selected key. Enables selecting chords via click or drag.
+     */
+    const ChordWheel = ({ activeKey, onChordSelect }) => {
+      // geometry constants
+      const size = 580;
+      const cx = size / 2;
+      const cy = size / 2;
+      const rOuter = 260;
+      const rMid = 188;
+      const rInner = 116;
+      const TWO_PI = Math.PI * 2;
+      const step = TWO_PI / 12;
+      // Set of diatonic chords
+      const diatonic = useMemo(() => new Set(Object.values(KEY_DEGREES[activeKey] || {})), [activeKey]);
+      const invDegrees = useMemo(() => {
+        const deg = KEY_DEGREES[activeKey] || {};
+        return Object.fromEntries(Object.entries(deg).map(([k,v]) => [v, k]));
+      }, [activeKey]);
+      // Generate path for sector
+      const sectorPath = (r1, r2, a0, a1) => {
+        const c = (a) => ({ x: Math.cos(a), y: Math.sin(a) });
+        const p0 = c(a0), p1 = c(a1);
+        return `M ${p0.x * r2} ${p0.y * r2} A ${r2} ${r2} 0 0 1 ${p1.x * r2} ${p1.y * r2} L ${p1.x * r1} ${p1.y * r1} A ${r1} ${r1} 0 0 0 ${p0.x * r1} ${p0.y * r1} Z`;
+      };
+      // handle drag
+      const handleDragStart = (e, name) => {
+        e.dataTransfer.setData('text/plain', name);
+      };
+      // order of major keys
+      const majorsOrder = ["C Major","G Major","D Major","A Major","E Major","B Major","F# Major","Db Major","Ab Major","Eb Major","Bb Major","F Major"];
+      const minorRel = { "C Major":"A Minor","G Major":"E Minor","D Major":"B Minor","A Major":"F# Minor","E Major":"C# Minor","B Major":"G# Minor","F# Major":"D# Minor","Db Major":"Bb Minor","Ab Major":"F Minor","Eb Major":"C Minor","Bb Major":"G Minor","F Major":"D Minor" };
+      return (
+        <svg viewBox={`0 0 ${size} ${size}`} className="w-full max-w-md mx-auto">
+          <g transform={`translate(${cx},${cy})`}>
+            {majorsOrder.map((maj, i) => {
+              const a0 = -Math.PI/2 + i * step;
+              const a1 = a0 + step;
+              const majName = maj;
+              const minName = minorRel[maj];
+              const isMajDiatonic = diatonic.has(majName);
+              const isMinDiatonic = diatonic.has(minName);
+              // coordinates for roman numerals
+              const majTx = Math.cos((a0 + a1)/2) * ((rMid + rOuter)/2);
+              const majTy = Math.sin((a0 + a1)/2) * ((rMid + rOuter)/2);
+              const minTx = Math.cos((a0 + a1)/2) * ((rInner + rMid)/2);
+              const minTy = Math.sin((a0 + a1)/2) * ((rInner + rMid)/2);
+              // roman numerals for diatonic chords
+              const majRN = invDegrees[majName] || '';
+              const minRN = invDegrees[minName] || '';
+              return (
+                <React.Fragment key={majName}>
+                  <g
+                    opacity={isMajDiatonic ? 1 : 0.35}
+                    className="cursor-grab transition-opacity duration-300"
+                    draggable="true"
+                    onDragStart={(e) => handleDragStart(e, majName)}
+                    onClick={() => onChordSelect(majName)}
+                  >
+                    <path d={sectorPath(rMid, rOuter, a0, a1)} fill={PALETTE[majName]} stroke="currentColor" strokeWidth="1" className="text-gray-800 dark:text-gray-900" />
+                    <text x={majTx} y={majTy + 6} textAnchor="middle" fontFamily="Readex Pro" fontWeight="800" fontSize="16" fill="#fff" className="pointer-events-none">
+                      {majName.replace(' Major', '')}
+                    </text>
+                    {majRN && (
+                      <text x={majTx} y={majTy + 28} textAnchor="middle" fontFamily="Inclusive Sans" fontWeight="600" fontSize="12" fill="#fff" className="pointer-events-none">
+                        {majRN}
+                      </text>
+                    )}
+                  </g>
+                  <g
+                    opacity={isMinDiatonic ? 1 : 0.35}
+                    className="cursor-grab transition-opacity duration-300"
+                    draggable="true"
+                    onDragStart={(e) => handleDragStart(e, minName)}
+                    onClick={() => onChordSelect(minName)}
+                  >
+                    <path d={sectorPath(rInner, rMid, a0, a1)} fill={PALETTE[minName]} stroke="currentColor" strokeWidth="1" className="text-gray-800 dark:text-gray-900" />
+                    <text x={minTx} y={minTy + 5} textAnchor="middle" fontFamily="Readex Pro" fontWeight="800" fontSize="14" fill="#fff" className="pointer-events-none">
+                      {minName.replace(' Minor', 'm')}
+                    </text>
+                    {minRN && (
+                      <text x={minTx} y={minTy + 22} textAnchor="middle" fontFamily="Inclusive Sans" fontWeight="600" fontSize="10" fill="#fff" className="pointer-events-none">
+                        {minRN}
+                      </text>
+                    )}
+                  </g>
+                </React.Fragment>
+              );
+            })}
+          </g>
+        </svg>
+      );
+    };
+
+    /**
+     * PianoDiagram component – displays a simple keyboard and highlights notes of a chord.
+     * Optionally shows finger numbers, and supports practise mode (students click keys to check themselves).
+     */
+    const PianoDiagram = ({ chordName, showFingers, pianoHand, inversion, practiceMode, onNoteClick, practiceNotes }) => {
+      // Determine voicing (only root/1st inversion for now) for right/left hand.
+      // Use a simple triad map here; more advanced voicings could be added.
+      const getTriad = (name) => {
+        const map = {
+          "C Major": ["C4","E4","G4"],
+          "A Minor": ["A4","C5","E5"],
+          "G Major": ["G4","B4","D5"],
+          "E Minor": ["E4","G4","B4"],
+          "D Major": ["D4","F#4","A4"],
+          "B Minor": ["B4","D5","F#5"],
+          "A Major": ["A4","C#5","E5"],
+          "F# Minor": ["F#4","A4","C#5"],
+          "E Major": ["E4","G#4","B4"],
+          "C# Minor": ["C#5","E5","G#5"],
+          "B Major": ["B4","D#5","F#5"],
+          "G# Minor": ["G#4","B4","D#5"],
+          "F# Major": ["F#4","A#4","C#5"],
+          "D# Minor": ["D#4","F#4","A#4"],
+          "Db Major": ["Db4","F4","Ab4"],
+          "Bb Minor": ["Bb4","Db5","F5"],
+          "Ab Major": ["Ab4","C5","Eb5"],
+          "F Minor": ["F4","Ab4","C5"],
+          "Eb Major": ["Eb4","G4","Bb4"],
+          "C Minor": ["C4","Eb4","G4"],
+          "Bb Major": ["Bb3","D4","F4"],
+          "G Minor": ["G3","Bb3","D4"],
+          "F Major": ["F3","A3","C4"],
+          "D Minor": ["D3","F3","A3"]
+        };
+        return map[name] || [];
+      };
+      const notes = getTriad(chordName);
+      // Determine finger numbers for right and left hand; simple 1-3-5 pattern
+      const fingerPatterns = {
+        root: { right: [1,3,5], left: [5,3,1] },
+        first: { right: [1,2,5], left: [5,2,1] },
+        second: { right: [1,3,5], left: [5,3,1] }
+      };
+      const fingers = fingerPatterns[inversion][pianoHand === 'rightHand' ? 'right' : 'left'];
+      // Build key positions between F3 and B5 (14 white keys). This covers typical triads for the chosen range.
+      const positions = useMemo(() => {
+        const map = {};
+        let whiteIndex = 0;
+        const seq = ["F","F#","G","G#","A","A#","B","C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+        let oct = 3;
+        for (let i = 0; i < seq.length; i++) {
+          const pc = seq[i];
+          if (pc === "C" && i > 6) oct++;
+          const note = pc + oct;
+          const isWhite = !pc.includes('#');
+          let xcol;
+          if (isWhite) { xcol = whiteIndex++; } else { xcol = whiteIndex - 0.5; }
+          const y = pc.includes('#') ? 55 : 85;
+          map[note] = { xcol, isWhite, y };
+        }
+        return map;
+      }, []);
+      const totalWhite = 14;
+      const renderKey = (noteKey, noteName) => {
+        const { xcol, isWhite } = noteKey;
+        const left = isWhite ? `${(xcol) * (100 / totalWhite)}%` : `calc(${(xcol + 0.5) * (100 / totalWhite)}% - ${100 / (totalWhite * 3)}%)`;
+        const classes = isWhite ? 'absolute bottom-0 h-full border-l-2 border-black bg-white' : 'absolute top-0 h-3/5 bg-black rounded-b-md shadow-md';
+        // Attach click handler to play the note
+        const handleClick = () => {
+          // Trigger practice note click if in practice mode
+          if (practiceMode && onNoteClick) onNoteClick(noteName);
+          // Play the note sound
+          const ctx = ensureAudioContext();
+          const freq = midiToFreq(noteToMidi(noteName));
+          const t = ctx.currentTime + 0.05;
+          makeVoice(freq, t, 0.6, 'sine');
+        };
+        return <div key={left} className={classes} style={{ left, width: isWhite ? `${100 / totalWhite}%` : `${100 / (totalWhite * 2)}%` }} onClick={handleClick} />;
+      };
+      const handleNoteClick = (note) => {
+        if (practiceMode && onNoteClick) onNoteClick(note);
+        // Play the note sound when clicked
+        const ctx = ensureAudioContext();
+        const freq = midiToFreq(noteToMidi(note));
+        const t = ctx.currentTime + 0.05;
+        makeVoice(freq, t, 0.6, 'sine');
+      };
+      return (
+        <div className="relative w-full max-w-2xl mx-auto h-48 bg-white dark:bg-gray-200 rounded-lg shadow-inner border-2 border-black overflow-hidden">
+          {/* White keys */}
+          {Object.entries(positions).filter(([k,v]) => v.isWhite).map(([note, pos]) => renderKey(pos, note))}
+          {/* Black keys */}
+          {Object.entries(positions).filter(([k,v]) => !v.isWhite).map(([note, pos]) => renderKey(pos, note))}
+          {/* Dots for chord notes */}
+          {notes.map((note, idx) => {
+            const pos = positions[note];
+            if (!pos) return null;
+            const left = pos.isWhite ? `${(pos.xcol + 0.5) * (100 / totalWhite)}%` : `calc(${(pos.xcol + 1) * (100 / totalWhite)}% - ${100 / (totalWhite * 2)}%)`;
+            const top = `${pos.y}%`;
+            return (
+              <React.Fragment key={note}>
+                <div className="absolute w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg" style={{ left, top, transform:'translate(-50%, -50%)', backgroundColor: PALETTE[chordName] }}>
+                  {note.replace(/\d/, '')}
+                </div>
+                {showFingers && !practiceMode && (
+                  <div className="absolute bg-black text-white text-xs font-bold px-2 py-1 rounded-md" style={{ left, top: `calc(${top} - 30px)`, transform:'translate(-50%, -50%)' }}>{fingers[idx]}</div>
+                )}
+              </React.Fragment>
+            );
+          })}
+          {/* Practice dots: lighten backgrounds when correct or incorrect */}
+          {practiceMode && Object.entries(positions).map(([noteName, pos]) => {
+            const left = pos.isWhite ? `${(pos.xcol + 0.5) * (100 / totalWhite)}%` : `calc(${(pos.xcol + 1) * (100 / totalWhite)}% - ${100 / (totalWhite * 2)}%)`;
+            const top = `${pos.y}%`;
+            const correct = practiceNotes.correct.includes(noteName);
+            const incorrect = practiceNotes.incorrect.includes(noteName);
+            let highlightClass = '';
+            if (correct) highlightClass = pos.isWhite ? 'bg-green-200' : 'bg-green-600';
+            if (incorrect) highlightClass = pos.isWhite ? 'bg-red-200' : 'bg-red-600';
+            return (
+              <div key={noteName} onClick={() => handleNoteClick(noteName)} className={`absolute rounded-full`} style={{ width:'16px', height:'16px', left, top, transform:'translate(-50%, -50%)', backgroundColor: highlightClass }} />
+            );
+          })}
+        </div>
+      );
+    };
+
+    /**
+     * GuitarDiagram – displays a simple 5-fret guitar diagram with dots for fretted notes.
+     * Supports mirrored (player view) orientation.
+     */
+    const GuitarDiagram = ({ chordName, mirrored, strum }) => {
+      // Minimal shapes map: choose the easiest voicing. Additional voicings could be added later.
+      const SHAPES = {
+        "C Major": { fret: [-1,3,2,0,1,0], fingers: [0,3,2,0,1,0] },
+        "A Minor": { fret: [-1,0,2,2,1,0], fingers: [0,0,2,3,1,0] },
+        "G Major": { fret: [3,2,0,0,0,3], fingers: [3,2,0,0,0,4] },
+        "E Minor": { fret: [0,2,2,0,0,0], fingers: [0,2,3,0,0,0] },
+        "D Major": { fret: [-1,-1,0,2,3,2], fingers: [0,0,0,1,3,2] },
+        "B Minor": { fret: [-1,2,4,4,3,2], fingers: [0,1,3,4,2,1] },
+        "A Major": { fret: [-1,0,2,2,2,0], fingers: [0,0,1,2,3,0] },
+        "F# Minor": { fret: [2,4,4,2,2,2], fingers: [1,3,4,1,1,1] },
+        "E Major": { fret: [0,2,2,1,0,0], fingers: [0,2,3,1,0,0] },
+        "C# Minor": { fret: [-1,4,6,6,5,4], fingers: [0,1,3,4,2,1] },
+        "B Major": { fret: [-1,2,4,4,4,2], fingers: [0,1,3,4,4,1] },
+        "G# Minor": { fret: [4,6,6,4,4,4], fingers: [1,3,4,1,1,1] },
+        "F# Major": { fret: [2,4,4,3,2,2], fingers: [1,3,4,2,1,1] },
+        "D# Minor": { fret: [6,8,8,7,7,6], fingers: [1,3,4,2,2,1] },
+        "Db Major": { fret: [-1,4,6,6,6,4], fingers: [0,1,3,4,4,1] },
+        "Bb Minor": { fret: [-1,1,3,3,2,1], fingers: [0,1,3,4,2,1] },
+        "Ab Major": { fret: [4,6,6,5,4,4], fingers: [1,3,4,2,1,1] },
+        "F Minor": { fret: [1,3,3,1,1,1], fingers: [1,3,4,1,1,1] },
+        "Eb Major": { fret: [-1,6,8,8,8,6], fingers: [0,1,3,4,4,1] },
+        "C Minor": { fret: [-1,3,5,5,4,3], fingers: [0,1,3,4,2,1] },
+        "Bb Major": { fret: [-1,1,3,3,3,1], fingers: [0,1,3,4,4,1] },
+        "G Minor": { fret: [3,5,5,3,3,3], fingers: [1,3,4,1,1,1] },
+        "F Major": { fret: [1,3,3,2,1,1], fingers: [1,3,4,2,1,1] },
+        "D Minor": { fret: [-1,-1,0,2,3,1], fingers: [0,0,0,2,3,1] }
+      };
+      const shape = SHAPES[chordName] || { fret: [-1,-1,-1,-1,-1,-1], fingers: [0,0,0,0,0,0] };
+      const fret = shape.fret;
+      const fingers = shape.fingers;
+      const numFrets = 5;
+      const numStrings = 6;
+      const baseColor = PALETTE[chordName] || '#333';
+      // Build note labels for bottom row
+      const noteCells = fret.map((f, i) => {
+        if (f < 0) return '';
+        if (f === 0) return ["E","B","G","D","A","E"][i];
+        return noteNameAt(["E2","A2","D3","G3","B3","E4"][i], f).replace(/\d/, '');
+      });
+      return (
+        <div className="w-full max-w-md mx-auto">
+          <div className={`relative ${mirrored ? 'h-64' : 'h-96'} bg-white dark:bg-gray-200 rounded-lg shadow-lg overflow-hidden`}>
+            {/* Nut */}
+            <div className={`absolute bg-black z-10 ${mirrored ? 'w-4 h-full left-0 top-0' : 'h-4 w-full top-0 left-0'}`}></div>
+            {/* Frets */}
+            {[...Array(numFrets)].map((_, i) => (
+              <div key={i} className={`absolute bg-gray-400 dark:bg-gray-500 z-0 ${mirrored ? 'w-0.5 h-full' : 'h-0.5 w-full'}`} style={mirrored ? { left: `${((i + 1) / numFrets) * 100}%` } : { top: `${((i + 1) / numFrets) * 100}%` }} />
+            ))}
+            {/* Strings */}
+            {[...Array(numStrings)].map((_, i) => (
+              <div key={i} className={`absolute ${mirrored ? 'h-px' : 'w-px'} ${fret[i] < 0 ? 'bg-gray-300 dark:bg-gray-700' : 'bg-gray-500 dark:bg-gray-600'}`} style={mirrored ? { top: `${(i / numStrings) * 100 + (100 / numStrings / 2)}%`, left: 0, right: 0, height: `${6 - i * 0.5}px` } : { left: `${(i / numStrings) * 100 + (100 / numStrings / 2)}%`, top: 0, bottom: 0, width: `${3 - i * 0.25}px` }} />
+            ))}
+            {/* Open/Muted markers */}
+            {fret.map((f, i) => {
+              let text = '';
+              if (f === 0) text = 'O';
+              else if (f < 0) text = 'X';
+              if (!text) return null;
+              const style = mirrored ? { top: `${(i / numStrings) * 100 + (100 / numStrings / 2)}%`, left: '-5%' } : { left: `${(i / numStrings) * 100 + (100 / numStrings / 2)}%`, top: '-6%' };
+              const handleClick = () => {
+                // Play open string if applicable
+                if (f === 0) {
+                  const noteNameFull = ["E2","A2","D3","G3","B3","E4"][i];
+                  const ctx = ensureAudioContext();
+                  const freq = midiToFreq(noteToMidi(noteNameFull));
+                  const t = ctx.currentTime + 0.05;
+                  makeVoice(freq, t, 1.0, 'sine');
+                }
+              };
+              return (
+                <div key={i} className="absolute text-2xl font-bold cursor-pointer" style={{ ...style, transform:'translate(-50%, -50%)', color: baseColor }} onClick={handleClick}>{text}</div>
+              );
+            })}
+            {/* Dots for fretted notes */}
+            {fret.map((f, i) => {
+              if (f <= 0) return null;
+              const style = mirrored ? { top: `${((i + 0.5) / numStrings) * 100}%`, left: `${((f - 0.5) / numFrets) * 100}%` } : { left: `${((i + 0.5) / numStrings) * 100}%`, top: `${((f - 0.5) / numFrets) * 100}%` };
+              const handleClick = () => {
+                // Compute full note name including octave
+                const noteNameFull = noteNameAt(["E2","A2","D3","G3","B3","E4"][i], f);
+                const ctx = ensureAudioContext();
+                const freq = midiToFreq(noteToMidi(noteNameFull));
+                const t = ctx.currentTime + 0.05;
+                makeVoice(freq, t, 1.2, 'sine');
+              };
+              return (
+                <div key={i} className="absolute w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-white font-bold text-lg transform -translate-x-1/2 -translate-y-1/2 cursor-pointer" style={{ ...style, backgroundColor: baseColor }} onClick={handleClick}>{fingers[i]}</div>
+              );
+            })}
+            {/* Strum animation */}
+            {strum.isStrumming && <div className={`strum-line ${strum.direction === 'down' ? 'strum-down' : 'strum-up'}`}></div>}
+          </div>
+          {/* Note strip */}
+          <div className="grid grid-cols-6 gap-1 mt-4 text-center font-bold text-lg text-gray-800 dark:text-gray-200" style={{ color: baseColor }}>
+            {noteCells.map((n,i) => <span key={i}>{n}</span>)}
+          </div>
+        </div>
+      );
+    };
+
+    /**
+     * Metronome component – handles BPM input and toggles playback.
+     */
+    const Metronome = ({ bpm, setBpm, isPlaying, onTogglePlay }) => {
+      return (
+        <div className="space-y-3">
+          <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">Metronome</h3>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <input type="number" value={bpm} onChange={e => setBpm(Math.max(30, Math.min(220, parseInt(e.target.value))))} className="w-20 p-2 rounded-md bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600" />
+              <span className="font-semibold text-gray-700 dark:text-gray-300">BPM</span>
+            </div>
+            <button onClick={onTogglePlay} className={`px-4 py-2 rounded-full font-bold text-white transition-colors ${isPlaying ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'}`}>
+              {isPlaying ? 'Stop' : 'Start'}
+            </button>
+          </div>
+          <input type="range" min="30" max="220" value={bpm} onChange={e => setBpm(parseInt(e.target.value))} className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer" />
+        </div>
+      );
+    };
+
+    /**
+     * SongPlayer – plays through a song's chord progression and indicates current and next chords.
+     */
+    const SongPlayer = ({ song, bpm, onChordChange }) => {
+      const [currentIndex, setCurrentIndex] = useState(0);
+      const [progress, setProgress] = useState(0);
+      const intervalRef = useRef(null);
+      useEffect(() => {
+        setCurrentIndex(0);
+        onChordChange(song.progression[0].chord);
+      }, [song]);
+      useEffect(() => {
+        const current = song.progression[currentIndex];
+        const duration = (current.beats / bpm) * 60 * 1000;
+        const start = Date.now();
+        function tick() {
+          const elapsed = Date.now() - start;
+          const newProg = Math.min((elapsed / duration) * 100, 100);
+          setProgress(newProg);
+          if (elapsed >= duration) {
+            const nextIndex = (currentIndex + 1) % song.progression.length;
+            setCurrentIndex(nextIndex);
+            onChordChange(song.progression[nextIndex].chord);
+          }
+        }
+        intervalRef.current = setInterval(tick, 50);
+        return () => clearInterval(intervalRef.current);
+      }, [currentIndex, bpm, song]);
+      const current = song.progression[currentIndex];
+      const next = song.progression[(currentIndex + 1) % song.progression.length];
+      return (
+        <div className="w-full mb-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-inner">
+          <div className="flex justify-between items-end mb-2">
+            <div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Current Chord</p>
+              <h3 className="text-2xl font-bold" style={{ color: PALETTE[current.chord] }}>{current.chord}</h3>
+              <p className="text-gray-500 dark:text-gray-400">Beats: {current.beats}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-gray-500 dark:text-gray-400">Next Chord</p>
+              <h4 className="text-lg font-bold text-gray-400 dark:text-gray-500">{next.chord}</h4>
+            </div>
+          </div>
+          <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4">
+            <div className="bg-blue-500 h-4 rounded-full" style={{ width: `${progress}%`, transition: 'width 0.05s linear' }}></div>
+          </div>
+        </div>
+      );
+    };
+
+    /**
+     * EarTraining component – presents chord identification exercises.
+     */
+    const EarTraining = ({ chords }) => {
+      const [started, setStarted] = useState(false);
+      const [currentChord, setCurrentChord] = useState(null);
+      const [options, setOptions] = useState([]);
+      const [score, setScore] = useState(0);
+      const [attempts, setAttempts] = useState(0);
+      const [reveal, setReveal] = useState(false);
+      const startExercise = () => {
+        // pick random chord from chords list or default major chords
+        const list = chords.length ? chords : ["C Major","G Major","A Minor","F Major","E Minor","D Minor"];
+        const chosen = list[Math.floor(Math.random() * list.length)];
+        const shuffle = [...list].sort(() => Math.random() - 0.5).slice(0,4);
+        if (!shuffle.includes(chosen)) shuffle[0] = chosen;
+        setCurrentChord(chosen);
+        setOptions(shuffle);
+        setReveal(false);
+        setStarted(true);
+        // auto-play chord
+        playChordAudio(chosen);
+      };
+      const checkAnswer = (guess) => {
+        setAttempts(attempts + 1);
+        if (guess === currentChord) {
+          setScore(score + 1);
+          startExercise();
+        } else {
+          setReveal(true);
+        }
+      };
+      const playAgain = () => {
+        if (currentChord) playChordAudio(currentChord);
+      };
+      const accuracy = attempts > 0 ? Math.round((score / attempts) * 100) : 0;
+      return (
+        <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-inner">
+          <h3 className="font-bold text-lg mb-2">Ear Training</h3>
+          {!started ? (
+            <button onClick={startExercise} className="mt-2 px-4 py-2 rounded-md bg-green-500 hover:bg-green-600 text-white font-semibold">Start</button>
+          ) : (
+            <>
+              <p className="font-semibold mb-2">Listen and identify the chord:</p>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {options.map(opt => (
+                  <button key={opt} onClick={() => checkAnswer(opt)} className="px-3 py-1 rounded-full text-white font-semibold" style={{ backgroundColor: PALETTE[opt] }}>{opt.replace(' Major','').replace(' Minor','m')}</button>
+                ))}
+              </div>
+              <button onClick={playAgain} className="mr-2 px-3 py-1 rounded-md bg-blue-500 hover:bg-blue-600 text-white font-semibold">🔊 Play Again</button>
+              {reveal && <p className="mt-2 text-sm text-red-500">It was {currentChord}</p>}
+              <p className="mt-2 text-sm">Score: {score}/{attempts} (Accuracy: {accuracy}%)</p>
+            </>
+          )}
+        </div>
+      );
+    };
+
+    /**
+     * ScaleVisualizer – shows notes in selected scale with root and chord-tone highlighting.
+     */
+    const ScaleVisualizer = () => {
+      const [root, setRoot] = useState('C');
+      const [scaleType, setScaleType] = useState('major');
+      const computeScale = () => {
+        const scale = SCALES[scaleType] || SCALES.major;
+        const notes = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+        const rootIndex = notes.indexOf(root);
+        return scale.map(i => notes[(rootIndex + i) % 12]);
+      };
+      const scaleNotes = computeScale();
+      return (
+        <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-inner mt-4">
+          <h3 className="font-bold text-lg mb-2">Scale Explorer</h3>
+          <div className="flex gap-4 mb-2">
+            <div>
+              <label className="block text-sm font-medium">Root</label>
+              <select value={root} onChange={e => setRoot(e.target.value)} className="p-2 rounded-md bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600">
+                {"C C# D D# E F F# G G# A A# B".split(' ').map(n => <option key={n}>{n}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium">Scale</label>
+              <select value={scaleType} onChange={e => setScaleType(e.target.value)} className="p-2 rounded-md bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600">
+                <option value="major">Major</option>
+                <option value="minor">Natural Minor</option>
+                <option value="dorian">Dorian</option>
+                <option value="mixolydian">Mixolydian</option>
+                <option value="pentatonic">Pentatonic</option>
+              </select>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2 justify-center mt-2">
+            {"C C# D D# E F F# G G# A A# B".split(' ').map(n => {
+              const isRoot = n === root;
+              const inScale = scaleNotes.includes(n);
+              return (
+                <div key={n} className={`w-8 h-8 rounded-full flex items-center justify-center font-bold border-2 ${isRoot ? 'bg-blue-500 border-blue-500 text-white' : inScale ? 'bg-green-500 border-green-500 text-white' : 'bg-white dark:bg-gray-600 border-gray-400 dark:border-gray-500 text-gray-700 dark:text-gray-200'}`}>
+                  {n}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    };
+
+    /**
+     * TheoryAnalysis – provides analysis for a given progression, including roman numerals, functional tags, and common patterns.
+     */
+    const TheoryAnalysis = ({ keyRoot, progression }) => {
+      if (!progression.length) {
+        return (
+          <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-inner mt-4">
+            <p>No progression selected. Build a progression to see analysis.</p>
+          </div>
+        );
+      }
+      const degrees = KEY_DEGREES[keyRoot] || {};
+      const inv = Object.fromEntries(Object.entries(degrees).map(([k,v]) => [v,k]));
+      const romanSeq = progression.map(chord => inv[chord] || '?').join('-');
+      // Recognize patterns from a small set of common progressions
+      const known = {
+        "I-V-vi-IV": "I-V-vi-IV (Pop)",
+        "ii-V-I": "ii-V-I (Jazz)",
+        "I-vi-IV-V": "I-vi-IV-V (50s)",
+        "vi-IV-I-V": "vi-IV-I-V (Alt)",
+        "I-IV-V": "I-IV-V (Blues)"
+      };
+      const found = Object.entries(known).find(([pattern, name]) => pattern === romanSeq);
+      return (
+        <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-inner mt-4">
+          <h3 className="font-bold text-lg mb-2">Harmonic Analysis</h3>
+          <p className="mb-2"><strong>Key:</strong> {keyRoot}</p>
+          <p className="mb-2"><strong>Roman Numerals:</strong> {romanSeq}</p>
+          <div className="flex flex-wrap gap-2 mb-2">
+            {progression.map((chord, idx) => {
+              const rn = inv[chord] || '-';
+              const func = CHORD_FUNCTIONS[rn] || 'unknown';
+              let bg;
+              if (func === 'tonic') bg = 'bg-green-500';
+              else if (func === 'predominant') bg = 'bg-yellow-400';
+              else if (func === 'dominant') bg = 'bg-red-500';
+              else if (func === 'substitute') bg = 'bg-purple-500';
+              else bg = 'bg-gray-400';
+              return <span key={idx} className={`px-2 py-1 rounded-md text-white text-sm ${bg}`}>{rn} ({func})</span>;
+            })}
+          </div>
+          {found && (
+            <p className="mb-2"><strong>Recognized Pattern:</strong> {found[1]}</p>
+          )}
+          <p className="font-semibold mt-2">Voice Leading Tips:</p>
+          <ul className="list-disc list-inside text-sm">
+            <li>Use inversions to keep bass movement smooth.</li>
+            <li>Keep common tones between successive chords.</li>
+            <li>Move voices by the smallest intervals possible.</li>
+          </ul>
+        </div>
+      );
+    };
+
+    /**
+      Main App Component
+    */
+    function App() {
+      // Theme state
+      const [darkMode, setDarkMode] = useState(false);
+      useEffect(() => {
+        if (darkMode) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }, [darkMode]);
+      // Tab state: 1 = Create, 2 = Practice, 3 = Songs, 4 = Learn, 5 = Theory
+      const [tab, setTab] = useState(1);
+      // Key selection
+      const [keyRoot, setKeyRoot] = useState('C Major');
+      // Progression: list of chord names
+      const [progression, setProgression] = useState([]);
+      // Instrument selection
+      const [instrument, setInstrument] = useState(null);
+      // Current chord for practise page
+      const [currentChord, setCurrentChord] = useState('');
+      // Guitar style: 'std' or 'mir'
+      const [guitarStyle, setGuitarStyle] = useState('std');
+      // Piano options
+      const [pianoHand, setPianoHand] = useState('rightHand');
+      const [pianoInversion, setPianoInversion] = useState('root');
+      const [showPianoFingers, setShowPianoFingers] = useState(true);
+      const [practiceMode, setPracticeMode] = useState(false);
+      const [practiceNotes, setPracticeNotes] = useState({ correct: [], incorrect: [] });
+      // Tempo
+      const [bpm, setBpm] = useState(90);
+      const [isMetPlaying, setIsMetPlaying] = useState(false);
+      const schedulerId = useRef(null);
+      const nextNoteTime = useRef(0);
+      const beatCount = useRef(0);
+      // Strum state for guitar animation
+      const [strum, setStrum] = useState({ isStrumming: false, direction: 'down' });
+      // Selected song for Songs tab
+      const [selectedSong, setSelectedSong] = useState(null);
+
+      // Tutorial: define a series of guided steps to teach chords and transitions
+      const tutorialSteps = [
+        {
+          title: 'Step 1: Learn C Major on Piano',
+          description: 'With your right hand, press the notes C, E and G on the piano. The keys will light up when you click them.',
+          instrument: 'Piano',
+          chord: 'C Major',
+          tips: 'Use your thumb, middle finger and pinky (1-3-5) to play C, E and G. Keep your hand relaxed.',
+        },
+        {
+          title: 'Step 2: Learn G Major on Guitar',
+          description: 'Switch to guitar and play a G major chord. Click each dot in the diagram to hear the string.',
+          instrument: 'Guitar',
+          chord: 'G Major',
+          tips: 'Place your fingers as shown (3-2-0-0-0-3). Strum slowly to hear each string ring.',
+        },
+        {
+          title: 'Step 3: Practice Switching C & G',
+          description: 'Practice switching between C major (piano) and G major (guitar). Play each chord several times and try to switch smoothly.',
+          instrument: 'Mixed',
+          chord: null,
+          tips: 'Set the metronome to a slow tempo and switch chords on each beat. Focus on finger placement.',
+        },
+        {
+          title: 'Step 4: Learn A Minor',
+          description: 'Learn the A minor chord on piano: click A, C, and E. Then try A minor on guitar (0-0-2-2-1-0).',
+          instrument: 'Mixed',
+          chord: 'A Minor',
+          tips: 'On piano, use fingers 1-3-5. On guitar, start with your index finger on the B string first fret.',
+        },
+        {
+          title: 'Step 5: Learn F Major',
+          description: 'Learn F major on piano (F, A, C) and guitar (1-3-3-2-1-1). Be patient with barre chords!',
+          instrument: 'Mixed',
+          chord: 'F Major',
+          tips: 'For guitar, use your index finger to barre the first fret. Press firmly but keep your hand relaxed.',
+        },
+        {
+          title: 'Step 6: Put It Together',
+          description: 'Play the I–V–vi–IV progression in C: C, G, Am, F. Use the backing track or metronome to keep time.',
+          instrument: 'Mixed',
+          chord: null,
+          tips: 'Loop the progression slowly at first, then gradually increase the tempo. Try to make each chord change smooth.',
+        },
+        {
+          title: 'Step 7: Explore & Improve',
+          description: 'Congratulations! You’ve learned the basic chords. Explore the Songs tab or create your own progression. Practice switching chords smoothly and keep your fingers curved.',
+          instrument: 'Mixed',
+          chord: null,
+          tips: 'Keep practicing regularly. Experiment with different songs and chord progressions to solidify your skills.',
+        },
+      ];
+      const [tutorialStep, setTutorialStep] = useState(0);
+      // Chord builder: selected root and type
+      const [builderRoot, setBuilderRoot] = useState('C');
+      const [builderType, setBuilderType] = useState('Major');
+      // Stats
+      const [stats, setStats] = useState({ sessionStart: Date.now(), chordsPlayed: 0 });
+      // Ear training chords from progression or fallback
+      const earChords = progression.length > 0 ? progression : [];
+      // Drag & drop support for progression
+      const handleDrop = (e) => {
+        e.preventDefault();
+        const name = e.dataTransfer.getData('text/plain');
+        if (name) addChordToProgression(name);
+      };
+      const handleDragOver = (e) => e.preventDefault();
+      // Add chord to progression
+      const addChordToProgression = (name) => {
+        if (progression.length < 8 && !progression.includes(name)) {
+          setProgression([...progression, name]);
+        }
+      };
+      // Remove chord from progression
+      const removeChordFromProgression = (idx) => {
+        const arr = [...progression];
+        arr.splice(idx, 1);
+        setProgression(arr);
+      };
+      // Start practise with built progression
+      const startPractice = () => {
+        if (progression.length > 0) {
+          setCurrentChord(progression[0]);
+          setTab(2);
+        }
+      };
+      // Start practise with song
+      const startSongPractice = (song) => {
+        setSelectedSong(song);
+        setProgression(song.progression.map(p => p.chord));
+        setCurrentChord(song.progression[0].chord);
+        setTab(2);
+      };
+      // Build custom chord using builder
+      const buildCustomChord = () => {
+        const typeObj = CHORD_EXTENSIONS[builderType];
+        if (!typeObj) return;
+        const chordName = builderRoot + typeObj.suffix;
+        addChordToProgression(chordName);
+      };
+      // Play chord audio (block or arpeggio for piano; strum up/down for guitar)
+      const playChordAudio = (chordName, style = null) => {
+        const ctx = ensureAudioContext();
+        if (ctx.state === 'suspended') ctx.resume();
+        const t = ctx.currentTime + 0.05;
+        // Determine instrument style if not provided
+        let playStyle = style;
+        if (!playStyle) {
+          playStyle = instrument === 'Piano' ? 'block' : 'down';
+        }
+        if (instrument === 'Piano') {
+          // Use triad mapping from PianoDiagram
+          const triadMap = {
+            "C Major": ["C4","E4","G4"],
+            "A Minor": ["A4","C5","E5"],
+            "G Major": ["G4","B4","D5"],
+            "E Minor": ["E4","G4","B4"],
+            "D Major": ["D4","F#4","A4"],
+            "B Minor": ["B4","D5","F#5"],
+            "A Major": ["A4","C#5","E5"],
+            "F# Minor": ["F#4","A4","C#5"],
+            "E Major": ["E4","G#4","B4"],
+            "C# Minor": ["C#5","E5","G#5"],
+            "B Major": ["B4","D#5","F#5"],
+            "G# Minor": ["G#4","B4","D#5"],
+            "F# Major": ["F#4","A#4","C#5"],
+            "D# Minor": ["D#4","F#4","A#4"],
+            "Db Major": ["Db4","F4","Ab4"],
+            "Bb Minor": ["Bb4","Db5","F5"],
+            "Ab Major": ["Ab4","C5","Eb5"],
+            "F Minor": ["F4","Ab4","C5"],
+            "Eb Major": ["Eb4","G4","Bb4"],
+            "C Minor": ["C4","Eb4","G4"],
+            "Bb Major": ["Bb3","D4","F4"],
+            "G Minor": ["G3","Bb3","D4"],
+            "F Major": ["F3","A3","C4"],
+            "D Minor": ["D3","F3","A3"]
+          };
+          const notes = triadMap[chordName] || [];
+          if (playStyle === 'arp') {
+            notes.forEach((note, i) => makeVoice(midiToFreq(noteToMidi(note)), t + i * 0.07, 1.0, 'triangle'));
+          } else {
+            notes.forEach(note => makeVoice(midiToFreq(noteToMidi(note)), t, 1.0, 'triangle'));
+          }
+        } else {
+          // Guitar: strum up/down
+          // Determine notes from simple shapes (use same SHAPES as GuitarDiagram)
+          const SHAPES = {
+            "C Major": { fret: [-1,3,2,0,1,0] },
+            "A Minor": { fret: [-1,0,2,2,1,0] },
+            "G Major": { fret: [3,2,0,0,0,3] },
+            "E Minor": { fret: [0,2,2,0,0,0] },
+            "D Major": { fret: [-1,-1,0,2,3,2] },
+            "B Minor": { fret: [-1,2,4,4,3,2] },
+            "A Major": { fret: [-1,0,2,2,2,0] },
+            "F# Minor": { fret: [2,4,4,2,2,2] },
+            "E Major": { fret: [0,2,2,1,0,0] },
+            "C# Minor": { fret: [-1,4,6,6,5,4] },
+            "B Major": { fret: [-1,2,4,4,4,2] },
+            "G# Minor": { fret: [4,6,6,4,4,4] },
+            "F# Major": { fret: [2,4,4,3,2,2] },
+            "D# Minor": { fret: [6,8,8,7,7,6] },
+            "Db Major": { fret: [-1,4,6,6,6,4] },
+            "Bb Minor": { fret: [-1,1,3,3,2,1] },
+            "Ab Major": { fret: [4,6,6,5,4,4] },
+            "F Minor": { fret: [1,3,3,1,1,1] },
+            "Eb Major": { fret: [-1,6,8,8,8,6] },
+            "C Minor": { fret: [-1,3,5,5,4,3] },
+            "Bb Major": { fret: [-1,1,3,3,3,1] },
+            "G Minor": { fret: [3,5,5,3,3,3] },
+            "F Major": { fret: [1,3,3,2,1,1] },
+            "D Minor": { fret: [-1,-1,0,2,3,1] }
+          };
+          const shape = SHAPES[chordName] || { fret: [] };
+          const notes = shape.fret.map((f, i) => f >= 0 ? noteNameAt(["E2","A2","D3","G3","B3","E4"][i], f) : null).filter(Boolean);
+          const ordered = playStyle === 'up' ? [...notes].reverse() : notes;
+          ordered.forEach((note, idx) => makeVoice(midiToFreq(noteToMidi(note)), t + idx * 0.012, 1.2, 'sawtooth'));
+          // Trigger strum animation
+          setStrum({ isStrumming: true, direction: playStyle });
+          setTimeout(() => setStrum({ isStrumming: false, direction: playStyle }), 200);
+        }
+        // Update stats
+        setStats(prev => ({ ...prev, chordsPlayed: prev.chordsPlayed + 1 }));
+      };
+      // Metronome scheduler
+      const playClick = (time, accent = false) => {
+        const ctx = ensureAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.value = accent ? 1400 : 900;
+        gain.gain.setValueAtTime(0.001, time);
+        gain.gain.exponentialRampToValueAtTime(0.4, time + 0.001);
+        gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.08);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(time);
+        osc.stop(time + 0.12);
+      };
+      const scheduler = () => {
+          const ctx = ensureAudioContext();
+          while (nextNoteTime.current < ctx.currentTime + 0.1) {
+            playClick(nextNoteTime.current, beatCount.current === 0);
+            nextNoteTime.current += 60 / bpm;
+            beatCount.current = (beatCount.current + 1) % 4;
+          }
+          // update session time periodically
+          setStats(prev => ({ ...prev }));
+      };
+      // Toggle metronome
+      const toggleMetronome = () => {
+        const ctx = ensureAudioContext();
+        if (ctx.state === 'suspended') ctx.resume();
+        if (isMetPlaying) {
+          clearInterval(schedulerId.current);
+          schedulerId.current = null;
+          setIsMetPlaying(false);
+        } else {
+          beatCount.current = 0;
+          nextNoteTime.current = ctx.currentTime + 0.05;
+          schedulerId.current = setInterval(scheduler, 25);
+          setIsMetPlaying(true);
+        }
+      };
+      // Practice mode note click handler
+      const handlePracticeNoteClick = (note) => {
+        const triadMap = {
+          "C Major": ["C4","E4","G4"],
+          "A Minor": ["A4","C5","E5"],
+          "G Major": ["G4","B4","D5"],
+          "E Minor": ["E4","G4","B4"],
+          "D Major": ["D4","F#4","A4"],
+          "B Minor": ["B4","D5","F#5"],
+          "A Major": ["A4","C#5","E5"],
+          "F# Minor": ["F#4","A4","C#5"],
+          "E Major": ["E4","G#4","B4"],
+          "C# Minor": ["C#5","E5","G#5"],
+          "B Major": ["B4","D#5","F#5"],
+          "G# Minor": ["G#4","B4","D#5"],
+          "F# Major": ["F#4","A#4","C#5"],
+          "D# Minor": ["D#4","F#4","A#4"],
+          "Db Major": ["Db4","F4","Ab4"],
+          "Bb Minor": ["Bb4","Db5","F5"],
+          "Ab Major": ["Ab4","C5","Eb5"],
+          "F Minor": ["F4","Ab4","C5"],
+          "Eb Major": ["Eb4","G4","Bb4"],
+          "C Minor": ["C4","Eb4","G4"],
+          "Bb Major": ["Bb3","D4","F4"],
+          "G Minor": ["G3","Bb3","D4"],
+          "F Major": ["F3","A3","C4"],
+          "D Minor": ["D3","F3","A3"]
+        };
+        const triad = triadMap[currentChord] || [];
+        if (triad.includes(note)) {
+          if (!practiceNotes.correct.includes(note)) {
+            setPracticeNotes(prev => ({ ...prev, correct: [...prev.correct, note] }));
+          }
+        } else {
+          if (!practiceNotes.incorrect.includes(note)) {
+            setPracticeNotes(prev => ({ ...prev, incorrect: [...prev.incorrect, note] }));
+          }
+        }
+      };
+      // Stats update – update session time and chords played display
+      const sessionMinutes = Math.floor((Date.now() - stats.sessionStart) / 60000);
+      // Render diagram based on instrument
+      const renderDiagram = () => {
+        if (!instrument || !currentChord) {
+          return <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">Select an instrument to begin practice.</div>;
+        }
+        if (instrument === 'Piano') {
+          return (
+            <div className="flex flex-col items-center w-full">
+              <PianoDiagram
+                chordName={currentChord}
+                showFingers={showPianoFingers}
+                pianoHand={pianoHand}
+                inversion={pianoInversion}
+                practiceMode={practiceMode}
+                onNoteClick={handlePracticeNoteClick}
+                practiceNotes={practiceNotes}
+              />
+            </div>
+          );
+        }
+        if (instrument === 'Guitar') {
+          return (
+            <GuitarDiagram chordName={currentChord} mirrored={guitarStyle === 'mir'} strum={strum} />
+          );
+        }
+      };
+      // Save and load progress
+      const saveProgress = () => {
+        const saveData = {
+          keyRoot,
+          progression,
+          instrument,
+          currentChord,
+          guitarStyle,
+          pianoHand,
+          pianoInversion,
+          showPianoFingers,
+          practiceMode
+        };
+        localStorage.setItem('chord-lab-combined', JSON.stringify(saveData));
+        alert('Progress saved!');
+      };
+      const loadProgress = () => {
+        const saved = localStorage.getItem('chord-lab-combined');
+        if (saved) {
+          try {
+            const data = JSON.parse(saved);
+            setKeyRoot(data.keyRoot || 'C Major');
+            setProgression(data.progression || []);
+            setInstrument(data.instrument || null);
+            setCurrentChord(data.currentChord || '');
+            setGuitarStyle(data.guitarStyle || 'std');
+            setPianoHand(data.pianoHand || 'rightHand');
+            setPianoInversion(data.pianoInversion || 'root');
+            setShowPianoFingers(data.showPianoFingers !== undefined ? data.showPianoFingers : true);
+            setPracticeMode(data.practiceMode || false);
+            alert('Progress loaded!');
+          } catch {
+            alert('Failed to load saved data.');
+          }
+        }
+      };
+      // Reset practise notes when chord or instrument changes
+      useEffect(() => {
+        setPracticeNotes({ correct: [], incorrect: [] });
+      }, [currentChord, instrument, practiceMode]);
+      // Dark mode toggle button
+      const DarkModeToggle = () => (
+        <button onClick={() => setDarkMode(!darkMode)} className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+          {darkMode ? '☀️' : '🌙'}
+        </button>
+      );
+      return (
+        <div className="min-h-screen">
+          {/* Header */}
+          <header className="flex justify-between items-center p-4">
+            <h1 className="text-3xl font-extrabold text-gray-800 dark:text-white tracking-tight font-readex">Chord Lab</h1>
+            <div className="flex gap-2 items-center">
+              <button onClick={saveProgress} className="px-3 py-1 rounded-md bg-green-500 hover:bg-green-600 text-white font-semibold">Save</button>
+              <button onClick={loadProgress} className="px-3 py-1 rounded-md bg-yellow-400 hover:bg-yellow-500 text-black font-semibold">Load</button>
+              <DarkModeToggle />
+            </div>
+          </header>
+          {/* Tab navigation */}
+          <div className="flex border-b border-gray-200 dark:border-gray-700 mx-4 mb-4">
+            <button onClick={() => setTab(1)} className={`py-2 px-4 font-bold ${tab === 1 ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}>1. Create</button>
+            <button onClick={() => setTab(2)} className={`py-2 px-4 font-bold ${tab === 2 ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}>2. Practice</button>
+                                    <button onClick={() => setTab(3)} className={`py-2 px-4 font-bold ${tab === 3 ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}>3. Songs</button>
+                                    <button onClick={() => setTab(4)} className={`py-2 px-4 font-bold ${tab === 4 ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}>4. Learn</button>
+                                    <button onClick={() => setTab(5)} className={`py-2 px-4 font-bold ${tab === 5 ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}>5. Theory</button>
+                                    <button onClick={() => setTab(6)} className={`py-2 px-4 font-bold ${tab === 6 ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}>6. Band & Melody</button>
+                                    <button onClick={() => setTab(7)} className={`py-2 px-4 font-bold ${tab === 7 ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}>7. Tutorial</button>
+          </div>
+          {/* Content */}
+          <main className="max-w-7xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Panel: Controls */}
+            <div className="lg:col-span-1 space-y-6">
+              {/* Create Tab */}
+              {tab === 1 && (
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg space-y-4">
+                  <h2 className="text-xl font-bold">Build a Progression</h2>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Select Key</label>
+                    <select value={keyRoot} onChange={e => setKeyRoot(e.target.value)} className="w-full p-2 rounded-md bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600">
+                      {Object.keys(KEY_DEGREES).map(k => <option key={k}>{k}</option>)}
+                    </select>
+                  </div>
+                    {/* Chord wheel */}
+                  <ChordWheel activeKey={keyRoot} onChordSelect={addChordToProgression} />
+                  {/* Legend for roman numerals */}
+                  <div className="flex flex-wrap gap-2 justify-center mt-2">
+                    {Object.entries(KEY_DEGREES[keyRoot] || {}).filter(([k]) => ['I','ii','iii','IV','V','vi'].includes(k)).map(([rn, name]) => (
+                      <span key={rn} className="px-3 py-1 rounded-full text-white font-bold" style={{ backgroundColor: PALETTE[name] }}>{rn} {name.replace(' Major','').replace(' Minor','m')}</span>
+                    ))}
+                  </div>
+                  {/* Drag drop bin */}
+                  <div onDrop={handleDrop} onDragOver={handleDragOver} className="mt-4 p-4 min-h-[80px] bg-gray-100 dark:bg-gray-700 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
+                    <h3 className="font-bold mb-2 text-center text-gray-600 dark:text-gray-400">Drag Chords Here</h3>
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {progression.map((chord, idx) => {
+                        const deg = KEY_DEGREES[keyRoot] || {};
+                        const inv = Object.fromEntries(Object.entries(deg).map(([k,v]) => [v,k]));
+                        const rn = inv[chord] || '-';
+                        return (
+                          <div key={idx} className="flex items-center gap-1 px-3 py-1 rounded-full text-white font-semibold" style={{ backgroundColor: PALETTE[chord] }}>
+                            <span>{rn}</span>
+                            <span>{chord.replace(' Major','').replace(' Minor','m')}</span>
+                            <button onClick={() => removeChordFromProgression(idx)} className="ml-1 font-bold">×</button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  {/* Chord builder */}
+                  <div className="mt-4">
+                    <h3 className="font-bold mb-2">Custom Chord Builder</h3>
+                    <div className="flex gap-2 flex-wrap items-center">
+                      <select value={builderRoot} onChange={e => setBuilderRoot(e.target.value)} className="p-2 rounded-md bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600">
+                        {"C C# D D# E F F# G G# A A# B".split(' ').map(r => <option key={r}>{r}</option>)}
+                      </select>
+                      <div className="flex gap-1 flex-wrap">
+                        {Object.keys(CHORD_EXTENSIONS).map(type => (
+                          <button key={type} onClick={() => setBuilderType(type)} className={`px-2 py-1 rounded-md border ${builderType === type ? 'bg-blue-500 text-white border-blue-500' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'}`}>{type}</button>
+                        ))}
+                      </div>
+                      <button onClick={buildCustomChord} className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-md font-semibold">Add</button>
+                    </div>
+                  </div>
+                  <div className="flex gap-4 mt-4">
+                    <button onClick={() => setProgression([])} className="flex-1 py-2 px-4 rounded-md bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 font-semibold">Clear</button>
+                    <button onClick={startPractice} disabled={progression.length === 0} className="flex-1 py-2 px-4 rounded-md bg-blue-500 hover:bg-blue-600 text-white font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed">Practice</button>
+                  </div>
+                </div>
+              )}
+              {/* Practice Tab */}
+              { (tab === 2 || tab === 6) && (
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg space-y-6">
+                  {/* Instrument selection */}
+                  {!instrument ? (
+                    <div className="text-center space-y-4">
+                      <h2 className="text-xl font-bold">Choose Instrument</h2>
+                      <div className="flex gap-4">
+                        <button onClick={() => { setInstrument('Piano'); setCurrentChord(progression[0] || ''); }} className="flex-1 py-3 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 font-bold">Piano</button>
+                        <button onClick={() => { setInstrument('Guitar'); setCurrentChord(progression[0] || ''); }} className="flex-1 py-3 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 font-bold">Guitar</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Option to change instrument */}
+                      <button onClick={() => { setInstrument(null); setSelectedSong(null); }} className="text-sm text-blue-500 hover:underline mb-4">← Change Instrument</button>
+                      {/* Chord selector */}
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium mb-1">Current Chord</label>
+                        <select value={currentChord} onChange={e => setCurrentChord(e.target.value)} className="w-full p-2 rounded-md bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600" disabled={selectedSong && isMetPlaying}>
+                          {progression.map(ch => <option key={ch}>{ch}</option>)}
+                        </select>
+                      </div>
+                      {instrument === 'Guitar' && (
+                        <div className="mb-4">
+                          <h3 className="text-lg font-bold mb-2">Guitar Style</h3>
+                          <div className="flex gap-4">
+                            <label className="flex items-center gap-2"><input type="radio" name="gStyle" value="std" checked={guitarStyle === 'std'} onChange={e => setGuitarStyle(e.target.value)} /> Standard</label>
+                            <label className="flex items-center gap-2"><input type="radio" name="gStyle" value="mir" checked={guitarStyle === 'mir'} onChange={e => setGuitarStyle(e.target.value)} /> Mirrored</label>
+                          </div>
+                        </div>
+                      )}
+                      {instrument === 'Piano' && (
+                        <div className="space-y-3 mb-4">
+                          <div>
+                            <p className="font-semibold mb-1">Hand</p>
+                            <div className="flex gap-4">
+                              <label className="flex items-center gap-2"><input type="radio" name="pHand" value="rightHand" checked={pianoHand === 'rightHand'} onChange={e => setPianoHand(e.target.value)} /> Right</label>
+                              <label className="flex items-center gap-2"><input type="radio" name="pHand" value="leftHand" checked={pianoHand === 'leftHand'} onChange={e => setPianoHand(e.target.value)} /> Left</label>
+                            </div>
+                          </div>
+                          <div>
+                            <p className="font-semibold mb-1">Inversion</p>
+                            <div className="flex gap-4">
+                              <label className="flex items-center gap-2"><input type="radio" name="pInv" value="root" checked={pianoInversion === 'root'} onChange={e => setPianoInversion(e.target.value)} /> Root</label>
+                              <label className="flex items-center gap-2"><input type="radio" name="pInv" value="first" checked={pianoInversion === 'first'} onChange={e => setPianoInversion(e.target.value)} /> 1st</label>
+                              <label className="flex items-center gap-2"><input type="radio" name="pInv" value="second" checked={pianoInversion === 'second'} onChange={e => setPianoInversion(e.target.value)} /> 2nd</label>
+                            </div>
+                          </div>
+                          <label className="flex items-center gap-2"><input type="checkbox" checked={showPianoFingers} onChange={e => setShowPianoFingers(e.target.checked)} /> Show Finger Numbers</label>
+                          <label className={`flex items-center gap-2 p-2 rounded-md ${practiceMode ? 'bg-blue-100 dark:bg-blue-900' : 'bg-gray-100 dark:bg-gray-700'}`}><input type="checkbox" checked={practiceMode} onChange={e => setPracticeMode(e.target.checked)} /> <span className="font-semibold">Check Your Chord Mode</span></label>
+                        </div>
+                      )}
+                      {/* Sound buttons */}
+                      <div className="mb-4">
+                        <h3 className="text-lg font-bold mb-2">Sound</h3>
+                        <div className="flex gap-2">
+                          {instrument === 'Piano' && (
+                            <>
+                              <button onClick={() => playChordAudio(currentChord, 'block')} className="flex-1 py-2 px-4 rounded-md bg-blue-500 hover:bg-blue-600 text-white font-semibold">Block</button>
+                              <button onClick={() => playChordAudio(currentChord, 'arp')} className="flex-1 py-2 px-4 rounded-md bg-blue-500 hover:bg-blue-600 text-white font-semibold">Arpeggio</button>
+                            </>
+                          )}
+                          {instrument === 'Guitar' && (
+                            <>
+                              <button onClick={() => playChordAudio(currentChord, 'down')} className="flex-1 py-2 px-4 rounded-md bg-blue-500 hover:bg-blue-600 text-white font-semibold">Strum Down</button>
+                              <button onClick={() => playChordAudio(currentChord, 'up')} className="flex-1 py-2 px-4 rounded-md bg-blue-500 hover:bg-blue-600 text-white font-semibold">Strum Up</button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      {/* Metronome */}
+                      <Metronome bpm={bpm} setBpm={setBpm} isPlaying={isMetPlaying} onTogglePlay={toggleMetronome} />
+                    </>
+                  )}
+                </div>
+              )}
+              {/* Songs Tab */}
+              {tab === 3 && (
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg space-y-4">
+                  <h2 className="text-xl font-bold text-center">Song Library</h2>
+                  {SONG_LIBRARY.map((song, idx) => (
+                    <div key={idx} className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                      <h3 className="font-bold">{song.title}</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{song.artist}</p>
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {song.progression.map((p, i) => (
+                          <span key={i} className="px-2 py-0.5 text-xs text-white rounded-full" style={{ backgroundColor: PALETTE[p.chord] }}>{p.chord.replace(/ Major| Minor/, m => m === ' Major' ? '' : 'm')}</span>
+                        ))}
+                      </div>
+                      <button onClick={() => startSongPractice(song)} className="mt-3 w-full py-2 px-4 rounded-md bg-blue-500 hover:bg-blue-600 text-white font-semibold">Learn Song</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {/* Learn Tab */}
+              {tab === 4 && (
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg space-y-4">
+                  <h2 className="text-xl font-bold">Learn and Explore</h2>
+                  <EarTraining chords={earChords} />
+                  <ScaleVisualizer />
+                </div>
+              )}
+              {/* Theory Tab */}
+              {tab === 5 && (
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg space-y-4">
+                  <h2 className="text-xl font-bold">Theory & Analysis</h2>
+                  <TheoryAnalysis keyRoot={keyRoot} progression={progression} />
+                </div>
+              )}
+
+              {/* Band & Melody Tab */}
+              {tab === 6 && (
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg space-y-4">
+                  <h2 className="text-xl font-bold">Band & Melody</h2>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    This experimental section is designed to help students move beyond individual chord practice.  It will eventually support collaborative band sessions and rhythm games.  For now, use the melody guide below to explore creating simple tunes using notes that fit your current chord.
+                  </p>
+                  <MelodyGuide chordName={currentChord} />
+                  <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <h3 className="font-bold mb-2">Band View (Prototype)</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">In future versions this panel will allow you to invite classmates, select roles (guitar or piano), and play along together with a shared metronome and backing track.  Stay tuned!</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Tutorial Tab */}
+              {tab === 7 && (
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg space-y-6">
+                  {/* Step content */}
+                  {tutorialSteps[tutorialStep] && (
+                    <div>
+                      <h2 className="text-2xl font-bold mb-2">{tutorialSteps[tutorialStep].title}</h2>
+                      <p className="mb-4 text-gray-700 dark:text-gray-300">{tutorialSteps[tutorialStep].description}</p>
+                      {/* Diagrams for this step */}
+                      {tutorialSteps[tutorialStep].instrument === 'Piano' && tutorialSteps[tutorialStep].chord && (
+                        <div className="mb-4">
+                          <PianoDiagram chordName={tutorialSteps[tutorialStep].chord} showFingers={true} pianoHand={"rightHand"} pianoInversion={"root"} practiceMode={false} onNoteClick={null} practiceNotes={{correct:[], incorrect:[]}} />
+                        </div>
+                      )}
+                      {tutorialSteps[tutorialStep].instrument === 'Guitar' && tutorialSteps[tutorialStep].chord && (
+                        <div className="mb-4">
+                          <GuitarDiagram chordName={tutorialSteps[tutorialStep].chord} mirrored={false} strum={{isStrumming:false, direction:'down'}} />
+                        </div>
+                      )}
+                      {tutorialSteps[tutorialStep].instrument === 'Mixed' && tutorialSteps[tutorialStep].chord && (
+                        <div className="mb-4 space-y-6">
+                          <div>
+                            <h3 className="font-bold mb-2">Piano</h3>
+                            <PianoDiagram chordName={tutorialSteps[tutorialStep].chord} showFingers={true} pianoHand={"rightHand"} pianoInversion={"root"} practiceMode={false} onNoteClick={null} practiceNotes={{correct:[], incorrect:[]}} />
+                          </div>
+                          <div>
+                            <h3 className="font-bold mb-2">Guitar</h3>
+                            <GuitarDiagram chordName={tutorialSteps[tutorialStep].chord} mirrored={false} strum={{isStrumming:false, direction:'down'}} />
+                          </div>
+                        </div>
+                      )}
+                      {/* Tips */}
+                      <p className="text-sm italic text-gray-600 dark:text-gray-400 mt-4">Tips: {tutorialSteps[tutorialStep].tips}</p>
+                    </div>
+                  )}
+                  {/* Navigation buttons */}
+                  <div className="flex gap-4 mt-4">
+                    <button disabled={tutorialStep === 0} onClick={() => setTutorialStep(Math.max(0, tutorialStep - 1))} className={`px-4 py-2 rounded-md font-semibold ${tutorialStep === 0 ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}>Previous</button>
+                    {tutorialStep < tutorialSteps.length - 1 ? (
+                      <button onClick={() => setTutorialStep(tutorialStep + 1)} className="px-4 py-2 rounded-md bg-blue-500 hover:bg-blue-600 text-white font-semibold">Next</button>
+                    ) : (
+                      <button onClick={() => { setTutorialStep(0); setTab(2); }} className="px-4 py-2 rounded-md bg-green-500 hover:bg-green-600 text-white font-semibold">Finish Tutorial</button>
+                    )}
+                  </div>
+                </div>
+              )}
+              {/* Stats Panel in practice tab */}
+              {tab === 2 && instrument && (
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg space-y-4">
+                  <h2 className="text-xl font-bold">Practice Statistics</h2>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
+                      <div className="text-2xl font-bold text-blue-500">{sessionMinutes}m</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">Session Time</div>
+                    </div>
+                    <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
+                      <div className="text-2xl font-bold text-blue-500">{stats.chordsPlayed}</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">Chords Played</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+            {/* Right Panel: Diagram & Playback */}
+            <div className="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg flex flex-col justify-center items-center">
+              {/* Show SongPlayer if a song is selected and metronome is playing (auto loop) */}
+              {tab === 2 && selectedSong && (
+                <SongPlayer song={selectedSong} bpm={bpm} onChordChange={setCurrentChord} />
+              )}
+              {/* Display selected chord and instrument */}
+              {tab === 2 && (
+                <>
+                  <h2 className="text-2xl md:text-3xl font-bold text-center mb-4 text-gray-800 dark:text-gray-200">
+                    {currentChord || 'Select a chord'} – <span className="text-gray-500 dark:text-gray-400">{instrument || 'No Instrument'}</span>
+                  </h2>
+                  <div className="w-full flex-grow flex items-center justify-center">
+                    {renderDiagram()}
+                  </div>
+                </>
+              )}
+              { !(tab === 2 || tab === 6 || tab === 7) && (
+                <div className="flex items-center justify-center h-full w-full text-gray-400 dark:text-gray-500">
+                  {/* Placeholder when not in practice or tutorial tabs */}
+                  <p>Select or build a progression and start practicing to see diagrams here.</p>
+                </div>
+              )}
+            </div>
+          </main>
+        </div>
+      );
+    }
+    // Render App
+    const container = document.getElementById('root');
+    const root = ReactDOM.createRoot(container);
+    root.render(<App />);
+  </script>
+</body>
+</html>

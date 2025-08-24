@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Progressive Music Learning System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@700;800&family=Inclusive+Sans:opsz,wght@8..32,400;8..32,700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inclusive Sans', sans-serif;
+        }
+        h1, h2, h3, .font-readex {
+            font-family: 'Readex Pro', sans-serif;
+        }
+        
+        .pulse-highlight {
+            animation: pulseHighlight 2s infinite;
+        }
+        
+        @keyframes pulseHighlight {
+            0%, 100% { box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.8); }
+        }
+        
+        .tutorial-arrow {
+            position: absolute;
+            z-index: 1000;
+            pointer-events: none;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+        
+        .skill-meter {
+            background: linear-gradient(90deg, #ef4444 0%, #f97316 20%, #eab308 40%, #84cc16 60%, #22c55e 80%, #10b981 100%);
+        }
+        
+        .lesson-complete {
+            animation: celebrate 0.6s ease-in-out;
+        }
+        
+        @keyframes celebrate {
+            0% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(5deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useMemo, useCallback } = React;
+
+        // --- Learning System Data ---
+        
+        const SKILL_LEVELS = {
+            NOVICE: 0,
+            BEGINNER: 1,
+            INTERMEDIATE: 2,
+            ADVANCED: 3,
+            EXPERT: 4
+        };
+
+        const LEARNING_PATHS = {
+            PIANO_BEGINNER: {
+                name: "Piano Fundamentals",
+                description: "Start your piano journey with basic chords and techniques",
+                instrument: "Piano",
+                color: "#3b82f6",
+                icon: "🎹",
+                lessons: ["piano-basics-1", "piano-basics-2", "piano-chords-1", "piano-progressions-1"]
+            },
+            GUITAR_BEGINNER: {
+                name: "Guitar Essentials",
+                description: "Learn guitar from the ground up with proper technique",
+                instrument: "Guitar",
+                color: "#f97316",
+                icon: "🎸",
+                lessons: ["guitar-basics-1", "guitar-basics-2", "guitar-chords-1", "guitar-progressions-1"]
+            },
+            MUSIC_THEORY: {
+                name: "Music Theory Fundamentals",
+                description: "Understand the building blocks of music",
+                instrument: "Theory",
+                color: "#8b5cf6",
+                icon: "🎼",
+                lessons: ["theory-basics-1", "theory-scales-1", "theory-chords-1", "theory-progressions-1"]
+            }
+        };
+
+        const LESSON_DATABASE = {
+            "piano-basics-1": {
+                id: "piano-basics-1",
+                title: "Piano Posture and Hand Position",
+                description: "Learn proper sitting position and hand placement",
+                instrument: "Piano",
+                level: SKILL_LEVELS.NOVICE,
+                duration: 10,
+                objectives: [
+                    "Maintain proper sitting posture",
+                    "Position hands correctly on keys",
+                    "Understand finger numbering",
+                    "Play single notes with proper technique"
+                ],
+                steps: [
+                    {
+                        type: "instruction",
+                        title: "Proper Sitting Position",
+                        content: "Sit on the front half of the bench with your feet flat on the floor. Keep your back straight and shoulders relaxed.",
+                        image: "👤",
+                        tips: ["Adjust bench height so your arms hang naturally", "Keep feet firmly planted"]
+                    },
+                    {
+                        type: "practice",
+                        title: "Hand Position Check",
+                        content: "Place your hands on the keys with curved fingers, like holding a small ball.",
+                        target: "hand-position",
+                        success_criteria: "Fingers curved, wrists level with hands"
+                    },
+                    {
+                        type: "exercise",
+                        title: "Finger Independence",
+                        content: "Play each finger individually: 1-2-3-4-5-4-3-2-1",
+                        chord: "C Major",
+                        pattern: ["C4", "D4", "E4", "F4", "G4", "F4", "E4", "D4", "C4"],
+                        tempo: 60
+                    }
+                ],
+                completion_criteria: {
+                    posture_check: true,
+                    finger_exercise: true,
+                    technique_score: 80
+                }
+            },
+            
+            "piano-basics-2": {
+                id: "piano-basics-2",
+                title: "Reading the Piano Keyboard",
+                description: "Identify keys and understand keyboard layout",
+                instrument: "Piano",
+                level: SKILL_LEVELS.NOVICE,
+                duration: 15,
+                prerequisites: ["piano-basics-1"],
+                objectives: [
+                    "Identify all white keys by name",
+                    "Understand the black key pattern",
+                    "Find any note quickly",
+                    "Play simple melodies"
+                ],
+                steps: [
+                    {
+                        type: "instruction",
+                        title: "White Key Names",
+                        content: "The white keys repeat the pattern: C-D-E-F-G-A-B. Find Middle C first.",
+                        highlight: "middle-c",
+                        tips: ["Middle C is usually near the center of your keyboard", "Use it as your reference point"]
+                    },
+                    {
+                        type: "interactive",
+                        title: "Key Identification Quiz",
+                        content: "Click the keys I name. Let's start with C-E-G",
+                        quiz_type: "key_identification",
+                        questions: [
+                            { note: "C4", instruction: "Find and play Middle C" },
+                            { note: "E4", instruction: "Now find E (2 white keys right)" },
+                            { note: "G4", instruction: "Find G (2 white keys right from E)" }
+                        ]
+                    },
+                    {
+                        type: "exercise",
+                        title: "Scale Practice",
+                        content: "Play the C Major scale ascending and descending",
+                        pattern: ["C4", "D4", "E4", "F4", "G4", "A4", "B4", "C5", "B4", "A4", "G4", "F4", "E4", "D4", "C4"],
+                        fingering: [1, 2, 3, 1, 2, 3, 4, 5, 4, 3, 2, 1, 3, 2, 1],
+                        tempo: 80
+                    }
+                ]
+            },
+            
+            "piano-chords-1": {
+                id: "piano-chords-1",
+                title: "Your First Piano Chords",
+                description: "Learn to play C, F, and G Major chords",
+                instrument: "Piano",
+                level: SKILL_LEVELS.BEGINNER,
+                duration: 20,
+                prerequisites: ["piano-basics-2"],
+                objectives: [
+                    "Play C Major chord cleanly",
+                    "Play F Major chord cleanly", 
+                    "Play G Major chord cleanly",
+                    "Switch between chords smoothly"
+                ],
+                steps: [
+                    {
+                        type: "instruction",
+                        title: "What is a Chord?",
+                        content: "A chord is three or more notes played together. We'll start with triads (3-note chords).",
+                        tips: ["Think of chords as harmony", "Each finger plays one note simultaneously"]
+                    },
+                    {
+                        type: "demonstration",
+                        title: "C Major Chord",
+                        content: "Place fingers 1-3-5 on C-E-G. Press all keys together.",
+                        chord: "C Major",
+                        voicing: 0,
+                        highlight: true,
+                        audio_cue: true
+                    },
+                    {
+                        type: "practice",
+                        title: "Practice C Major",
+                        content: "Play C Major chord 5 times with steady rhythm. Hold each chord for 2 beats.",
+                        chord: "C Major",
+                        repetitions: 5,
+                        duration: 2,
+                        success_criteria: "All notes sound together, no buzzing"
+                    },
+                    {
+                        type: "demonstration",
+                        title: "F Major Chord",
+                        content: "Move your hand position: thumb on F, finger 3 on A, finger 5 on C.",
+                        chord: "F Major",
+                        voicing: 0,
+                        highlight: true,
+                        technique_tip: "Keep your thumb relaxed and curved"
+                    },
+                    {
+                        type: "practice",
+                        title: "Chord Progression",
+                        content: "Play: C - F - G - C. Hold each chord for 4 beats.",
+                        progression: ["C Major", "F Major", "G Major", "C Major"],
+                        tempo: 60,
+                        assessment: true
+                    }
+                ],
+                completion_criteria: {
+                    chord_accuracy: 90,
+                    timing_consistency: 85,
+                    smooth_transitions: 80
+                }
+            },
+            
+            "guitar-basics-1": {
+                id: "guitar-basics-1",
+                title: "Guitar Fundamentals",
+                description: "Proper guitar posture, pick holding, and basic technique",
+                instrument: "Guitar",
+                level: SKILL_LEVELS.NOVICE,
+                duration: 15,
+                objectives: [
+                    "Hold guitar correctly",
+                    "Hold pick properly",
+                    "Strum basic patterns",
+                    "Understand string names"
+                ],
+                steps: [
+                    {
+                        type: "instruction",
+                        title: "How to Hold Your Guitar",
+                        content: "Sit up straight. Rest the guitar's body on your right leg (if right-handed). The neck should angle slightly upward.",
+                        tips: ["Keep your back straight", "Don't lean over the guitar", "Support the neck with your fretting hand"]
+                    },
+                    {
+                        type: "demonstration",
+                        title: "Pick Holding Technique",
+                        content: "Hold the pick between your thumb and index finger. Only the tip should show.",
+                        image: "✋",
+                        technique_tip: "Grip firmly but don't squeeze too tight"
+                    },
+                    {
+                        type: "exercise",
+                        title: "String Names",
+                        content: "Learn the string names from lowest to highest: E-A-D-G-B-E",
+                        memory_aid: "Eddie Ate Dynamite, Good Bye Eddie",
+                        quiz_type: "string_identification"
+                    },
+                    {
+                        type: "practice",
+                        title: "Basic Strumming",
+                        content: "Strum all strings downward with a relaxed wrist motion. Keep it steady.",
+                        pattern: "down-down-down-down",
+                        tempo: 60,
+                        focus: "Keep your wrist relaxed and movement smooth"
+                    }
+                ]
+            },
+            
+            "guitar-chords-1": {
+                id: "guitar-chords-1",
+                title: "Essential Guitar Chords",
+                description: "Master Em, Am, and C chords - the foundation of guitar playing",
+                instrument: "Guitar",
+                level: SKILL_LEVELS.BEGINNER,
+                duration: 25,
+                prerequisites: ["guitar-basics-1"],
+                objectives: [
+                    "Play E minor chord cleanly",
+                    "Play A minor chord cleanly",
+                    "Play C major chord cleanly",
+                    "Switch between chords smoothly"
+                ],
+                steps: [
+                    {
+                        type: "instruction",
+                        title: "Reading Chord Diagrams",
+                        content: "Dots show where to place your fingers. Numbers show which fingers to use. X means don't play that string.",
+                        tips: ["1=Index, 2=Middle, 3=Ring, 4=Pinky", "Press just behind the frets, not on them"]
+                    },
+                    {
+                        type: "demonstration",
+                        title: "E Minor - Your First Chord",
+                        content: "Place middle finger (2) on 2nd fret A string, ring finger (3) on 2nd fret D string.",
+                        chord: "E Minor",
+                        voicing: 0,
+                        highlight: true,
+                        difficulty_note: "This is one of the easiest chords!"
+                    },
+                    {
+                        type: "practice",
+                        title: "Perfect Your Em",
+                        content: "Place fingers, then strum. Each string should ring clearly. Press firmly but don't strain.",
+                        chord: "E Minor",
+                        focus: "Clean, clear notes",
+                        common_problems: ["Muted strings - press harder", "Buzzing - adjust finger position"]
+                    },
+                    {
+                        type: "assessment",
+                        title: "Chord Quality Check",
+                        content: "Play Em chord and hold for 4 seconds. All strings should ring clearly.",
+                        chord: "E Minor",
+                        criteria: ["All strings clear", "No buzzing", "Proper finger placement"],
+                        passing_score: 85
+                    },
+                    {
+                        type: "progression",
+                        title: "First Chord Change",
+                        content: "Switch between Em and Am. Start slow: 4 beats each chord.",
+                        progression: ["E Minor", "A Minor"],
+                        tempo: 60,
+                        repetitions: 8,
+                        coaching_tip: "Lift all fingers at once, then place the new chord"
+                    }
+                ]
+            }
+        };
+
+        const CHORD_DATA = {
+            "C Major": { 
+                piano: { notes: ["C4", "E4", "G4"], fingers: [1, 3, 5] },
+                guitar: { frets: [-1, 3, 2, 0, 1, 0], fingers: [0, 3, 2, 0, 1, 0] }
+            },
+            "F Major": { 
+                piano: { notes: ["F4", "A4", "C5"], fingers: [1, 3, 5] },
+                guitar: { frets: [1, 3, 3, 2, 1, 1], fingers: [1, 3, 4, 2, 1, 1] }
+            },
+            "G Major": { 
+                piano: { notes: ["G4", "B4", "D5"], fingers: [1, 3, 5] },
+                guitar: { frets: [3, 2, 0, 0, 0, 3], fingers: [3, 2, 0, 0, 0, 4] }
+            },
+            "E Minor": { 
+                piano: { notes: ["E4", "G4", "B4"], fingers: [1, 3, 5] },
+                guitar: { frets: [0, 2, 2, 0, 0, 0], fingers: [0, 2, 3, 0, 0, 0] }
+            },
+            "A Minor": { 
+                piano: { notes: ["A4", "C5", "E5"], fingers: [1, 3, 5] },
+                guitar: { frets: [-1, 0, 2, 2, 1, 0], fingers: [0, 0, 2, 3, 1, 0] }
+            }
+        };
+
+        // --- Audio System ---
+        let audioCtx;
+        const ensureAudioContext = () => {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return audioCtx;
+        };
+
+        const noteToMidi = (note) => {
+            const notes = { "C": 0, "C#": 1, "D": 2, "D#": 3, "E": 4, "F": 5, "F#": 6, "G": 7, "G#": 8, "A": 9, "A#": 10, "B": 11 };
+            const match = note.match(/^([A-G]#?)(\d+)$/);
+            if (!match) return 60;
+            const [, noteName, octave] = match;
+            return 12 * (parseInt(octave) + 1) + notes[noteName];
+        };
+
+        const midiToFreq = (midi) => 440 * Math.pow(2, (midi - 69) / 12);
+
+        const playNote = (note, duration = 1.0, type = 'triangle') => {
+            const ctx = ensureAudioContext();
+            if (ctx.state === 'suspended') ctx.resume();
+            
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            
+            o.type = type;
+            o.frequency.setValueAtTime(midiToFreq(noteToMidi(note)), ctx.currentTime);
+            
+            g.gain.setValueAtTime(0.0001, ctx.currentTime);
+            g.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+            
+            o.connect(g).connect(ctx.destination);
+            o.start(ctx.currentTime);
+            o.stop(ctx.currentTime + duration + 0.05);
+        };
+
+        const playChord = (chordName, instrument) => {
+            const chordData = CHORD_DATA[chordName];
+            if (!chordData || !chordData[instrument.toLowerCase()]) return;
+            
+            const notes = chordData[instrument.toLowerCase()].notes;
+            notes.forEach(note => playNote(note, 1.5));
+        };
+
+        // --- Tutorial Components ---
+
+        const TutorialOverlay = ({ step, onNext, onPrevious, onSkip, onClose, isActive, currentStep, totalSteps }) => {
+            if (!isActive || !step) return null;
+
+            return (
+                <div className="fixed top-4 right-4 z-40 w-80 max-h-96 overflow-y-auto">
+                    <div className="bg-white rounded-xl p-4 shadow-2xl border-2 border-blue-200">
+                        <button 
+                            onClick={onClose} 
+                            className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-lg font-bold w-6 h-6 flex items-center justify-center"
+                        >
+                            ×
+                        </button>
+                        
+                        <div className="mb-3">
+                            <div className="flex items-center justify-between mb-2">
+                                <h3 className="text-lg font-bold text-gray-800 pr-6">{step.title}</h3>
+                                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                                    {currentStep + 1}/{totalSteps}
+                                </span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-1.5">
+                                <div 
+                                    className="bg-blue-500 h-1.5 rounded-full transition-all duration-300" 
+                                    style={{ width: `${((currentStep + 1) / totalSteps) * 100}%` }}
+                                ></div>
+                            </div>
+                        </div>
+                        
+                        <div className="mb-4">
+                            <p className="text-gray-700 text-sm mb-3">{step.content}</p>
+                            
+                            {step.tips && (
+                                <div className="bg-blue-50 rounded-lg p-3 mb-3">
+                                    <h4 className="font-semibold text-blue-800 mb-1 text-sm">💡 Tips:</h4>
+                                    <ul className="text-blue-700 text-xs space-y-1">
+                                        {step.tips.slice(0, 2).map((tip, index) => (
+                                            <li key={index}>• {tip}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                            
+                            {step.technique_tip && (
+                                <div className="bg-green-50 rounded-lg p-3 mb-3">
+                                    <h4 className="font-semibold text-green-800 mb-1 text-sm">🎯 Focus:</h4>
+                                    <p className="text-green-700 text-xs">{step.technique_tip}</p>
+                                </div>
+                            )}
+                        </div>
+                        
+                        <div className="flex justify-between items-center text-sm">
+                            <button 
+                                onClick={onPrevious}
+                                className="px-3 py-1 text-gray-600 hover:text-gray-800 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={currentStep === 0}
+                            >
+                                ← Back
+                            </button>
+                            
+                            <div className="flex gap-1">
+                                <button 
+                                    onClick={onSkip}
+                                    className="px-3 py-1 text-gray-500 hover:text-gray-700 font-semibold text-xs"
+                                >
+                                    Skip
+                                </button>
+                                <button 
+                                    onClick={onNext}
+                                    className="px-4 py-1 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600"
+                                >
+                                    {currentStep === totalSteps - 1 ? 'Done!' : 'Next →'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const ProgressIndicator = ({ current, total, label }) => (
+            <div className="mb-6">
+                <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium text-gray-700">{label}</span>
+                    <span className="text-sm font-medium text-gray-700">{current}/{total}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div 
+                        className="progress-bar bg-blue-500 h-3 rounded-full" 
+                        style={{ width: `${(current / total) * 100}%` }}
+                    ></div>
+                </div>
+            </div>
+        );
+
+        const SkillMeter = ({ skill, level, maxLevel = 100 }) => (
+            <div className="mb-4">
+                <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-medium text-gray-700">{skill}</span>
+                    <span className="text-sm font-medium text-gray-700">{level}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                        className="skill-meter h-2 rounded-full transition-all duration-500" 
+                        style={{ width: `${(level / maxLevel) * 100}%` }}
+                    ></div>
+                </div>
+            </div>
+        );
+
+        const InstrumentDisplay = ({ instrument, chord, highlight, practiceMode, onNoteClick }) => {
+            if (!instrument || !chord) return null;
+            
+            const chordData = CHORD_DATA[chord];
+            if (!chordData) return null;
+            
+            const instrumentData = chordData[instrument.toLowerCase()];
+            if (!instrumentData) return null;
+
+            if (instrument === 'Piano') {
+                return (
+                    <PianoDisplay 
+                        chord={chord} 
+                        notes={instrumentData.notes}
+                        fingers={instrumentData.fingers}
+                        highlight={highlight}
+                        practiceMode={practiceMode}
+                        onNoteClick={onNoteClick}
+                    />
+                );
+            } else if (instrument === 'Guitar') {
+                return (
+                    <GuitarDisplay 
+                        chord={chord}
+                        frets={instrumentData.frets}
+                        fingers={instrumentData.fingers}
+                        highlight={highlight}
+                    />
+                );
+            }
+            
+            return null;
+        };
+
+        const PianoDisplay = ({ chord, notes, fingers, highlight, practiceMode, onNoteClick }) => {
+            const whiteKeys = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5', 'D5', 'E5'];
+            const blackKeys = ['C#4', 'D#4', 'F#4', 'G#4', 'A#4', 'C#5', 'D#5'];
+            const [playingNotes, setPlayingNotes] = useState(new Set());
+            
+            const playNoteWithVisual = (note) => {
+                playNote(note, 0.8);
+                setPlayingNotes(prev => new Set([...prev, note]));
+                setTimeout(() => {
+                    setPlayingNotes(prev => {
+                        const newSet = new Set(prev);
+                        newSet.delete(note);
+                        return newSet;
+                    });
+                }, 800);
+            };
+            
+            return (
+                <div className="w-full max-w-2xl mx-auto">
+                    <div className={`relative bg-white rounded-xl shadow-2xl border-4 border-gray-800 overflow-hidden h-48 ${highlight ? 'pulse-highlight' : ''}`}>
+                        {/* White Keys */}
+                        {whiteKeys.map((note, index) => {
+                            const isChordNote = notes.includes(note);
+                            const fingerNumber = isChordNote ? fingers[notes.indexOf(note)] : null;
+                            const isPlaying = playingNotes.has(note);
+                            
+                            return (
+                                <div
+                                    key={note}
+                                    className={`absolute bottom-0 h-full border-l border-gray-300 cursor-pointer transition-all duration-200 ${
+                                        isPlaying ? 'bg-yellow-300 transform scale-95' :
+                                        isChordNote ? 'bg-blue-200 hover:bg-blue-300' : 
+                                        'bg-white hover:bg-gray-50'
+                                    }`}
+                                    style={{
+                                        left: `${(index / whiteKeys.length) * 100}%`,
+                                        width: `${100 / whiteKeys.length}%`
+                                    }}
+                                    onClick={() => {
+                                        playNoteWithVisual(note);
+                                        if (practiceMode && onNoteClick) onNoteClick(note);
+                                    }}
+                                >
+                                    {isChordNote && (
+                                        <div className={`absolute top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full flex items-center justify-center font-bold text-white ${
+                                            isPlaying ? 'bg-yellow-600' : 'bg-blue-500'
+                                        }`}>
+                                            {fingerNumber}
+                                        </div>
+                                    )}
+                                    <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-xs font-semibold text-gray-600">
+                                        {note.replace(/\d/, '')}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                        
+                        {/* Black Keys */}
+                        {blackKeys.map((note, index) => {
+                            const positions = [0.7, 1.7, 3.7, 4.7, 5.7, 7.7, 8.7];
+                            const isChordNote = notes.includes(note);
+                            const fingerNumber = isChordNote ? fingers[notes.indexOf(note)] : null;
+                            const isPlaying = playingNotes.has(note);
+                            
+                            return (
+                                <div
+                                    key={note}
+                                    className={`absolute top-0 h-24 rounded-b-md shadow-lg cursor-pointer transition-all duration-200 ${
+                                        isPlaying ? 'bg-yellow-600 transform scale-95' :
+                                        isChordNote ? 'bg-blue-800 hover:bg-blue-700' : 
+                                        'bg-gray-900 hover:bg-gray-700'
+                                    }`}
+                                    style={{
+                                        left: `${(positions[index] / whiteKeys.length) * 100}%`,
+                                        width: `${60 / whiteKeys.length}%`
+                                    }}
+                                    onClick={() => {
+                                        playNoteWithVisual(note);
+                                        if (practiceMode && onNoteClick) onNoteClick(note);
+                                    }}
+                                >
+                                    {isChordNote && fingerNumber && (
+                                        <div className={`absolute top-2 left-1/2 transform -translate-x-1/2 w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs ${
+                                            isPlaying ? 'bg-yellow-200 text-yellow-800' : 'bg-white text-blue-800'
+                                        }`}>
+                                            {fingerNumber}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                    
+                    <div className="mt-4 text-center">
+                        <div className="text-lg font-bold text-gray-700">{chord}</div>
+                        <div className="text-sm text-gray-500 mb-2">
+                            Notes: {notes.join(' - ')}
+                        </div>
+                        <div className="text-xs text-gray-400">
+                            Click any key to hear it! 🎵
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const GuitarDisplay = ({ chord, frets, fingers, highlight }) => {
+            const stringNames = ['E', 'A', 'D', 'G', 'B', 'E'];
+            
+            return (
+                <div className="w-full max-w-sm mx-auto">
+                    <div className={`relative bg-white rounded-xl shadow-2xl overflow-hidden h-96 ${highlight ? 'pulse-highlight' : ''}`}>
+                        {/* Nut */}
+                        <div className="absolute top-0 left-0 right-0 h-4 bg-gray-900"></div>
+                        
+                        {/* Frets */}
+                        {[1, 2, 3, 4, 5].map(fret => (
+                            <div 
+                                key={fret}
+                                className="absolute left-0 right-0 h-0.5 bg-gray-600"
+                                style={{ top: `${(fret / 5) * 100}%` }}
+                            />
+                        ))}
+                        
+                        {/* Strings */}
+                        {stringNames.map((string, stringIndex) => {
+                            const fret = frets[stringIndex];
+                            const finger = fingers[stringIndex];
+                            const thickness = [4, 3.5, 3, 2.5, 2, 1.5][stringIndex];
+                            
+                            return (
+                                <React.Fragment key={stringIndex}>
+                                    <div 
+                                        className={`absolute top-0 bottom-0 ${fret < 0 ? 'bg-gray-400' : 'bg-gray-700'}`}
+                                        style={{
+                                            left: `${(stringIndex / stringNames.length) * 100 + (100 / stringNames.length / 2)}%`,
+                                            width: `${thickness}px`,
+                                            transform: 'translateX(-50%)'
+                                        }}
+                                    />
+                                    
+                                    {/* Fret positions */}
+                                    {fret > 0 && (
+                                        <div
+                                            className="absolute w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold transform -translate-x-1/2 -translate-y-1/2 shadow-xl z-10"
+                                            style={{
+                                                left: `${(stringIndex / stringNames.length) * 100 + (100 / stringNames.length / 2)}%`,
+                                                top: `${((fret - 0.5) / 5) * 100}%`
+                                            }}
+                                        >
+                                            {finger}
+                                        </div>
+                                    )}
+                                    
+                                    {/* Open/Muted indicators */}
+                                    <div
+                                        className="absolute text-2xl font-bold transform -translate-x-1/2"
+                                        style={{
+                                            left: `${(stringIndex / stringNames.length) * 100 + (100 / stringNames.length / 2)}%`,
+                                            top: '-12%',
+                                            color: fret === 0 ? '#22c55e' : fret < 0 ? '#ef4444' : 'transparent'
+                                        }}
+                                    >
+                                        {fret === 0 ? 'O' : fret < 0 ? 'X' : ''}
+                                    </div>
+                                </React.Fragment>
+                            );
+                        })}
+                    </div>
+                    
+                    <div className="mt-4 text-center">
+                        <div className="text-lg font-bold text-gray-700">{chord}</div>
+                        <div className="text-sm text-gray-500">
+                            Frets: {frets.map(f => f < 0 ? 'X' : f).join('-')}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Main Application ---
+        function MusicLearningSystem() {
+            const [userProfile, setUserProfile] = useState({
+                name: '',
+                experience: SKILL_LEVELS.NOVICE,
+                instruments: [],
+                currentPath: null,
+                progress: {},
+                skills: {
+                    rhythm: 0,
+                    technique: 0,
+                    theory: 0,
+                    reading: 0
+                }
+            });
+            
+            const [currentLesson, setCurrentLesson] = useState(null);
+            const [lessonStep, setLessonStep] = useState(0);
+            const [tutorialActive, setTutorialActive] = useState(false);
+            const [practiceMode, setPracticeMode] = useState(false);
+            const [assessmentResults, setAssessmentResults] = useState({});
+            const [practiceStats, setPracticeStats] = useState({
+                attempts: 0,
+                successful: 0,
+                currentStreak: 0,
+                bestStreak: 0,
+                totalPracticeTime: 0
+            });
+            
+            const [currentChallenge, setCurrentChallenge] = useState(null);
+            const [challengeScore, setChallengeScore] = useState(0);
+            const [showCelebration, setShowCelebration] = useState(false);
+            const [showFeedback, setShowFeedback] = useState(false);
+            const [notifications, setNotifications] = useState([]);
+
+            const recordPracticeAttempt = useCallback((successful = false) => {
+                setPracticeStats(prev => ({
+                    ...prev,
+                    attempts: prev.attempts + 1,
+                    successful: successful ? prev.successful + 1 : prev.successful,
+                    currentStreak: successful ? prev.currentStreak + 1 : 0,
+                    bestStreak: successful ? Math.max(prev.bestStreak, prev.currentStreak + 1) : prev.bestStreak
+                }));
+                
+                if (successful) {
+                    addNotification('Great job! 🎵', 'success');
+                    if (practiceStats.currentStreak > 0 && (practiceStats.currentStreak + 1) % 5 === 0) {
+                        addNotification(`Amazing! ${practiceStats.currentStreak + 1} in a row! 🔥`, 'success');
+                    }
+                }
+            }, [practiceStats.currentStreak, addNotification]);
+
+            const startChallenge = (step) => {
+                if (step.type === 'challenge' || step.type === 'practice') {
+                    setCurrentChallenge(step);
+                    setChallengeScore(0);
+                    addNotification('Challenge started! Show me what you\'ve learned! 🎯', 'info');
+                }
+            };
+
+            const submitChallenge = (score) => {
+                if (!currentChallenge) return;
+                
+                const passed = score >= 80;
+                recordPracticeAttempt(passed);
+                
+                if (passed) {
+                    setShowCelebration(true);
+                    setTimeout(() => setShowCelebration(false), 2000);
+                    addNotification(currentChallenge.success_message || 'Challenge completed! 🎉', 'success');
+                } else {
+                    addNotification('Keep practicing! You\'re getting better! 💪', 'warning');
+                }
+                
+                setCurrentChallenge(null);
+            };
+
+            // Initialize user profile if empty
+            useEffect(() => {
+                if (!userProfile.name) {
+                    setCurrentLesson({ type: 'profile_setup' });
+                }
+            }, [userProfile.name]);
+
+            const addNotification = useCallback((message, type = 'info') => {
+                const id = Date.now();
+                setNotifications(prev => [...prev, { id, message, type }]);
+                setTimeout(() => {
+                    setNotifications(prev => prev.filter(n => n.id !== id));
+                }, 4000);
+            }, []);
+
+            const startLesson = (lessonId) => {
+                const lesson = LESSON_DATABASE[lessonId];
+                if (!lesson) return;
+                
+                setCurrentLesson(lesson);
+                setLessonStep(0);
+                setTutorialActive(false); // Don't auto-start tutorial
+                addNotification(`Starting: ${lesson.title}`, 'info');
+                
+                // Show a friendly prompt asking if they want guidance
+                setTimeout(() => {
+                    addNotification('💡 Click "Show Guide" for step-by-step instructions!', 'info');
+                }, 2000);
+            };
+
+            const completeLesson = () => {
+                if (!currentLesson) return;
+                
+                setUserProfile(prev => ({
+                    ...prev,
+                    progress: {
+                        ...prev.progress,
+                        completedLessons: [...(prev.progress?.completedLessons || []), currentLesson.id]
+                    },
+                    skills: {
+                        ...prev.skills,
+                        technique: Math.min(100, prev.skills.technique + 5),
+                        theory: Math.min(100, prev.skills.theory + 3)
+                    }
+                }));
+                
+                addNotification(`Lesson completed: ${currentLesson.title}! 🎉`, 'success');
+                setCurrentLesson(null);
+                setTutorialActive(false);
+                setLessonStep(0);
+            };
+
+            const handleTutorialNext = () => {
+                if (!currentLesson || !currentLesson.steps) return;
+                
+                if (lessonStep < currentLesson.steps.length - 1) {
+                    setLessonStep(prev => prev + 1);
+                } else {
+                    // Tutorial completed - just close overlay, keep lesson active
+                    setTutorialActive(false);
+                    addNotification('Tutorial completed! Continue practicing at your own pace! 🎉', 'success');
+                }
+            };
+
+            const handleTutorialPrevious = () => {
+                if (lessonStep > 0) {
+                    setLessonStep(prev => prev - 1);
+                }
+            };
+
+            const handleTutorialSkip = () => {
+                setTutorialActive(false);
+                addNotification('Tutorial paused. You can continue at your own pace!', 'info');
+            };
+
+            const handleTutorialClose = () => {
+                setTutorialActive(false);
+            };
+
+            const ProfileSetup = React.memo(() => {
+                const [localName, setLocalName] = useState(userProfile.name || '');
+                const [localExperience, setLocalExperience] = useState(userProfile.experience);
+                const [localInstruments, setLocalInstruments] = useState(userProfile.instruments || []);
+                
+                const handleSubmit = () => {
+                    setUserProfile(prev => ({
+                        ...prev,
+                        name: localName,
+                        experience: localExperience,
+                        instruments: localInstruments
+                    }));
+                    setCurrentLesson(null);
+                    addNotification(`Welcome ${localName}! Let's start learning! 🎉`, 'success');
+                };
+                
+                return (
+                    <div className="max-w-2xl mx-auto p-8 bg-white rounded-xl shadow-lg">
+                        <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">Welcome to Your Music Journey! 🎵</h2>
+                        
+                        <div className="space-y-6">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    What should we call you?
+                                </label>
+                                <input
+                                    type="text"
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="Your name"
+                                    value={localName}
+                                    onChange={(e) => setLocalName(e.target.value)}
+                                    autoFocus
+                                />
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    What's your current music experience?
+                                </label>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    {[
+                                        { level: SKILL_LEVELS.NOVICE, label: 'Complete Beginner', desc: 'Never played before' },
+                                        { level: SKILL_LEVELS.BEGINNER, label: 'Some Experience', desc: 'Know a few chords/notes' },
+                                        { level: SKILL_LEVELS.INTERMEDIATE, label: 'Intermediate', desc: 'Can play songs' },
+                                        { level: SKILL_LEVELS.ADVANCED, label: 'Advanced', desc: 'Years of experience' }
+                                    ].map(({ level, label, desc }) => (
+                                        <button
+                                            key={level}
+                                            className={`p-4 text-left rounded-lg border-2 transition-all ${
+                                                localExperience === level 
+                                                    ? 'border-blue-500 bg-blue-50' 
+                                                    : 'border-gray-200 hover:border-gray-300'
+                                            }`}
+                                            onClick={() => setLocalExperience(level)}
+                                        >
+                                            <div className="font-semibold">{label}</div>
+                                            <div className="text-sm text-gray-600">{desc}</div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Which instrument(s) would you like to learn?
+                                </label>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    {[
+                                        { id: 'Piano', icon: '🎹', name: 'Piano', desc: 'Great for understanding harmony' },
+                                        { id: 'Guitar', icon: '🎸', name: 'Guitar', desc: 'Perfect for chords and rhythm' }
+                                    ].map(({ id, icon, name, desc }) => (
+                                        <button
+                                            key={id}
+                                            className={`p-4 text-left rounded-lg border-2 transition-all ${
+                                                localInstruments.includes(id)
+                                                    ? 'border-blue-500 bg-blue-50' 
+                                                    : 'border-gray-200 hover:border-gray-300'
+                                            }`}
+                                            onClick={() => {
+                                                setLocalInstruments(prev => 
+                                                    prev.includes(id)
+                                                        ? prev.filter(i => i !== id)
+                                                        : [...prev, id]
+                                                );
+                                            }}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-2xl">{icon}</span>
+                                                <div>
+                                                    <div className="font-semibold">{name}</div>
+                                                    <div className="text-sm text-gray-600">{desc}</div>
+                                                </div>
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            
+                            <button
+                                className="w-full py-4 bg-blue-500 text-white rounded-lg font-semibold text-lg hover:bg-blue-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                disabled={!localName.trim() || localInstruments.length === 0}
+                                onClick={handleSubmit}
+                            >
+                                Start My Musical Journey! 🚀
+                            </button>
+                        </div>
+                    </div>
+                );
+            });
+
+            if (currentLesson?.type === 'profile_setup') {
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
+                        <ProfileSetup />
+                        
+                        {/* Notifications */}
+                        <div className="fixed top-4 right-4 space-y-2 z-50">
+                            {notifications.map(({ id, message, type }) => (
+                                <div key={id} className={`px-4 py-2 rounded-lg text-white font-medium ${
+                                    type === 'success' ? 'bg-green-500' : 
+                                    type === 'warning' ? 'bg-yellow-500' : 
+                                    type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+                                }`}>
+                                    {message}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+                    <div className="container mx-auto px-4 py-6">
+                        {/* Header */}
+                        <header className="bg-white/90 backdrop-blur-md rounded-xl shadow-lg p-6 mb-6">
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <h1 className="text-3xl font-bold text-gray-800 font-readex">
+                                        Music Learning System
+                                    </h1>
+                                    <p className="text-gray-600">Welcome back, {userProfile.name}!</p>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    {userProfile.instruments.map(instrument => (
+                                        <div key={instrument} className="flex items-center gap-2 bg-blue-100 px-3 py-1 rounded-full">
+                                            <span>{instrument === 'Piano' ? '🎹' : '🎸'}</span>
+                                            <span className="text-sm font-medium text-blue-800">{instrument}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </header>
+
+                        {/* Learning Dashboard */}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            {/* Progress Panel */}
+                            <div className="lg:col-span-1">
+                                <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+                                    <h2 className="text-xl font-bold mb-4 text-gray-800">Your Progress</h2>
+                                    
+                                    <SkillMeter skill="Technique" level={userProfile.skills.technique} />
+                                    <SkillMeter skill="Music Theory" level={userProfile.skills.theory} />
+                                    <SkillMeter skill="Rhythm" level={userProfile.skills.rhythm} />
+                                    <SkillMeter skill="Reading" level={userProfile.skills.reading} />
+                                    
+                                    {/* Practice Statistics */}
+                                    <div className="mt-6 pt-4 border-t border-gray-200">
+                                        <h3 className="font-semibold text-gray-700 mb-3">Practice Stats Today</h3>
+                                        <div className="grid grid-cols-2 gap-4 text-center">
+                                            <div className="bg-blue-50 rounded-lg p-3">
+                                                <div className="text-lg font-bold text-blue-600">{practiceStats.attempts}</div>
+                                                <div className="text-xs text-blue-500">Attempts</div>
+                                            </div>
+                                            <div className="bg-green-50 rounded-lg p-3">
+                                                <div className="text-lg font-bold text-green-600">{practiceStats.successful}</div>
+                                                <div className="text-xs text-green-500">Successful</div>
+                                            </div>
+                                            <div className="bg-purple-50 rounded-lg p-3">
+                                                <div className="text-lg font-bold text-purple-600">{practiceStats.currentStreak}</div>
+                                                <div className="text-xs text-purple-500">Current Streak</div>
+                                            </div>
+                                            <div className="bg-yellow-50 rounded-lg p-3">
+                                                <div className="text-lg font-bold text-yellow-600">{practiceStats.bestStreak}</div>
+                                                <div className="text-xs text-yellow-500">Best Streak</div>
+                                            </div>
+                                        </div>
+                                        
+                                        {practiceStats.attempts > 0 && (
+                                            <div className="mt-3">
+                                                <div className="text-sm text-gray-600 text-center">
+                                                    Success Rate: {Math.round((practiceStats.successful / practiceStats.attempts) * 100)}%
+                                                </div>
+                                                <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                                                    <div 
+                                                        className="bg-green-500 h-2 rounded-full transition-all duration-300" 
+                                                        style={{ width: `${(practiceStats.successful / practiceStats.attempts) * 100}%` }}
+                                                    ></div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                    
+                                    <div className="mt-6">
+                                        <h3 className="font-semibold text-gray-700 mb-3">Next Milestone</h3>
+                                        <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg p-4">
+                                            <div className="text-sm opacity-90">Complete 3 more lessons to unlock:</div>
+                                            <div className="font-bold">🏆 Chord Master Badge</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Learning Paths */}
+                                <div className="bg-white rounded-xl shadow-lg p-6">
+                                    <h2 className="text-xl font-bold mb-4 text-gray-800">Learning Paths</h2>
+                                    
+                                    {Object.entries(LEARNING_PATHS)
+                                        .filter(([_, path]) => userProfile.instruments.includes(path.instrument))
+                                        .map(([pathId, path]) => {
+                                            const completedLessons = userProfile.progress?.completedLessons || [];
+                                            const pathProgress = path.lessons.filter(lessonId => completedLessons.includes(lessonId)).length;
+                                            
+                                            return (
+                                                <div key={pathId} className="mb-4 p-4 border-2 border-gray-200 rounded-lg hover:border-gray-300 transition-colors">
+                                                    <div className="flex items-center gap-3 mb-2">
+                                                        <span className="text-2xl">{path.icon}</span>
+                                                        <div className="flex-1">
+                                                            <h3 className="font-semibold text-gray-800">{path.name}</h3>
+                                                            <p className="text-sm text-gray-600">{path.description}</p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    {/* Progress bar for the path */}
+                                                    <div className="mb-3">
+                                                        <div className="w-full bg-gray-200 rounded-full h-2">
+                                                            <div 
+                                                                className="bg-green-500 h-2 rounded-full transition-all duration-300" 
+                                                                style={{ width: `${(pathProgress / path.lessons.length) * 100}%` }}
+                                                            ></div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="flex justify-between items-center">
+                                                        <div className="text-sm text-gray-500">
+                                                            {pathProgress}/{path.lessons.length} lessons completed
+                                                        </div>
+                                                        <button
+                                                            className="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 transition-colors"
+                                                            onClick={() => {
+                                                                // Start next incomplete lesson
+                                                                const nextLesson = path.lessons.find(lessonId => !completedLessons.includes(lessonId));
+                                                                if (nextLesson) {
+                                                                    startLesson(nextLesson);
+                                                                } else {
+                                                                    startLesson(path.lessons[0]); // Restart path
+                                                                }
+                                                            }}
+                                                        >
+                                                            {pathProgress === 0 ? 'Start Path' : 
+                                                             pathProgress === path.lessons.length ? 'Review Path' : 'Continue'}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })
+                                    }
+                                </div>
+                            </div>
+
+                            {/* Main Content */}
+                            <div className="lg:col-span-2">
+                                {currentLesson ? (
+                                    <div className="bg-white rounded-xl shadow-lg p-6">
+                                        {/* Lesson Header */}
+                                        <div className="mb-6">
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div>
+                                                    <div className="flex items-center gap-3 mb-2">
+                                                        <button
+                                                            onClick={() => {
+                                                                setCurrentLesson(null);
+                                                                setTutorialActive(false);
+                                                                setLessonStep(0);
+                                                            }}
+                                                            className="text-blue-500 hover:text-blue-600 font-semibold text-sm"
+                                                        >
+                                                            ← Back to Dashboard
+                                                        </button>
+                                                        <span className="text-2xl">{currentLesson.instrument === 'Piano' ? '🎹' : '🎸'}</span>
+                                                    </div>
+                                                    <h2 className="text-2xl font-bold text-gray-800">{currentLesson.title}</h2>
+                                                    <p className="text-gray-600">{currentLesson.description}</p>
+                                                </div>
+                                                <div className="text-right">
+                                                    <div className="text-sm text-gray-500 mb-1">
+                                                        {currentLesson.duration} min lesson
+                                                    </div>
+                                                    <div className={`px-3 py-1 rounded-full text-xs font-bold ${
+                                                        currentLesson.level === SKILL_LEVELS.NOVICE ? 'bg-green-100 text-green-800' :
+                                                        currentLesson.level === SKILL_LEVELS.BEGINNER ? 'bg-blue-100 text-blue-800' :
+                                                        currentLesson.level === SKILL_LEVELS.INTERMEDIATE ? 'bg-yellow-100 text-yellow-800' :
+                                                        'bg-red-100 text-red-800'
+                                                    }`}>
+                                                        {Object.keys(SKILL_LEVELS)[currentLesson.level]}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <ProgressIndicator 
+                                                current={lessonStep + 1} 
+                                                total={currentLesson.steps?.length || 1}
+                                                label="Lesson Progress"
+                                            />
+                                        </div>
+
+                                        {/* Lesson Objectives */}
+                                        {currentLesson.objectives && (
+                                            <div className="mb-6 bg-blue-50 rounded-lg p-4">
+                                                <h3 className="font-semibold text-blue-800 mb-2">🎯 What You'll Learn:</h3>
+                                                <ul className="text-blue-700 text-sm space-y-1">
+                                                    {currentLesson.objectives.map((objective, index) => (
+                                                        <li key={index}>✓ {objective}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
+
+                                        {/* Instrument Display */}
+                                        {currentLesson.instrument && (
+                                            <div className="mb-6">
+                                                <InstrumentDisplay 
+                                                    instrument={currentLesson.instrument}
+                                                    chord={currentLesson.steps?.[lessonStep]?.chord || "C Major"}
+                                                    highlight={tutorialActive}
+                                                    practiceMode={practiceMode}
+                                                />
+                                            </div>
+                                        )}
+
+                                        {/* Interactive Controls */}
+                                        <div className="flex gap-4 justify-center">
+                                            <button
+                                                onClick={() => {
+                                                    const step = currentLesson.steps?.[lessonStep];
+                                                    if (step?.chord) {
+                                                        playChord(step.chord, currentLesson.instrument);
+                                                    }
+                                                }}
+                                                className="px-6 py-3 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition-colors"
+                                            >
+                                                🔊 Play Example
+                                            </button>
+                                            
+                                            <button
+                                                onClick={() => setPracticeMode(!practiceMode)}
+                                                className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+                                                    practiceMode 
+                                                        ? 'bg-orange-500 text-white hover:bg-orange-600' 
+                                                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                                }`}
+                                            >
+                                                {practiceMode ? '📝 Exit Practice' : '🎯 Practice Mode'}
+                                            </button>
+                                            
+                                            <button
+                                                onClick={() => setTutorialActive(true)}
+                                                className="px-6 py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors"
+                                            >
+                                                📚 Continue Lesson
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="bg-white rounded-xl shadow-lg p-12 text-center">
+                                        <div className="text-6xl mb-4">🎵</div>
+                                        <h2 className="text-2xl font-bold text-gray-800 mb-4">Ready to Learn?</h2>
+                                        <p className="text-gray-600 mb-8">Choose a learning path to begin your musical journey!</p>
+                                        
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md mx-auto">
+                                            {userProfile.instruments.includes('Piano') && (
+                                                <button
+                                                    onClick={() => startLesson('piano-basics-1')}
+                                                    className="p-4 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors"
+                                                >
+                                                    🎹 Start Piano
+                                                </button>
+                                            )}
+                                            {userProfile.instruments.includes('Guitar') && (
+                                                <button
+                                                    onClick={() => startLesson('guitar-basics-1')}
+                                                    className="p-4 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-colors"
+                                                >
+                                                    🎸 Start Guitar
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Celebration Overlay */}
+                    {showCelebration && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                            <div className="bg-white rounded-xl p-8 text-center max-w-md mx-4 lesson-complete">
+                                <div className="text-6xl mb-4">🎉</div>
+                                <h2 className="text-2xl font-bold text-gray-800 mb-4">Excellent Work!</h2>
+                                <p className="text-gray-600 mb-6">You're making great progress! Keep up the amazing work!</p>
+                                <button
+                                    onClick={() => setShowCelebration(false)}
+                                    className="px-6 py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors"
+                                >
+                                    Continue Learning! 🚀
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Tutorial Overlay */}
+                    <TutorialOverlay
+                        step={currentLesson?.steps?.[lessonStep]}
+                        onNext={handleTutorialNext}
+                        onPrevious={handleTutorialPrevious}
+                        onSkip={handleTutorialSkip}
+                        onClose={handleTutorialClose}
+                        isActive={tutorialActive}
+                        currentStep={lessonStep}
+                        totalSteps={currentLesson?.steps?.length || 1}
+                    />
+
+                    {/* Notifications */}
+                    <div className="fixed top-4 right-4 space-y-2 z-40">
+                        {notifications.map(({ id, message, type }) => (
+                            <div key={id} className={`px-4 py-2 rounded-lg text-white font-medium shadow-lg ${
+                                type === 'success' ? 'bg-green-500' : 
+                                type === 'warning' ? 'bg-yellow-500' : 
+                                type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+                            }`}>
+                                {message}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        // Render the application
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<MusicLearningSystem />);
+    </script>
+</body>
+</html>

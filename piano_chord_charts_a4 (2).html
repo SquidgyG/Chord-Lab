@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Piano Chord Charts - Root Position (Majors & Minors)</title>
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4 landscape; margin: 0; }
+  
+  @media print {
+    body { margin: 0; padding: 0; }
+    .sheet { 
+      page-break-after: always; 
+      page-break-inside: avoid;
+      width: 100vw;
+      height: 100vh;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .title {
+      font-size: 56px;
+      margin-bottom: 30px;
+    }
+    .keyboard-wrap {
+      padding: 30px;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .keyboard {
+      height: 450px;
+      width: 100%;
+      max-width: 1000px;
+    }
+    .note {
+      width: 100px;
+      height: 100px;
+      font-size: 36px;
+      border: 5px solid #000;
+    }
+  }
+  
+  :root{ --sheet-padding: 26px; --border-radius: 22px; --title-size: 46px; }
+  *{box-sizing:border-box}
+  body{ margin:0; background:#f3f6fb; font-family: "Readex Pro", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; }
+  .sheet{ break-after: page; padding: var(--sheet-padding);
+    border: 16px solid; border-radius: var(--border-radius);
+    box-shadow: 0 10px 28px rgba(0,0,0,.12);
+    position: relative; overflow: hidden; }
+  .title{ text-align:center; font-size: var(--title-size); font-weight: 800;
+    margin: 0 0 20px; letter-spacing:.4px; z-index:1; position:relative; }
+
+  .keyboard-wrap{ position:relative; z-index:1; padding: 18px; border-radius: 14px;
+    background:#fff;
+    box-shadow: 0 16px 40px rgba(0,0,0,.20), 0 8px 18px rgba(0,0,0,.12);
+  }
+  .keyboard{ position:relative; border:2px solid #111; height: 370px;
+    display:grid; grid-template-columns: repeat(11, 1fr); gap: 0; overflow:hidden;
+    background: #ffffff; border-radius: 10px; }
+  .keyboard::before{ content:""; position:absolute; inset:0; z-index:2; pointer-events:none;
+    background: repeating-linear-gradient(to right, rgba(0,0,0,.68) 0 2px, transparent 2px calc(100%/11)); }
+  .white{ position:relative; background:#fff; z-index:1; }
+  .black{ position:absolute; top:0; width: calc(100%/11 * .64); height: 62%;
+    background:#000; border:1px solid #111; border-bottom-left-radius:6px; border-bottom-right-radius:6px;
+    box-shadow: inset 0 -5px 0 rgba(255,255,255,.08); z-index:5; }
+
+  .fill{ position:absolute; pointer-events:none; }
+  .fill-white{ top:0; height:100%; z-index:3; box-shadow: inset 0 0 0 2px #000; }
+  .fill-black{ top:0; height:62%; z-index:6; box-shadow: inset 0 0 0 2px #000; }
+
+  .note{ position:absolute; transform: translateX(-50%);
+    width: 86px; height: 86px; border-radius: 999px;
+    display:grid; place-items:center; font-weight: 800; font-size: 30px;
+    background:#fff; border: 4px solid #000; color:#000; text-shadow: none; z-index:7; }
+  .note.white { bottom: 18px; }
+  .note.black { top: calc(62% - 10px - 43px); }
+</style>
+</head>
+<body>
+
+  <section class="sheet" style="border-color:#cc39bc; background:#faeff9;">
+    <h1 class="title">C Major</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="C Major chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-white" style="left:calc(100%/11*4); width:calc(100%/11); background:#cc39bc;"></div><div class="fill fill-white" style="left:calc(100%/11*6); width:calc(100%/11); background:#cc39bc;"></div><div class="fill fill-white" style="left:calc(100%/11*8); width:calc(100%/11); background:#cc39bc;"></div>
+        <div class="note white" style="left:calc(100%/11*4 + 100%/11*.5);">C</div><div class="note white" style="left:calc(100%/11*6 + 100%/11*.5);">E</div><div class="note white" style="left:calc(100%/11*8 + 100%/11*.5);">G</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" style="border-color:#714faa; background:#f3f0f8;">
+    <h1 class="title">G Major</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="G Major chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-white" style="left:calc(100%/11*1); width:calc(100%/11); background:#714faa;"></div><div class="fill fill-white" style="left:calc(100%/11*3); width:calc(100%/11); background:#714faa;"></div><div class="fill fill-white" style="left:calc(100%/11*5); width:calc(100%/11); background:#714faa;"></div>
+        <div class="note white" style="left:calc(100%/11*1 + 100%/11*.5);">G</div><div class="note white" style="left:calc(100%/11*3 + 100%/11*.5);">B</div><div class="note white" style="left:calc(100%/11*5 + 100%/11*.5);">D</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" style="border-color:#3b8bf9; background:#eff5fe;">
+    <h1 class="title">D Major</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="D Major chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-white" style="left:calc(100%/11*5); width:calc(100%/11); background:#3b8bf9;"></div><div class="fill fill-black" style="left:calc(100%/11*8 - (100%/11*.32)); width:calc(100%/11*.64); background:#3b8bf9;"></div><div class="fill fill-white" style="left:calc(100%/11*9); width:calc(100%/11); background:#3b8bf9;"></div>
+        <div class="note white" style="left:calc(100%/11*5 + 100%/11*.5);">D</div><div class="note black" style="left:calc(100%/11*8);">F#</div><div class="note white" style="left:calc(100%/11*9 + 100%/11*.5);">A</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" style="border-color:#02c7f9; background:#eafafe;">
+    <h1 class="title">A Major</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="A Major chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-white" style="left:calc(100%/11*2); width:calc(100%/11); background:#02c7f9;"></div><div class="fill fill-black" style="left:calc(100%/11*5 - (100%/11*.32)); width:calc(100%/11*.64); background:#02c7f9;"></div><div class="fill fill-white" style="left:calc(100%/11*6); width:calc(100%/11); background:#02c7f9;"></div>
+        <div class="note white" style="left:calc(100%/11*2 + 100%/11*.5);">A</div><div class="note black" style="left:calc(100%/11*5);">C#</div><div class="note white" style="left:calc(100%/11*6 + 100%/11*.5);">E</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" style="border-color:#00e3e2; background:#eafcfc;">
+    <h1 class="title">E Major</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="E Major chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-white" style="left:calc(100%/11*6); width:calc(100%/11); background:#00e3e2;"></div><div class="fill fill-black" style="left:calc(100%/11*9 - (100%/11*.32)); width:calc(100%/11*.64); background:#00e3e2;"></div><div class="fill fill-white" style="left:calc(100%/11*10); width:calc(100%/11); background:#00e3e2;"></div>
+        <div class="note white" style="left:calc(100%/11*6 + 100%/11*.5);">E</div><div class="note black" style="left:calc(100%/11*9);">G#</div><div class="note white" style="left:calc(100%/11*10 + 100%/11*.5);">B</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" style="border-color:#00d48e; background:#eafbf5;">
+    <h1 class="title">B Major</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="B Major chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-white" style="left:calc(100%/11*3); width:calc(100%/11); background:#00d48e;"></div><div class="fill fill-black" style="left:calc(100%/11*6 - (100%/11*.32)); width:calc(100%/11*.64); background:#00d48e;"></div><div class="fill fill-black" style="left:calc(100%/11*8 - (100%/11*.32)); width:calc(100%/11*.64); background:#00d48e;"></div>
+        <div class="note white" style="left:calc(100%/11*3 + 100%/11*.5);">B</div><div class="note black" style="left:calc(100%/11*6);">D#</div><div class="note black" style="left:calc(100%/11*8);">F#</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" style="border-color:#37b838; background:#eff9ef;">
+    <h1 class="title">F# Major</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="F# Major chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-black" style="left:calc(100%/11*1 - (100%/11*.32)); width:calc(100%/11*.64); background:#37b838;"></div><div class="fill fill-black" style="left:calc(100%/11*3 - (100%/11*.32)); width:calc(100%/11*.64); background:#37b838;"></div><div class="fill fill-black" style="left:calc(100%/11*5 - (100%/11*.32)); width:calc(100%/11*.64); background:#37b838;"></div>
+        <div class="note black" style="left:calc(100%/11*1);">F#</div><div class="note black" style="left:calc(100%/11*3);">A#</div><div class="note black" style="left:calc(100%/11*5);">C#</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" style="border-color:#79c505; background:#f4faeb;">
+    <h1 class="title">Db Major</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="Db Major chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-black" style="left:calc(100%/11*5 - (100%/11*.32)); width:calc(100%/11*.64); background:#79c505;"></div><div class="fill fill-white" style="left:calc(100%/11*7); width:calc(100%/11); background:#79c505;"></div><div class="fill fill-black" style="left:calc(100%/11*9 - (100%/11*.32)); width:calc(100%/11*.64); background:#79c505;"></div>
+        <div class="note black" style="left:calc(100%/11*5);">Db</div><div class="note white" style="left:calc(100%/11*7 + 100%/11*.5);">F</div><div class="note black" style="left:calc(100%/11*9);">Ab</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" style="border-color:#fdd500; background:#fefbea;">
+    <h1 class="title">Ab Major</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="Ab Major chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-black" style="left:calc(100%/11*2 - (100%/11*.32)); width:calc(100%/11*.64); background:#fdd500;"></div><div class="fill fill-white" style="left:calc(100%/11*4); width:calc(100%/11); background:#fdd500;"></div><div class="fill fill-black" style="left:calc(100%/11*6 - (100%/11*.32)); width:calc(100%/11*.64); background:#fdd500;"></div>
+        <div class="note black" style="left:calc(100%/11*2);">Ab</div><div class="note white" style="left:calc(100%/11*4 + 100%/11*.5);">C</div><div class="note black" style="left:calc(100%/11*6);">Eb</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" style="border-color:#ff6813; background:#fff2ec;">
+    <h1 class="title">Eb Major</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="Eb Major chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-black" style="left:calc(100%/11*6 - (100%/11*.32)); width:calc(100%/11*.64); background:#ff6813;"></div><div class="fill fill-white" style="left:calc(100%/11*8); width:calc(100%/11); background:#ff6813;"></div><div class="fill fill-black" style="left:calc(100%/11*10 - (100%/11*.32)); width:calc(100%/11*.64); background:#ff6813;"></div>
+        <div class="note black" style="left:calc(100%/11*6);">Eb</div><div class="note white" style="left:calc(100%/11*8 + 100%/11*.5);">G</div><div class="note black" style="left:calc(100%/11*10);">Bb</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" style="border-color:#ff4b2c; background:#fff0ee;">
+    <h1 class="title">Bb Major</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="Bb Major chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-black" style="left:calc(100%/11*3 - (100%/11*.32)); width:calc(100%/11*.64); background:#ff4b2c;"></div><div class="fill fill-white" style="left:calc(100%/11*5); width:calc(100%/11); background:#ff4b2c;"></div><div class="fill fill-white" style="left:calc(100%/11*7); width:calc(100%/11); background:#ff4b2c;"></div>
+        <div class="note black" style="left:calc(100%/11*3);">Bb</div><div class="note white" style="left:calc(100%/11*5 + 100%/11*.5);">D</div><div class="note white" style="left:calc(100%/11*7 + 100%/11*.5);">F</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" style="border-color:#ff2a44; background:#ffedf0;">
+    <h1 class="title">F Major</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="F Major chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-white" style="left:calc(100%/11*0); width:calc(100%/11); background:#ff2a44;"></div><div class="fill fill-white" style="left:calc(100%/11*2); width:calc(100%/11); background:#ff2a44;"></div><div class="fill fill-white" style="left:calc(100%/11*4); width:calc(100%/11); background:#ff2a44;"></div>
+        <div class="note white" style="left:calc(100%/11*0 + 100%/11*.5);">F</div><div class="note white" style="left:calc(100%/11*2 + 100%/11*.5);">A</div><div class="note white" style="left:calc(100%/11*4 + 100%/11*.5);">C</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" style="border-color:#ab369e; background:#f8eef7;">
+    <h1 class="title">A Minor</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="A Minor chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-white" style="left:calc(100%/11*2); width:calc(100%/11); background:#ab369e;"></div><div class="fill fill-white" style="left:calc(100%/11*4); width:calc(100%/11); background:#ab369e;"></div><div class="fill fill-white" style="left:calc(100%/11*6); width:calc(100%/11); background:#ab369e;"></div>
+        <div class="note white" style="left:calc(100%/11*2 + 100%/11*.5);">A</div><div class="note white" style="left:calc(100%/11*4 + 100%/11*.5);">C</div><div class="note white" style="left:calc(100%/11*6 + 100%/11*.5);">E</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" style="border-color:#624890; background:#f2f0f6;">
+    <h1 class="title">E Minor</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="E Minor chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-white" style="left:calc(100%/11*6); width:calc(100%/11); background:#624890;"></div><div class="fill fill-white" style="left:calc(100%/11*8); width:calc(100%/11); background:#624890;"></div><div class="fill fill-white" style="left:calc(100%/11*10); width:calc(100%/11); background:#624890;"></div>
+        <div class="note white" style="left:calc(100%/11*6 + 100%/11*.5);">E</div><div class="note white" style="left:calc(100%/11*8 + 100%/11*.5);">G</div><div class="note white" style="left:calc(100%/11*10 + 100%/11*.5);">B</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" style="border-color:#3777cf; background:#eff4fb;">
+    <h1 class="title">B Minor</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="B Minor chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-white" style="left:calc(100%/11*3); width:calc(100%/11); background:#3777cf;"></div><div class="fill fill-white" style="left:calc(100%/11*5); width:calc(100%/11); background:#3777cf;"></div><div class="fill fill-black" style="left:calc(100%/11*8 - (100%/11*.32)); width:calc(100%/11*.64); background:#3777cf;"></div>
+        <div class="note white" style="left:calc(100%/11*3 + 100%/11*.5);">B</div><div class="note white" style="left:calc(100%/11*5 + 100%/11*.5);">D</div><div class="note black" style="left:calc(100%/11*8);">F#</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" style="border-color:#08a6cf; background:#ebf7fb;">
+    <h1 class="title">F# Minor</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="F# Minor chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-black" style="left:calc(100%/11*1 - (100%/11*.32)); width:calc(100%/11*.64); background:#08a6cf;"></div><div class="fill fill-white" style="left:calc(100%/11*2); width:calc(100%/11); background:#08a6cf;"></div><div class="fill fill-black" style="left:calc(100%/11*5 - (100%/11*.32)); width:calc(100%/11*.64); background:#08a6cf;"></div>
+        <div class="note black" style="left:calc(100%/11*1);">F#</div><div class="note white" style="left:calc(100%/11*2 + 100%/11*.5);">A</div><div class="note black" style="left:calc(100%/11*5);">C#</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" style="border-color:#06bebe; background:#ebf9f9;">
+    <h1 class="title">C# Minor</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="C# Minor chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-black" style="left:calc(100%/11*5 - (100%/11*.32)); width:calc(100%/11*.64); background:#06bebe;"></div><div class="fill fill-white" style="left:calc(100%/11*6); width:calc(100%/11); background:#06bebe;"></div><div class="fill fill-black" style="left:calc(100%/11*9 - (100%/11*.32)); width:calc(100%/11*.64); background:#06bebe;"></div>
+        <div class="note black" style="left:calc(100%/11*5);">C#</div><div class="note white" style="left:calc(100%/11*6 + 100%/11*.5);">E</div><div class="note black" style="left:calc(100%/11*9);">G#</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" style="border-color:#05b17a; background:#ebf8f4;">
+    <h1 class="title">G# Minor</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="G# Minor chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-black" style="left:calc(100%/11*2 - (100%/11*.32)); width:calc(100%/11*.64); background:#05b17a;"></div><div class="fill fill-white" style="left:calc(100%/11*3); width:calc(100%/11); background:#05b17a;"></div><div class="fill fill-black" style="left:calc(100%/11*6 - (100%/11*.32)); width:calc(100%/11*.64); background:#05b17a;"></div>
+        <div class="note black" style="left:calc(100%/11*2);">G#</div><div class="note white" style="left:calc(100%/11*3 + 100%/11*.5);">B</div><div class="note black" style="left:calc(100%/11*6);">D#</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" style="border-color:#339c35; background:#eef7ee;">
+    <h1 class="title">D# Minor</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="D# Minor chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-black" style="left:calc(100%/11*6 - (100%/11*.32)); width:calc(100%/11*.64); background:#339c35;"></div><div class="fill fill-black" style="left:calc(100%/11*8 - (100%/11*.32)); width:calc(100%/11*.64); background:#339c35;"></div><div class="fill fill-black" style="left:calc(100%/11*10 - (100%/11*.32)); width:calc(100%/11*.64); background:#339c35;"></div>
+        <div class="note black" style="left:calc(100%/11*6);">D#</div><div class="note black" style="left:calc(100%/11*8);">F#</div><div class="note black" style="left:calc(100%/11*10);">A#</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" style="border-color:#69a50b; background:#f3f7eb;">
+    <h1 class="title">Bb Minor</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="Bb Minor chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-black" style="left:calc(100%/11*3 - (100%/11*.32)); width:calc(100%/11*.64); background:#69a50b;"></div><div class="fill fill-black" style="left:calc(100%/11*5 - (100%/11*.32)); width:calc(100%/11*.64); background:#69a50b;"></div><div class="fill fill-white" style="left:calc(100%/11*7); width:calc(100%/11); background:#69a50b;"></div>
+        <div class="note black" style="left:calc(100%/11*3);">Bb</div><div class="note black" style="left:calc(100%/11*5);">Db</div><div class="note white" style="left:calc(100%/11*7 + 100%/11*.5);">F</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" style="border-color:#d2b207; background:#fbf8eb;">
+    <h1 class="title">F Minor</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="F Minor chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-white" style="left:calc(100%/11*0); width:calc(100%/11); background:#d2b207;"></div><div class="fill fill-black" style="left:calc(100%/11*2 - (100%/11*.32)); width:calc(100%/11*.64); background:#d2b207;"></div><div class="fill fill-white" style="left:calc(100%/11*4); width:calc(100%/11); background:#d2b207;"></div>
+        <div class="note white" style="left:calc(100%/11*0 + 100%/11*.5);">F</div><div class="note black" style="left:calc(100%/11*2);">G#</div><div class="note white" style="left:calc(100%/11*4 + 100%/11*.5);">C</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" style="border-color:#d45a16; background:#fbf1ec;">
+    <h1 class="title">C Minor</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="C Minor chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-white" style="left:calc(100%/11*4); width:calc(100%/11); background:#d45a16;"></div><div class="fill fill-black" style="left:calc(100%/11*6 - (100%/11*.32)); width:calc(100%/11*.64); background:#d45a16;"></div><div class="fill fill-white" style="left:calc(100%/11*8); width:calc(100%/11); background:#d45a16;"></div>
+        <div class="note white" style="left:calc(100%/11*4 + 100%/11*.5);">C</div><div class="note black" style="left:calc(100%/11*6);">D#</div><div class="note white" style="left:calc(100%/11*8 + 100%/11*.5);">G</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" style="border-color:#d4442a; background:#fbf0ed;">
+    <h1 class="title">G Minor</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="G Minor chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-white" style="left:calc(100%/11*1); width:calc(100%/11); background:#d4442a;"></div><div class="fill fill-black" style="left:calc(100%/11*3 - (100%/11*.32)); width:calc(100%/11*.64); background:#d4442a;"></div><div class="fill fill-white" style="left:calc(100%/11*5); width:calc(100%/11); background:#d4442a;"></div>
+        <div class="note white" style="left:calc(100%/11*1 + 100%/11*.5);">G</div><div class="note black" style="left:calc(100%/11*3);">A#</div><div class="note white" style="left:calc(100%/11*5 + 100%/11*.5);">D</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" style="border-color:#d4293f; background:#fbedef;">
+    <h1 class="title">D Minor</h1>
+    <div class="keyboard-wrap">
+      <div class="keyboard" role="img" aria-label="D Minor chord chart (root position, range F4-B5)">
+        <div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="white" aria-label="C"></div><div class="white" aria-label="D"></div><div class="white" aria-label="E"></div><div class="white" aria-label="F"></div><div class="white" aria-label="G"></div><div class="white" aria-label="A"></div><div class="white" aria-label="B"></div><div class="black" style="left:calc(100%/11*1 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*2 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*3 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*5 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*6 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*8 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*9 - (100%/11*.32));"></div><div class="black" style="left:calc(100%/11*10 - (100%/11*.32));"></div>
+        <div class="fill fill-white" style="left:calc(100%/11*5); width:calc(100%/11); background:#d4293f;"></div><div class="fill fill-white" style="left:calc(100%/11*7); width:calc(100%/11); background:#d4293f;"></div><div class="fill fill-white" style="left:calc(100%/11*9); width:calc(100%/11); background:#d4293f;"></div>
+        <div class="note white" style="left:calc(100%/11*5 + 100%/11*.5);">D</div><div class="note white" style="left:calc(100%/11*7 + 100%/11*.5);">F</div><div class="note white" style="left:calc(100%/11*9 + 100%/11*.5);">A</div>
+      </div>
+    </div>
+  </section>
+</body></html>
