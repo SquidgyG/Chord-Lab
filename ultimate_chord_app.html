@@ -48,6 +48,20 @@
             border: 2px solid #1e1b4b;
         }
 
+        .guitar-barre {
+            position:absolute;
+            transform: translateY(-50%);
+            height: 30px;
+            border-radius: 15px;
+            z-index: 30;
+            display:grid;
+            place-items:center;
+            font-weight:800;
+            font-size: 14px;
+            color:#fff;
+            text-shadow: 0 1px 0 rgba(0,0,0,.25);
+        }
+
         /* Professional Piano Styling */
         .piano-keyboard {
             box-shadow: 0 8px 24px rgba(0,0,0,0.15), 0 4px 8px rgba(0,0,0,0.1);
@@ -65,11 +79,6 @@
             background: linear-gradient(to bottom, #f1f5f9, #e2e8f0);
         }
 
-        .piano-white-key.active {
-            background: linear-gradient(to bottom, #dbeafe, #bfdbfe);
-            box-shadow: inset 0 2px 8px rgba(59, 130, 246, 0.3);
-        }
-
         .piano-black-key {
             background: linear-gradient(to bottom, #1f2937, #111827);
             border-radius: 0 0 4px 4px;
@@ -79,10 +88,6 @@
 
         .piano-black-key:hover {
             background: linear-gradient(to bottom, #374151, #1f2937);
-        }
-
-        .piano-black-key.active {
-            background: linear-gradient(to bottom, #1e40af, #1e3a8a);
         }
 
         /* Animations */
@@ -203,18 +208,18 @@
         // --- Data Structures from various versions ---
 
         const PALETTE = {
-          "C Major": "#ef4444", "A Minor": "#dc2626",
-          "G Major": "#f97316", "E Minor": "#ea580c",
-          "D Major": "#f59e0b", "B Minor": "#d97706",
-          "A Major": "#eab308", "F# Minor": "#ca8a04",
-          "E Major": "#84cc16", "C# Minor": "#65a30d",
-          "B Major": "#22c55e", "G# Minor": "#16a34a",
-          "F# Major": "#10b981", "D# Minor": "#059669",
-          "Db Major": "#14b8a6", "Bb Minor": "#0d9488",
-          "Ab Major": "#06b6d4", "F Minor": "#0891b2",
-          "Eb Major": "#0ea5e9", "C Minor": "#0284c7",
-          "Bb Major": "#3b82f6", "G Minor": "#2563eb",
-          "F Major": "#6366f1", "D Minor": "#4f46e5",
+            "C Major": "#cc39bc", "A Minor": "#ab369e",
+            "G Major": "#714faa", "E Minor": "#624890",
+            "D Major": "#3b8bf9", "B Minor": "#3777cf",
+            "A Major": "#02c7f9", "F# Minor": "#08a6cf",
+            "E Major": "#00e3e2", "C# Minor": "#06bebe",
+            "B Major": "#00d48e", "G# Minor": "#05b17a",
+            "F# Major": "#37b838", "D# Minor": "#339c35",
+            "Db Major": "#79c505", "Bb Minor": "#69a50b",
+            "Ab Major": "#fdd500", "F Minor": "#d2b207",
+            "Eb Major": "#ff6813", "C Minor": "#d45a16",
+            "Bb Major": "#ff4b2c", "G Minor": "#d4442a",
+            "F Major": "#ff2a44", "D Minor": "#d4293f"
         };
 
         const KEY_DEGREES = {
@@ -239,7 +244,7 @@
                 "D": { name: "D Major", frets: [-1, -1, 0, 2, 3, 2], fingers: [0, 0, 0, 1, 3, 2], difficulty: 2, notes: ["", "", "D3", "A3", "D4", "F#4"], color: PALETTE["D Major"] },
                 "A": { name: "A Major", frets: [-1, 0, 2, 2, 2, 0], fingers: [0, 0, 1, 2, 3, 0], difficulty: 2, notes: ["", "A2", "E3", "A3", "C#4", "E4"], color: PALETTE["A Major"] },
                 "E": { name: "E Major", frets: [0, 2, 2, 1, 0, 0], fingers: [0, 2, 3, 1, 0, 0], difficulty: 1, notes: ["E2", "B2", "E3", "G#3", "B3", "E4"], color: PALETTE["E Major"] },
-                "F": { name: "F Major", frets: [1, 3, 3, 2, 1, 1], fingers: [1, 3, 4, 2, 1, 1], difficulty: 4, notes: ["F2", "A2", "F3", "A3", "C4", "F4"], color: PALETTE["F Major"] },
+                "F": { name: "F Major", frets: [1, 3, 3, 2, 1, 1], fingers: [1, 3, 4, 2, 1, 1], difficulty: 4, notes: ["F2", "A2", "F3", "A3", "C4", "F4"], color: PALETTE["F Major"], barre: { fret: 1, from: 0, to: 5 } },
                 "Am": { name: "A Minor", frets: [-1, 0, 2, 2, 1, 0], fingers: [0, 0, 2, 3, 1, 0], difficulty: 1, notes: ["", "A2", "E3", "A3", "C4", "E4"], color: PALETTE["A Minor"] },
                 "Em": { name: "E Minor", frets: [0, 2, 2, 0, 0, 0], fingers: [0, 2, 3, 0, 0, 0], difficulty: 1, notes: ["E2", "B2", "E3", "G3", "B3", "E4"], color: PALETTE["E Minor"] },
                 "Dm": { name: "D Minor", frets: [-1, -1, 0, 2, 3, 1], fingers: [0, 0, 0, 2, 3, 1], difficulty: 2, notes: ["", "", "D3", "F3", "A3", "D4"], color: PALETTE["D Minor"] },
@@ -697,7 +702,8 @@
 
                         {/* Strings */}
                         {[0, 1, 2, 3, 4, 5].map(string => {
-                            const thickness = mirrored ? [4, 3.5, 3, 2.5, 2, 1.5] : [1.5, 2, 2.5, 3, 3.5, 4];
+                            const thickness = mirrored ? [6, 5, 4, 3, 2.5, 2] : [2, 2.5, 3, 4, 5, 6];
+                            const isMuted = chordData.frets[string] === -1;
                             return (
                                 <div key={string}
                                      className="guitar-string absolute z-5"
@@ -705,12 +711,14 @@
                                          top: `${(string / 5) * 85 + 7.5}%`,
                                          left: 0,
                                          right: 0,
-                                         height: `${thickness[string]}px`
+                                         height: `${thickness[string]}px`,
+                                         background: isMuted ? '#bfbfbf' : undefined
                                      } : {
                                          left: `${(string / 5) * 85 + 7.5}%`,
                                          top: 0,
                                          bottom: 0,
-                                         width: `${thickness[string]}px`
+                                         width: `${thickness[string]}px`,
+                                         background: isMuted ? '#bfbfbf' : undefined
                                      }}>
                                 </div>
                             );
@@ -739,9 +747,22 @@
                             </div>
                         )}
 
+                        {/* Barre */}
+                        {chordData.barre && (
+                             <div className="guitar-barre" style={{
+                                top: `${((chordData.barre.fret - 0.5) / 6) * 100}%`,
+                                left: `${(chordData.barre.from / 5) * 85 + 7.5}%`,
+                                width: `${((chordData.barre.to - chordData.barre.from) / 5) * 85}%`,
+                                backgroundColor: chordData.color,
+                             }}>1</div>
+                        )}
+
                         {/* Finger positions */}
                         {chordData.frets.map((fret, string) => {
-                            if (fret <= 0) return null;
+                            // Don't render a dot for the barre finger itself
+                            if (fret <= 0 || (chordData.barre && chordData.fingers[string] === 1)) {
+                                return null;
+                            }
                             return (
                                 <div key={string}
                                      className="guitar-dot absolute rounded-full flex items-center justify-center text-white font-bold text-sm z-40"
@@ -771,15 +792,21 @@
                             if (!symbol) return null;
                             return (
                                 <div key={string}
-                                     className={`absolute text-xl font-bold z-40 ${fret === 0 ? 'text-green-600' : 'text-red-600'}`}
+                                     className={`absolute z-40`}
                                      style={mirrored ? {
                                          top: `${(string / 5) * 85 + 7.5}%`,
                                          left: '-8%',
-                                         transform: 'translate(-50%, -50%)'
+                                         transform: 'translate(-50%, -50%)',
+                                         fontSize: '32px',
+                                         fontWeight: '800',
+                                         color: fret === 0 ? '#16a34a' : '#dc2626'
                                      } : {
                                          left: `${(string / 5) * 85 + 7.5}%`,
                                          top: '-8%',
-                                         transform: 'translate(-50%, -50%)'
+                                         transform: 'translate(-50%, -50%)',
+                                         fontSize: '32px',
+                                         fontWeight: '800',
+                                         color: fret === 0 ? '#16a34a' : '#dc2626'
                                      }}>
                                     {symbol}
                                 </div>
@@ -883,15 +910,14 @@
                             const isChord = isChordNote(key);
                             const fingerNumber = isChord ? getFingerNumber(key) : null;
                             const isActive = activeKeys.includes(fullNote);
-                            const isPlaying = playingNotes.includes(fullNote);
 
                             return (
                                 <div key={`${key}-${index}`}
-                                     className={`piano-white-key absolute h-full cursor-pointer ${isActive || isChord ? 'active' : ''}`}
+                                     className={`piano-white-key absolute h-full cursor-pointer`}
                                      style={{
                                          left: `${(index / 11) * 100}%`,
                                          width: `${100 / 11}%`,
-                                         backgroundColor: isPlaying ? '#dbeafe' : undefined
+                                         backgroundColor: isChord ? chordData.color : (isActive ? '#a5b4fc' : undefined)
                                      }}
                                      onClick={() => interactive && handleKeyClick(key, octave)}>
 
@@ -913,17 +939,17 @@
                         {blackKeys.map(({ note, position }, index) => {
                             const octave = position >= 7 ? 5 : 4;
                             const fullNote = note + octave;
+                            const isChord = isChordNote(note);
                             const isActive = activeKeys.includes(fullNote);
-                            const isPlaying = playingNotes.includes(fullNote);
 
                             return (
                                 <div key={`${note}-${index}`}
-                                     className={`piano-black-key absolute cursor-pointer z-10 ${isActive ? 'active' : ''}`}
+                                     className={`piano-black-key absolute cursor-pointer z-10`}
                                      style={{
                                          left: `${(position / 11) * 100}%`,
                                          width: `${80 / 11}%`,
                                          height: '60%',
-                                         backgroundColor: isPlaying ? '#1e40af' : undefined
+                                         backgroundColor: isChord ? chordData.color : (isActive ? '#a5b4fc' : undefined)
                                      }}
                                      onClick={() => interactive && handleKeyClick(note.replace('#', '#'), octave)}>
                                 </div>
