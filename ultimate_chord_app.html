@@ -1331,6 +1331,13 @@
             </div>
         };
 
+        const formatTime = (ms) => {
+            if (!ms) return '0:00.0';
+            const minutes = Math.floor(ms / 60000);
+            const seconds = ((ms % 60000) / 1000).toFixed(1);
+            return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        };
+
         const AchievementToast = ({ achievement, onDismiss }) => {
             useEffect(() => {
                 const timer = setTimeout(onDismiss, 4000);
@@ -1620,13 +1627,6 @@
                     localStorage.setItem('ultimateBestTime', challengeTime);
                     triggerAchievement('SPEED_DEMON');
                 }
-            };
-
-            const formatTime = (ms) => {
-                if (!ms) return '0:00.0';
-                const minutes = Math.floor(ms / 60000);
-                const seconds = ((ms % 60000) / 1000).toFixed(1);
-                return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
             };
 
             const loadPresetProgression = (degrees) => {
