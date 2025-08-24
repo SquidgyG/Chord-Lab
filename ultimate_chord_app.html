@@ -1329,7 +1329,7 @@
                     ></div>
                 </div>
             </div>
-        };
+        );
 
         const formatTime = (ms) => {
             if (!ms) return '0:00.0';
@@ -1350,7 +1350,7 @@
                     <p>{achievement}</p>
                 </div>
             );
-        );
+        };
 
         const SongSuggestions = ({ progression, activeKey, triggerAchievement }) => {
             if (!progression || progression.length < 2) {
@@ -1531,8 +1531,19 @@
             const [currentView, setCurrentView] = useState('dashboard');
             const [currentChord, setCurrentChord] = useState('C');
             const [userProgress, setUserProgress] = useState(() => {
-                const savedProgress = localStorage.getItem('ultimateUserProgress');
-                return savedProgress ? JSON.parse(savedProgress) : { chords: [], songsCompleted: [], unlockedAchievements: [] };
+                try {
+                    const savedProgress = localStorage.getItem('ultimateUserProgress');
+                    // Ensure that the parsed object has the expected keys. If not, reset.
+                    const progress = savedProgress ? JSON.parse(savedProgress) : null;
+                    if (progress && progress.chords && progress.songsCompleted && progress.unlockedAchievements) {
+                        return progress;
+                    }
+                    // If data is null, malformed, or missing keys, return default.
+                    return { chords: [], songsCompleted: [], unlockedAchievements: [] };
+                } catch (error) {
+                    console.error("Failed to parse userProgress from localStorage, resetting.", error);
+                    return { chords: [], songsCompleted: [], unlockedAchievements: [] };
+                }
             });
             const [showCelebration, setShowCelebration] = useState(false);
             const [selectedSong, setSelectedSong] = useState(null);
@@ -1899,136 +1910,143 @@
                             </div>
                         )}
 
-                        {currentView === 'practice' && currentChord && (
-                            <div className="max-w-5xl mx-auto">
-                                <div className="flex justify-between items-center mb-8">
-                                    <h2 className="text-3xl font-bold font-readex text-gray-800">Practice Mode</h2>
-                                    <div className="flex items-center gap-4">
-                                        <button
-                                            onClick={() => markChordLearned(currentChord)}
-                                            className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-medium">
-                                            Mark as Learned ✓
-                                        </button>
-                                        {!isChallengeActive ? (
-                                            <button onClick={startChallenge} className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-medium">
-                                                🏆 Start Challenge
+                        {currentView === 'practice' && currentChord && (() => {
+                            const chordInfo = CHORD_DATA[selectedInstrument]?.[currentChord];
+                            return (
+                                <div className="max-w-5xl mx-auto">
+                                    <div className="flex justify-between items-center mb-8">
+                                        <h2 className="text-3xl font-bold font-readex text-gray-800">Practice Mode</h2>
+                                        <div className="flex items-center gap-4">
+                                            <button
+                                                onClick={() => markChordLearned(currentChord)}
+                                                className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-medium">
+                                                Mark as Learned ✓
                                             </button>
-                                        ) : (
-                                            <button onClick={stopChallenge} className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded-lg font-medium">
-                                                ⏹️ Stop Challenge
-                                            </button>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {isChallengeActive && (
-                                    <div className="text-center mb-6 bg-red-100 p-4 rounded-lg">
-                                        <h3 className="text-2xl font-bold text-red-700">Challenge Active!</h3>
-                                        <div className="text-5xl font-mono my-2">{formatTime(challengeTime)}</div>
-                                        <p className="text-sm text-gray-600">Best Time: {bestChallengeTime ? formatTime(bestChallengeTime) : 'N/A'}</p>
-                                    </div>
-                                )}
-
-                                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                                    <div>
-                                        {selectedInstrument === 'guitar' && (
-                                            <EnhancedGuitarDiagram
-                                                chord={currentChord}
-                                                onPlay={(direction) => playChord(currentChord, selectedInstrument, 'rightHand', 'strum')}
-                                                onInteract={(stringIndex, fret, note) => {
-                                                    console.log(`Played string ${stringIndex}, fret ${fret}, note ${note}`);
-                                                }}
-                                                mirrored={guitarMirrored}
-                                                interactive={interactiveMode}
-                                            />
-                                        )}
-
-                                        {selectedInstrument === 'piano' && (
-                                            <EnhancedPianoDiagram
-                                                chord={currentChord}
-                                                onPlay={(style, hand) => playChord(currentChord, selectedInstrument, hand, style)}
-                                                hand={pianoHand}
-                                                interactive={interactiveMode}
-                                            />
-                                        )}
+                                            {!isChallengeActive ? (
+                                                <button onClick={startChallenge} className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-medium">
+                                                    🏆 Start Challenge
+                                                </button>
+                                            ) : (
+                                                <button onClick={stopChallenge} className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded-lg font-medium">
+                                                    ⏹️ Stop Challenge
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
 
-                                    <div className="space-y-6">
-                                        <div className="bg-white rounded-xl shadow-lg p-6">
-                                            <h3 className="text-xl font-semibold mb-4">Chord Information</h3>
-                                            <div className="space-y-3">
-                                                <div>
-                                                    <span className="font-medium">Name: </span>
-                                                    <span style={{ color: CHORD_DATA[selectedInstrument][currentChord]?.color }}>
-                                                        {CHORD_DATA[selectedInstrument][currentChord]?.name}
-                                                    </span>
-                                                </div>
-                                                {selectedInstrument === 'guitar' && (
-                                                    <>
+                                    {isChallengeActive && (
+                                        <div className="text-center mb-6 bg-red-100 p-4 rounded-lg">
+                                            <h3 className="text-2xl font-bold text-red-700">Challenge Active!</h3>
+                                            <div className="text-5xl font-mono my-2">{formatTime(challengeTime)}</div>
+                                            <p className="text-sm text-gray-600">Best Time: {bestChallengeTime ? formatTime(bestChallengeTime) : 'N/A'}</p>
+                                        </div>
+                                    )}
+
+                                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                                        <div>
+                                            {selectedInstrument === 'guitar' && (
+                                                <EnhancedGuitarDiagram
+                                                    chord={currentChord}
+                                                    onPlay={(direction) => playChord(currentChord, selectedInstrument, 'rightHand', 'strum')}
+                                                    onInteract={(stringIndex, fret, note) => {
+                                                        console.log(`Played string ${stringIndex}, fret ${fret}, note ${note}`);
+                                                    }}
+                                                    mirrored={guitarMirrored}
+                                                    interactive={interactiveMode}
+                                                />
+                                            )}
+
+                                            {selectedInstrument === 'piano' && (
+                                                <EnhancedPianoDiagram
+                                                    chord={currentChord}
+                                                    onPlay={(style, hand) => playChord(currentChord, selectedInstrument, hand, style)}
+                                                    hand={pianoHand}
+                                                    interactive={interactiveMode}
+                                                />
+                                            )}
+                                        </div>
+
+                                        <div className="space-y-6">
+                                            <div className="bg-white rounded-xl shadow-lg p-6">
+                                                <h3 className="text-xl font-semibold mb-4">Chord Information</h3>
+                                                {chordInfo ? (
+                                                    <div className="space-y-3">
                                                         <div>
-                                                            <span className="font-medium">Difficulty: </span>
-                                                            <div className="inline-flex gap-1">
-                                                                {[...Array(CHORD_DATA.guitar[currentChord]?.difficulty)].map((_, i) => (
-                                                                    <span key={i} className="text-yellow-400">⭐</span>
-                                                                ))}
+                                                            <span className="font-medium">Name: </span>
+                                                            <span style={{ color: chordInfo.color }}>
+                                                                {chordInfo.name}
+                                                            </span>
+                                                        </div>
+                                                        {selectedInstrument === 'guitar' && chordInfo.frets && (
+                                                            <>
+                                                                <div>
+                                                                    <span className="font-medium">Difficulty: </span>
+                                                                    <div className="inline-flex gap-1">
+                                                                        {[...Array(chordInfo.difficulty || 0)].map((_, i) => (
+                                                                            <span key={i} className="text-yellow-400">⭐</span>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                                <div>
+                                                                    <span className="font-medium">Frets: </span>
+                                                                    {chordInfo.frets.map(f => f === -1 ? 'X' : f).join(' - ')}
+                                                                </div>
+                                                            </>
+                                                        )}
+                                                        {selectedInstrument === 'piano' && chordInfo[pianoHand]?.notes && (
+                                                            <div>
+                                                                <span className="font-medium">Notes: </span>
+                                                                {chordInfo[pianoHand].notes.join(' - ')}
                                                             </div>
-                                                        </div>
-                                                        <div>
-                                                            <span className="font-medium">Frets: </span>
-                                                            {CHORD_DATA.guitar[currentChord]?.frets.map(f => f === -1 ? 'X' : f).join(' - ')}
-                                                        </div>
-                                                    </>
-                                                )}
-                                                {selectedInstrument === 'piano' && (
-                                                    <div>
-                                                        <span className="font-medium">Notes: </span>
-                                                        {CHORD_DATA.piano[currentChord]?.[pianoHand].notes.join(' - ')}
+                                                        )}
                                                     </div>
+                                                ) : (
+                                                    <p className="text-gray-500">No data for this chord on the selected instrument.</p>
                                                 )}
                                             </div>
-                                        </div>
 
-                                        <div className="bg-yellow-50 rounded-xl p-6">
-                                            <h3 className="text-lg font-semibold text-yellow-800 mb-3">💡 Practice Tips</h3>
-                                            <ul className="text-yellow-700 space-y-2 text-sm">
-                                                {selectedInstrument === 'guitar' ? [
-                                                    "Press strings just behind the frets, not on them",
-                                                    "Keep your thumb on the back of the neck",
-                                                    "Curve your fingers to avoid touching other strings",
-                                                    "Practice switching between chords slowly at first"
-                                                ] : [
-                                                    "Keep your wrists level with your hands",
-                                                    "Curve your fingers like you're holding a small ball",
-                                                    "Use the correct fingering - it builds muscle memory",
-                                                    "Practice playing the chord smoothly and evenly"
-                                                ]}.map((tip, index) => (
-                                                    <li key={index} className="flex items-start gap-2">
-                                                        <span className="text-yellow-500 mt-1">•</span>
-                                                        <span>{tip}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
+                                            <div className="bg-yellow-50 rounded-xl p-6">
+                                                <h3 className="text-lg font-semibold text-yellow-800 mb-3">💡 Practice Tips</h3>
+                                                <ul className="text-yellow-700 space-y-2 text-sm">
+                                                    {selectedInstrument === 'guitar' ? [
+                                                        "Press strings just behind the frets, not on them",
+                                                        "Keep your thumb on the back of the neck",
+                                                        "Curve your fingers to avoid touching other strings",
+                                                        "Practice switching between chords slowly at first"
+                                                    ] : [
+                                                        "Keep your wrists level with your hands",
+                                                        "Curve your fingers like you're holding a small ball",
+                                                        "Use the correct fingering - it builds muscle memory",
+                                                        "Practice playing the chord smoothly and evenly"
+                                                    ]}.map((tip, index) => (
+                                                        <li key={index} className="flex items-start gap-2">
+                                                            <span className="text-yellow-500 mt-1">•</span>
+                                                            <span>{tip}</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
 
-                                        <div className="bg-white rounded-xl shadow-lg p-6">
-                                            <h3 className="text-lg font-semibold mb-3">Try Other Chords</h3>
-                                            <div className="grid grid-cols-3 gap-2">
-                                                {Object.keys(CHORD_DATA[selectedInstrument]).filter(c => c !== currentChord).map(chord => (
-                                                    <button key={chord}
-                                                            onClick={() => setCurrentChord(chord)}
-                                                            className="p-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                                                            style={{
-                                                                borderLeft: `3px solid ${CHORD_DATA[selectedInstrument][chord]?.color}`
-                                                            }}>
-                                                        {chord}
-                                                    </button>
-                                                ))}
+                                            <div className="bg-white rounded-xl shadow-lg p-6">
+                                                <h3 className="text-lg font-semibold mb-3">Try Other Chords</h3>
+                                                <div className="grid grid-cols-3 gap-2">
+                                                    {Object.keys(CHORD_DATA[selectedInstrument] || {}).filter(c => c !== currentChord).map(chord => (
+                                                        <button key={chord}
+                                                                onClick={() => setCurrentChord(chord)}
+                                                                className="p-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                                                                style={{
+                                                                    borderLeft: `3px solid ${CHORD_DATA[selectedInstrument][chord]?.color}`
+                                                                }}>
+                                                            {chord}
+                                                        </button>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
+                            );
+                        })()}
 
                         {currentView === 'profile' && (
                             <ProfileView userProfile={userProgress} bestChallengeTime={bestChallengeTime} />
