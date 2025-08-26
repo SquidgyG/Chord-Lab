@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { NavLink, Route, Routes, Navigate } from 'react-router-dom'
 import Dashboard from './components/Dashboard'
 import ChordProgressionBuilder from './components/chord-builder/ChordProgressionBuilder'
@@ -9,48 +10,82 @@ import ChordWheel from './components/ChordWheel'
 
 function App() {
   const { classroomMode, toggleClassroomMode } = useClassroomMode()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const linkBase = 'px-3 py-2 rounded-lg whitespace-nowrap'
   const linkActive = 'bg-blue-600 text-white'
   const linkIdle = 'text-gray-700 hover:bg-gray-100'
 
+  const navLinks = (
+    <>
+      <NavLink to="/" end className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
+        Home
+      </NavLink>
+      <NavLink to="/create" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
+        Chord Builder
+      </NavLink>
+      <NavLink to="/practice" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
+        Practice
+      </NavLink>
+      <NavLink to="/learn" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
+        Learn
+      </NavLink>
+      <NavLink to="/wheel" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
+        Chord Wheel
+      </NavLink>
+      <NavLink to="/metronome" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
+        Metronome
+      </NavLink>
+    </>
+  )
+
   return (
     <div className={`min-h-screen ${classroomMode ? 'text-[110%] contrast-125' : ''}`}>
-      <header className="bg-white shadow-sm">
+      <header className="bg-white shadow-sm relative">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <span className="font-extrabold text-xl text-gray-900">Chord Lab</span>
-            <nav className="flex gap-2 overflow-x-auto">
-              <NavLink to="/" end className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
-                Home
-              </NavLink>
-              <NavLink to="/create" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
-                Chord Builder
-              </NavLink>
-              <NavLink to="/practice" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
-                Practice
-              </NavLink>
-              <NavLink to="/learn" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
-                Learn
-              </NavLink>
-              <NavLink to="/wheel" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
-                Chord Wheel
-              </NavLink>
-              <NavLink to="/metronome" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
-                Metronome
-              </NavLink>
-            </nav>
+            <nav className="hidden md:flex gap-2">{navLinks}</nav>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={toggleClassroomMode}
-              className={`px-3 py-2 rounded-lg border ${classroomMode ? 'bg-yellow-100 border-yellow-300 text-yellow-900' : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+              className={`px-3 py-2 rounded-lg border ${
+                classroomMode
+                  ? 'bg-yellow-100 border-yellow-300 text-yellow-900'
+                  : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+              }`}
               title="Classroom Mode: larger text and higher contrast"
             >
               {classroomMode ? 'Classroom: On' : 'Classroom: Off'}
             </button>
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden px-2 py-1 rounded-lg border bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+              aria-label="Toggle menu"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d={isMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}
+                />
+              </svg>
+            </button>
           </div>
         </div>
+        {isMenuOpen && (
+          <nav className="md:hidden bg-white shadow-md absolute top-full left-0 right-0 z-10">
+            <div className="flex flex-col gap-1 p-2">{navLinks}</div>
+          </nav>
+        )}
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-6">

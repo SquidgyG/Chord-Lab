@@ -193,17 +193,18 @@ export default function ChordWheel() {
       </div>
       <div className="mt-3 space-y-2">
         <p className="text-sm text-gray-700">
-          <span className="font-semibold">In {activeKey} major</span>, highlighted sectors fit well: I, IV, V majors and ii, iii, vi minors.
+          <span className="font-semibold">In {activeKey} major</span>, highlighted sectors fit
+          well: I, IV, V majors and ii, iii, vi minors.
         </p>
         <div className="flex flex-wrap gap-2">
           <button
-            onClick={() => navigate(`/practice?key=${encodeURIComponent(activeKey)}`)}
+            onClick={() => void navigate(`/practice?key=${encodeURIComponent(activeKey)}`)}
             className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
           >
             Practice in {activeKey}
           </button>
           <button
-            onClick={() => navigate(`/practice?chord=${encodeURIComponent(selected)}`)}
+            onClick={() => void navigate(`/practice?chord=${encodeURIComponent(selected)}`)}
             className="px-3 py-2 rounded-lg bg-gray-900 text-white hover:bg-black"
           >
             Practice {selected}

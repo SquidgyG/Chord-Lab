@@ -58,75 +58,82 @@ const useAudio = () => {
   // Initialize audio context on first user interaction
   const initAudio = () => {
     if (!isInitialized.current) {
-      const context = new (window.AudioContext || (window as any).webkitAudioContext)();
-      setAudioContext(context);
-      isInitialized.current = true;
-      return context;
+      const AudioContext = window.AudioContext ?? window.webkitAudioContext
+      if (AudioContext) {
+        const context = new AudioContext()
+        setAudioContext(context)
+        isInitialized.current = true
+        return context
+      }
     }
-    return audioContext;
-  };
-  
+    return audioContext
+  }
+
   // Play a single note
-  const playNote = (frequency: number, duration = 0.5, instrument: 'piano' | 'guitar' = 'piano') => {
-    const context = audioContext || initAudio();
-    if (!context) return;
-    
-    const oscillator = context.createOscillator();
-    const gainNode = context.createGain();
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(context.destination);
-    
+  const playNote = (
+    frequency: number,
+    duration = 0.5,
+    instrument: 'piano' | 'guitar' = 'piano'
+  ) => {
+    const context = audioContext ?? initAudio()
+    if (!context) return
+
+    const oscillator = context.createOscillator()
+    const gainNode = context.createGain()
+
+    oscillator.connect(gainNode)
+    gainNode.connect(context.destination)
+
     // Set oscillator type based on instrument
     if (instrument === 'piano') {
-      oscillator.type = 'sine';
+      oscillator.type = 'sine'
     } else if (instrument === 'guitar') {
-      oscillator.type = 'sawtooth';
+      oscillator.type = 'sawtooth'
     }
-    
-    oscillator.frequency.value = frequency;
-    
+
+    oscillator.frequency.value = frequency
+
     // Apply ADSR envelope
-    const now = context.currentTime;
-    gainNode.gain.setValueAtTime(0, now);
-    gainNode.gain.linearRampToValueAtTime(0.5, now + 0.01); // Attack
-    gainNode.gain.linearRampToValueAtTime(0.3, now + 0.1);  // Decay
-    gainNode.gain.setValueAtTime(0.3, now + duration - 0.1); // Sustain
-    gainNode.gain.linearRampToValueAtTime(0, now + duration); // Release
-    
-    oscillator.start(now);
-    oscillator.stop(now + duration);
-  };
-  
+    const now = context.currentTime
+    gainNode.gain.setValueAtTime(0, now)
+    gainNode.gain.linearRampToValueAtTime(0.5, now + 0.01) // Attack
+    gainNode.gain.linearRampToValueAtTime(0.3, now + 0.1) // Decay
+    gainNode.gain.setValueAtTime(0.3, now + duration - 0.1) // Sustain
+    gainNode.gain.linearRampToValueAtTime(0, now + duration) // Release
+
+    oscillator.start(now)
+    oscillator.stop(now + duration)
+  }
+
   // Play a chord (multiple notes simultaneously)
   const playChord = (notes: string[], duration = 1.0, instrument: 'piano' | 'guitar' = 'piano') => {
     notes.forEach(note => {
-      const frequency = NOTE_FREQUENCIES[note];
+      const frequency = NOTE_FREQUENCIES[note]
       if (frequency) {
-        playNote(frequency, duration, instrument);
+        playNote(frequency, duration, instrument)
       }
-    });
-  };
-  
+    })
+  }
+
   // Play a guitar string at a specific fret
   const playGuitarNote = (string: number, fret: number, duration = 0.5) => {
-    if (string < 1 || string > 6) return;
-    
+    if (string < 1 || string > 6) return
+
     // Calculate frequency: fret frequency = string frequency * 2^(fret/12)
-    const stringFreq = GUITAR_STRING_FREQUENCIES[string - 1];
-    const frequency = stringFreq * Math.pow(2, fret / 12);
-    
-    playNote(frequency, duration, 'guitar');
-  };
-  
+    const stringFreq = GUITAR_STRING_FREQUENCIES[string - 1]
+    const frequency = stringFreq * Math.pow(2, fret / 12)
+
+    playNote(frequency, duration, 'guitar')
+  }
+
   // Clean up audio context on unmount
   useEffect(() => {
     return () => {
       if (audioContext) {
-        audioContext.close();
+        void audioContext.close()
       }
-    };
-  }, [audioContext]);
+    }
+  }, [audioContext])
   
   return {
     initAudio,

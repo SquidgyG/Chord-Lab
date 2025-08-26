@@ -59,9 +59,10 @@ const Dashboard = () => {
             <svg viewBox="0 0 200 200" className="w-48 h-48">
               <g transform="translate(100,100)">
                 <circle r="80" fill="#fff" stroke="#e5e7eb" strokeWidth="2" />
-                {[...Array(12)].map((_, i) => {
-                  const angle = -Math.PI/2 + (Math.PI*2/12)*i;
-                  const x = Math.cos(angle)*80, y = Math.sin(angle)*80;
+                {Array.from({ length: 12 }).map((_, i) => {
+                  const angle = -Math.PI / 2 + (Math.PI * 2 / 12) * i
+                  const x = Math.cos(angle) * 80,
+                    y = Math.sin(angle) * 80
                   return <line key={i} x1={0} y1={0} x2={x} y2={y} stroke="#e5e7eb" strokeWidth={1.5} />
                 })}
                 <circle r="55" fill="#f9fafb" stroke="#e5e7eb" strokeWidth="1" />
