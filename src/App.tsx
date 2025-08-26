@@ -5,6 +5,7 @@ import PracticeMode from './components/practice-mode/PracticeMode'
 import Metronome from './components/practice-mode/Metronome'
 import LearningPathway from './components/learning-path/LearningPathway'
 import { useClassroomMode } from './contexts/ClassroomModeContext'
+import ChordWheel from './components/ChordWheel'
 
 function App() {
   const { classroomMode, toggleClassroomMode } = useClassroomMode()
@@ -32,6 +33,9 @@ function App() {
               <NavLink to="/learn" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
                 Learn
               </NavLink>
+              <NavLink to="/wheel" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
+                Chord Wheel
+              </NavLink>
               <NavLink to="/metronome" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
                 Metronome
               </NavLink>
@@ -55,6 +59,7 @@ function App() {
           <Route path="/create" element={<ChordProgressionBuilder />} />
           <Route path="/practice" element={<PracticeMode />} />
           <Route path="/learn" element={<LearningPathway />} />
+          <Route path="/wheel" element={<ChordWheel />} />
           <Route path="/metronome" element={<Metronome />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

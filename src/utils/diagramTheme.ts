@@ -35,7 +35,16 @@ const MINOR_COLORS: Record<string, string> = {
   'Gb': '#08a6cf',
   'C#': '#06bebe',
   'Db': '#06bebe',
-  // Fm, Cm, Gm, Dm can derive from related majors if needed
+  'G#': '#05b17a',
+  'Ab': '#05b17a',
+  'D#': '#339c35',
+  'Eb': '#339c35',
+  'Bb': '#69a50b',
+  'A#': '#69a50b',
+  'F': '#d2b207',
+  'C': '#d45a16',
+  'G': '#d4442a',
+  'D': '#d4293f',
 };
 
 function softBg(hex: string, alpha = 0.12): string {
@@ -51,7 +60,13 @@ function normalizeChord(chordName: string) {
   const name = (chordName || '').trim();
   // Extract root (with optional accidental) and detect minor
   const match = name.match(/^([A-G](?:#|b)?)(.*)$/i);
-  const root = match ? match[1].toUpperCase().replace('B', 'B').replace('H', 'B') : 'C';
+  let root = match ? match[1] : 'C';
+  // Uppercase the letter, preserve accidental as-is (so 'Bb' stays 'Bb')
+  if (root.length >= 1) {
+    const letter = root[0].toUpperCase();
+    const accidental = root.length >= 2 && (root[1] === '#' || root[1] === 'b') ? root[1] : '';
+    root = `${letter}${accidental}`;
+  }
   const rest = match ? match[2].toLowerCase() : '';
   const isMinor = /(^|[^a-z])m(?!aj)/.test(rest) || /minor/.test(rest);
   return { root, isMinor };
