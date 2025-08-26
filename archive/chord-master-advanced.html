@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chord Master - Advanced</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#8b5cf6',
+                        accent: '#10b981'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-4">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">🎵 Chord Master</h1>
+                    <p class="text-gray-600 mt-1">Your interactive chord learning companion</p>
+                </div>
+                <div class="mt-4 md:mt-0 flex items-center space-x-4">
+                    <div class="text-right">
+                        <p class="font-medium text-gray-800">Student</p>
+                        <p class="text-sm text-gray-600">Guitar • Beginner</p>
+                    </div>
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                        S
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Quick Practice -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Quick Practice</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="quick-practice">
+                <!-- Quick practice buttons will be populated by JS -->
+            </div>
+        </div>
+        
+        <!-- Navigation Tabs -->
+        <div class="flex overflow-x-auto mb-6 bg-white rounded-2xl shadow-lg p-2">
+            <button id="progression-tab" class="px-4 py-2 rounded-lg whitespace-nowrap tab-button active" data-tab="progression">
+                Chord Builder
+            </button>
+            <button id="practice-tab" class="px-4 py-2 rounded-lg whitespace-nowrap tab-button" data-tab="practice">
+                Practice Mode
+            </button>
+            <button id="learn-tab" class="px-4 py-2 rounded-lg whitespace-nowrap tab-button" data-tab="learn">
+                Learning Path
+            </button>
+            <button id="metronome-tab" class="px-4 py-2 rounded-lg whitespace-nowrap tab-button" data-tab="metronome">
+                Metronome
+            </button>
+        </div>
+        
+        <!-- Tab Content -->
+        <div class="mb-6">
+            <!-- Chord Progression Builder -->
+            <div id="progression-content" class="tab-content active bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Chord Progression Builder</h2>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Key</label>
+                    <select id="key-selector" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="C">C</option>
+                        <option value="C#">C#</option>
+                        <option value="D">D</option>
+                        <option value="D#">D#</option>
+                        <option value="E">E</option>
+                        <option value="F">F</option>
+                        <option value="F#">F#</option>
+                        <option value="G">G</option>
+                        <option value="G#">G#</option>
+                        <option value="A">A</option>
+                        <option value="A#">A#</option>
+                        <option value="B">B</option>
+                    </select>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Your Progression</label>
+                    <div id="progression-display" class="flex flex-wrap gap-2 min-h-[60px] border-2 border-dashed border-gray-300 rounded-lg p-4">
+                        <p class="text-gray-500">Add chords to build your progression</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Add Chords</label>
+                    <div id="chord-buttons" class="grid grid-cols-7 gap-2">
+                        <!-- Chord buttons will be populated by JS -->
+                    </div>
+                </div>
+                
+                <div class="mt-6 flex justify-between">
+                    <button id="clear-progressions" class="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors">
+                        Clear All
+                    </button>
+                    <button id="play-progression" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+                        Play Progression
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Practice Mode -->
+            <div id="practice-content" class="tab-content bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Practice Mode</h2>
+                
+                <div class="mb-6 flex flex-wrap gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Instrument</label>
+                        <div class="flex space-x-2">
+                            <button id="guitar-btn" class="instrument-btn px-4 py-2 rounded-lg bg-blue-500 text-white">Guitar</button>
+                            <button id="piano-btn" class="instrument-btn px-4 py-2 rounded-lg bg-gray-200">Piano</button>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tempo: <span id="tempo-value">60</span> BPM</label>
+                        <input id="tempo-slider" type="range" min="40" max="200" value="60" class="w-32">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tips</label>
+                        <button id="tips-toggle" class="px-4 py-2 rounded-lg bg-green-500 text-white">On</button>
+                    </div>
+                </div>
+                
+                <div id="chord-practice-area">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 id="current-chord-name" class="text-xl font-bold text-gray-800">C Major</h3>
+                        <div class="flex space-x-2">
+                            <button id="play-chord" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">Play</button>
+                            <button id="next-chord" class="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors">Next Chord</button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-center my-6">
+                        <div id="instrument-diagram">
+                            <!-- Instrument diagram will be populated by JS -->
+                        </div>
+                    </div>
+                    
+                    <div id="practice-tips" class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                        <h4 class="font-bold text-blue-800 mb-2">Practice Tip</h4>
+                        <p class="text-blue-700">
+                            Practice this chord slowly at first, focusing on clean fingering. 
+                            Make sure each note rings clearly without any buzzing.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="mt-6 pt-4 border-t border-gray-200">
+                    <h4 class="font-bold text-gray-800 mb-2">Other Chords to Practice</h4>
+                    <div id="other-chords" class="flex flex-wrap gap-2">
+                        <!-- Other chord buttons will be populated by JS -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Learning Path -->
+            <div id="learn-content" class="tab-content bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Learning Pathway</h2>
+                
+                <div class="mb-6 flex flex-wrap gap-2" id="path-selector">
+                    <button class="path-btn px-4 py-2 rounded-lg bg-blue-500 text-white" data-path="beginner">Beginner Path</button>
+                    <button class="path-btn px-4 py-2 rounded-lg bg-gray-200" data-path="intermediate">Intermediate Path</button>
+                    <button class="path-btn px-4 py-2 rounded-lg bg-gray-200" data-path="advanced">Advanced Path</button>
+                </div>
+                
+                <div id="path-details" class="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-100">
+                    <h3 id="path-title" class="text-xl font-bold text-gray-800 mb-2">Beginner Path</h3>
+                    <p id="path-description" class="text-gray-600 mb-4">Start your musical journey with the basics</p>
+                    
+                    <div class="mb-3">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="font-medium text-gray-700">Progress</span>
+                            <span id="progress-percent" class="text-gray-600">50%</span>
+                        </div>
+                        <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div id="progress-bar" class="h-full bg-blue-500 rounded-full" style="width: 50%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-sm text-gray-600">
+                        <span id="completed-lessons">2</span> of <span id="total-lessons">4</span> lessons completed
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-gray-800 mb-3">Lessons</h4>
+                    <div id="lessons-list" class="space-y-3">
+                        <!-- Lessons will be populated by JS -->
+                    </div>
+                </div>
+                
+                <div class="mt-6 pt-4 border-t border-gray-200 flex justify-between">
+                    <button class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
+                        Previous
+                    </button>
+                    <button class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                        Start Next Lesson
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Metronome -->
+            <div id="metronome-content" class="tab-content bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Metronome</h2>
+                
+                <div class="flex flex-col items-center mb-6">
+                    <div class="text-5xl font-bold text-blue-600 mb-4">
+                        <span id="bpm-display">120</span> <span class="text-xl text-gray-500">BPM</span>
+                    </div>
+                    
+                    <div id="beat-indicator" class="flex space-x-2 mb-6">
+                        <div class="w-4 h-4 rounded-full bg-blue-500"></div>
+                        <div class="w-4 h-4 rounded-full bg-gray-300"></div>
+                        <div class="w-4 h-4 rounded-full bg-gray-300"></div>
+                        <div class="w-4 h-4 rounded-full bg-gray-300"></div>
+                    </div>
+                    
+                    <div class="w-full max-w-xs mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Tempo: <span id="tempo-value2">120</span> BPM
+                        </label>
+                        <input id="bpm-slider" type="range" min="40" max="240" value="120" class="w-full">
+                    </div>
+                    
+                    <div class="w-full max-w-xs mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Beats per measure: <span id="beats-value">4</span>
+                        </label>
+                        <input id="beats-slider" type="range" min="2" max="8" value="4" class="w-full">
+                    </div>
+                </div>
+                
+                <div class="flex justify-center space-x-4">
+                    <button id="start-metronome" class="px-6 py-3 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 transition-colors flex items-center">
+                        <span class="mr-2">▶</span> Start
+                    </button>
+                    <button id="stop-metronome" class="px-6 py-3 bg-red-500 text-white font-bold rounded-lg hover:bg-red-600 transition-colors flex items-center hidden">
+                        <span class="mr-2">⏹</span> Stop
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Tab switching functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs and contents
+                    tabs.forEach(t => t.classList.remove('bg-blue-500', 'text-white'));
+                    tabContents.forEach(content => content.classList.add('hidden'));
+                    
+                    // Add active class to clicked tab
+                    tab.classList.add('bg-blue-500', 'text-white');
+                    
+                    // Show corresponding content
+                    const tabId = tab.id.replace('-tab', '-content');
+                    document.getElementById(tabId).classList.remove('hidden');
+                });
+            });
+            
+            // Chord progression builder functionality
+            const chordButtons = document.querySelectorAll('.chord-btn');
+            const progressionList = document.getElementById('progression-list');
+            const keySelect = document.getElementById('key-select');
+            
+            chordButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const chord = button.textContent;
+                    const key = keySelect.value;
+                    const chordWithKey = `${key}${chord}`;
+                    
+                    const chordElement = document.createElement('div');
+                    chordElement.className = 'px-4 py-2 bg-blue-100 rounded-lg flex items-center';
+                    chordElement.innerHTML = `
+                        <span class="mr-2">${chordWithKey}</span>
+                        <button class="remove-chord text-red-500 hover:text-red-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    
+                    progressionList.appendChild(chordElement);
+                    
+                    // Add event listener to remove button
+                    chordElement.querySelector('.remove-chord').addEventListener('click', () => {
+                        progressionList.removeChild(chordElement);
+                    });
+                });
+            });
+            
+            // Quick practice buttons
+            const quickPracticeButtons = document.querySelectorAll('.quick-practice');
+            quickPracticeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const progression = button.dataset.progression.split(',');
+                    const key = keySelect.value;
+                    
+                    // Clear current progression
+                    progressionList.innerHTML = '';
+                    
+                    // Add new progression
+                    progression.forEach(chord => {
+                        const chordWithKey = `${key}${chord}`;
+                        const chordElement = document.createElement('div');
+                        chordElement.className = 'px-4 py-2 bg-blue-100 rounded-lg flex items-center';
+                        chordElement.innerHTML = `
+                            <span class="mr-2">${chordWithKey}</span>
+                            <button class="remove-chord text-red-500 hover:text-red-700">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        `;
+                        
+                        progressionList.appendChild(chordElement);
+                        
+                        // Add event listener to remove button
+                        chordElement.querySelector('.remove-chord').addEventListener('click', () => {
+                            progressionList.removeChild(chordElement);
+                        });
+                    });
+                });
+            });
+            
+            // Clear progressions button
+            document.getElementById('clear-progressions').addEventListener('click', () => {
+                progressionList.innerHTML = '';
+            });
+            
+            // Audio context initialization
+            let audioContext;
+            
+            function initAudio() {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            }
+            
+            // Play progression button
+            document.getElementById('play-progression').addEventListener('click', () => {
+                initAudio();
+                // Simple tone playback for demonstration
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 440; // A4 note
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            });
+            
+            // Practice Mode functionality
+            const guitarBtn = document.getElementById('guitar-btn');
+            const pianoBtn = document.getElementById('piano-btn');
+            const tempoSlider = document.getElementById('tempo-slider');
+            const tempoValue = document.getElementById('tempo-value');
+            const tipsToggle = document.getElementById('tips-toggle');
+            const practiceTips = document.getElementById('practice-tips');
+            
+            // Instrument selection
+            guitarBtn.addEventListener('click', () => {
+                guitarBtn.classList.remove('bg-gray-200');
+                guitarBtn.classList.add('bg-blue-500', 'text-white');
+                pianoBtn.classList.remove('bg-blue-500', 'text-white');
+                pianoBtn.classList.add('bg-gray-200');
+                
+                // Update instrument diagram (simplified)
+                document.getElementById('instrument-diagram').innerHTML = `
+                    <div class="text-center">
+                        <h4 class="font-bold mb-2">Guitar Fretboard</h4>
+                        <div class="bg-amber-100 p-4 rounded-lg inline-block">
+                            <div class="text-sm mb-2">C Major Chord</div>
+                            <div class="flex flex-col space-y-1 w-48">
+                                <div class="flex justify-between border-b border-gray-400 pb-1">
+                                    <span class="text-xs">E</span>
+                                    <span class="text-xs">A</span>
+                                    <span class="text-xs">D</span>
+                                    <span class="text-xs">G</span>
+                                    <span class="text-xs">B</span>
+                                    <span class="text-xs">e</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="w-4 h-4 rounded-full bg-blue-500"></span>
+                                    <span class="w-4 h-4 rounded-full bg-blue-500"></span>
+                                    <span class="w-4 h-4 rounded-full bg-blue-500"></span>
+                                    <span class="w-4 h-4 rounded-full bg-blue-500"></span>
+                                    <span class="w-4 h-4 rounded-full bg-blue-500"></span>
+                                    <span class="w-4 h-4 rounded-full bg-blue-500"></span>
+                                </div>
+                                <div class="text-xs mt-2">1 2 3 4 5 6</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            pianoBtn.addEventListener('click', () => {
+                pianoBtn.classList.remove('bg-gray-200');
+                pianoBtn.classList.add('bg-blue-500', 'text-white');
+                guitarBtn.classList.remove('bg-blue-500', 'text-white');
+                guitarBtn.classList.add('bg-gray-200');
+                
+                // Update instrument diagram (simplified)
+                document.getElementById('instrument-diagram').innerHTML = `
+                    <div class="text-center">
+                        <h4 class="font-bold mb-2">Piano Keyboard</h4>
+                        <div class="bg-white p-4 rounded-lg inline-block border border-gray-300">
+                            <div class="flex relative">
+                                <!-- White keys -->
+                                <div class="w-8 h-32 bg-white border border-gray-300"></div>
+                                <div class="w-8 h-32 bg-white border border-gray-300"></div>
+                                <div class="w-8 h-32 bg-white border border-gray-300"></div>
+                                <div class="w-8 h-32 bg-white border border-gray-300"></div>
+                                <div class="w-8 h-32 bg-white border border-gray-300"></div>
+                                <div class="w-8 h-32 bg-white border border-gray-300"></div>
+                                <div class="w-8 h-32 bg-white border border-gray-300"></div>
+                                
+                                <!-- Black keys -->
+                                <div class="absolute left-6 w-5 h-20 bg-black"></div>
+                                <div class="absolute left-14 w-5 h-20 bg-black"></div>
+                                <div class="absolute left-30 w-5 h-20 bg-black"></div>
+                                <div class="absolute left-38 w-5 h-20 bg-black"></div>
+                                <div class="absolute left-46 w-5 h-20 bg-black"></div>
+                            </div>
+                            <div class="mt-2 text-sm">C Major Chord Notes: C, E, G</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            // Initialize with guitar selected
+            guitarBtn.click();
+            
+            // Tempo slider
+            tempoSlider.addEventListener('input', () => {
+                tempoValue.textContent = tempoSlider.value;
+            });
+            
+            // Tips toggle
+            tipsToggle.addEventListener('click', () => {
+                const isOn = tipsToggle.textContent === 'On';
+                tipsToggle.textContent = isOn ? 'Off' : 'On';
+                tipsToggle.classList.toggle('bg-green-500', !isOn);
+                tipsToggle.classList.toggle('bg-gray-500', isOn);
+                practiceTips.classList.toggle('hidden', isOn);
+            });
+            
+            // Play chord button
+            document.getElementById('play-chord').addEventListener('click', () => {
+                initAudio();
+                // Play a simple chord (C major triad)
+                const frequencies = [261.63, 329.63, 392.00]; // C4, E4, G4
+                
+                frequencies.forEach(freq => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = freq;
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.5);
+                });
+            });
+            
+            // Populate other chords
+            const otherChordsContainer = document.getElementById('other-chords');
+            const otherChords = ['Am', 'F', 'G', 'Em', 'Dm', 'D', 'A', 'E'];
+            
+            otherChords.forEach(chord => {
+                const key = keySelect.value;
+                const chordWithKey = `${key}${chord}`;
+                const button = document.createElement('button');
+                button.className = 'px-3 py-1 bg-gray-100 rounded-lg hover:bg-gray-200';
+                button.textContent = chordWithKey;
+                otherChordsContainer.appendChild(button);
+            });
+            
+            // Learning Path functionality
+            const pathButtons = document.querySelectorAll('.path-btn');
+            const pathTitle = document.getElementById('path-title');
+            const pathDescription = document.getElementById('path-description');
+            const progressBar = document.getElementById('progress-bar');
+            const progressPercent = document.getElementById('progress-percent');
+            const completedLessons = document.getElementById('completed-lessons');
+            const totalLessons = document.getElementById('total-lessons');
+            const lessonsList = document.getElementById('lessons-list');
+            
+            // Learning path data
+            const learningPaths = {
+                beginner: {
+                    title: 'Beginner Path',
+                    description: 'Start your musical journey with the basics',
+                    progress: 50,
+                    completed: 2,
+                    total: 4,
+                    lessons: [
+                        { title: 'Introduction to Chords', completed: true },
+                        { title: 'Basic Open Chords', completed: true },
+                        { title: 'Chord Transitions', completed: false },
+                        { title: 'Simple Songs', completed: false }
+                    ]
+                },
+                intermediate: {
+                    title: 'Intermediate Path',
+                    description: 'Build on your foundation with more complex techniques',
+                    progress: 25,
+                    completed: 1,
+                    total: 4,
+                    lessons: [
+                        { title: 'Barre Chords', completed: true },
+                        { title: 'Chord Inversions', completed: false },
+                        { title: 'Fingerpicking Patterns', completed: false },
+                        { title: 'Intermediate Songs', completed: false }
+                    ]
+                },
+                advanced: {
+                    title: 'Advanced Path',
+                    description: 'Master complex techniques and musical theory',
+                    progress: 0,
+                    completed: 0,
+                    total: 4,
+                    lessons: [
+                        { title: 'Advanced Chord Voicings', completed: false },
+                        { title: 'Jazz Chords', completed: false },
+                        { title: 'Chord Progressions', completed: false },
+                        { title: 'Composition', completed: false }
+                    ]
+                }
+            };
+            
+            // Path selection
+            pathButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Update button styles
+                    pathButtons.forEach(btn => {
+                        btn.classList.remove('bg-blue-500', 'text-white');
+                        btn.classList.add('bg-gray-200');
+                    });
+                    button.classList.remove('bg-gray-200');
+                    button.classList.add('bg-blue-500', 'text-white');
+                    
+                    // Update content
+                    const path = button.dataset.path;
+                    const pathData = learningPaths[path];
+                    
+                    pathTitle.textContent = pathData.title;
+                    pathDescription.textContent = pathData.description;
+                    progressBar.style.width = `${pathData.progress}%`;
+                    progressPercent.textContent = `${pathData.progress}%`;
+                    completedLessons.textContent = pathData.completed;
+                    totalLessons.textContent = pathData.total;
+                    
+                    // Update lessons list
+                    lessonsList.innerHTML = '';
+                    pathData.lessons.forEach(lesson => {
+                        const lessonElement = document.createElement('div');
+                        lessonElement.className = `p-3 rounded-lg ${lesson.completed ? 'bg-green-50 border border-green-200' : 'bg-gray-50 border border-gray-200'}`;
+                        lessonElement.innerHTML = `
+                            <div class="flex items-center">
+                                <div class="w-5 h-5 rounded-full ${lesson.completed ? 'bg-green-500' : 'bg-gray-300'} flex items-center justify-center mr-3">
+                                    ${lesson.completed ? '<i class="fas fa-check text-white text-xs"></i>' : ''}
+                                </div>
+                                <span class="${lesson.completed ? 'text-green-800 font-medium' : 'text-gray-700'}">${lesson.title}</span>
+                            </div>
+                        `;
+                        lessonsList.appendChild(lessonElement);
+                    });
+                });
+            });
+            
+            // Initialize with beginner path
+            document.querySelector('.path-btn[data-path="beginner"]').click();
+            
+            // Metronome functionality
+            const bpmSlider = document.getElementById('bpm-slider');
+            const bpmDisplay = document.getElementById('bpm-display');
+            const tempoValue2 = document.getElementById('tempo-value2');
+            const beatsSlider = document.getElementById('beats-slider');
+            const beatsValue = document.getElementById('beats-value');
+            const startBtn = document.getElementById('start-metronome');
+            const stopBtn = document.getElementById('stop-metronome');
+            const beatIndicator = document.getElementById('beat-indicator');
+            
+            let metronomeInterval;
+            let beatCount = 0;
+            
+            // BPM slider
+            bpmSlider.addEventListener('input', () => {
+                const bpm = bpmSlider.value;
+                bpmDisplay.textContent = bpm;
+                tempoValue2.textContent = bpm;
+            });
+            
+            // Beats slider
+            beatsSlider.addEventListener('input', () => {
+                beatsValue.textContent = beatsSlider.value;
+                // Update beat indicators
+                const beats = parseInt(beatsSlider.value);
+                beatIndicator.innerHTML = '';
+                for (let i = 0; i < beats; i++) {
+                    const dot = document.createElement('div');
+                    dot.className = 'w-4 h-4 rounded-full bg-gray-300';
+                    beatIndicator.appendChild(dot);
+                }
+                beatIndicator.children[0].classList.replace('bg-gray-300', 'bg-blue-500');
+            });
+            
+            // Start metronome
+            startBtn.addEventListener('click', () => {
+                initAudio();
+                startBtn.classList.add('hidden');
+                stopBtn.classList.remove('hidden');
+                
+                const bpm = parseInt(bpmSlider.value);
+                const interval = 60000 / bpm;
+                const beats = parseInt(beatsSlider.value);
+                
+                beatCount = 0;
+                
+                metronomeInterval = setInterval(() => {
+                    // Update beat indicator
+                    const dots = beatIndicator.children;
+                    for (let i = 0; i < dots.length; i++) {
+                        dots[i].classList.replace('bg-blue-500', 'bg-gray-300');
+                    }
+                    dots[beatCount].classList.replace('bg-gray-300', 'bg-blue-500');
+                    
+                    // Play click sound
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    // Accent the first beat
+                    oscillator.frequency.value = beatCount === 0 ? 880 : 440;
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(beatCount === 0 ? 0.5 : 0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.1);
+                    
+                    // Update beat count
+                    beatCount = (beatCount + 1) % beats;
+                }, interval);
+            });
+            
+            // Stop metronome
+            stopBtn.addEventListener('click', () => {
+                startBtn.classList.remove('hidden');
+                stopBtn.classList.add('hidden');
+                
+                if (metronomeInterval) {
+                    clearInterval(metronomeInterval);
+                    metronomeInterval = null;
+                }
+                
+                // Reset beat indicator
+                const dots = beatIndicator.children;
+                for (let i = 0; i < dots.length; i++) {
+                    dots[i].classList.replace('bg-blue-500', 'bg-gray-300');
+                }
+                dots[0].classList.replace('bg-gray-300', 'bg-blue-500');
+            });
+        });
+    </script>
+</body>
+</html>

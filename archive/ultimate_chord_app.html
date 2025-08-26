@@ -304,6 +304,26 @@
             }
         };
 
+        // Simple metronome tick using existing AudioContext
+        const playTick = (accent = false) => {
+            const ctx = ensureAudioContext();
+            if (ctx.state === 'suspended') ctx.resume();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            // Accent is higher pitch and slightly louder
+            osc.type = 'square';
+            const now = ctx.currentTime;
+            const freq = accent ? 2000 : 1400;
+            osc.frequency.setValueAtTime(freq, now);
+            const startGain = accent ? 0.4 : 0.25;
+            gain.gain.setValueAtTime(startGain, now);
+            // Very short tick envelope
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.07);
+        };
+
         const SONG_LIBRARY = [
             {
                 id: 1,
@@ -961,6 +981,10 @@
             const [progress, setProgress] = useState(0);
             const [timeRemaining, setTimeRemaining] = useState(0);
             const intervalRef = useRef();
+            // Local metronome for play-along
+            const [metEnabled, setMetEnabled] = useState(false);
+            const [songBeat, setSongBeat] = useState(0);
+            const metRef = useRef();
 
             const currentChord = song.pattern[currentChordIndex];
             const nextChord = song.pattern[(currentChordIndex + 1) % song.pattern.length];
@@ -1012,11 +1036,40 @@
                 clearInterval(intervalRef.current);
                 setProgress(0);
                 setTimeRemaining(0);
+                if (metRef.current) {
+                    clearInterval(metRef.current);
+                    metRef.current = null;
+                }
+                setSongBeat(0);
             };
 
             useEffect(() => {
                 return () => clearInterval(intervalRef.current);
             }, []);
+
+            // Song metronome runner (uses song BPM)
+            useEffect(() => {
+                if (metRef.current) {
+                    clearInterval(metRef.current);
+                    metRef.current = null;
+                }
+                if (!metEnabled || !isPlaying) {
+                    setSongBeat(0);
+                    return;
+                }
+                const bpm = Math.max(30, song.bpm || 100);
+                const beatsPerMeasure = 4; // simple default
+                const intervalMs = 60_000 / bpm;
+                let beat = 0;
+                metRef.current = setInterval(() => {
+                    beat = (beat % beatsPerMeasure) + 1;
+                    setSongBeat(beat);
+                    playTick(beat === 1);
+                }, intervalMs);
+                return () => {
+                    if (metRef.current) clearInterval(metRef.current);
+                };
+            }, [metEnabled, isPlaying, song.bpm]);
 
             return (
                 <div className="bg-white rounded-xl p-6 shadow-lg mb-6">
@@ -1074,6 +1127,12 @@
                             onClick={() => playChord(currentChord.chord, instrument, hand)}
                             className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg">
                             🎵 Play Current Chord
+                        </button>
+                        <button
+                            onClick={() => setMetEnabled(v => !v)}
+                            className={`px-6 py-3 font-bold rounded-lg transition-colors ${metEnabled ? 'bg-yellow-500 hover:bg-yellow-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'}`}
+                            title="Toggle metronome (uses song BPM)">
+                            {metEnabled ? '🔔 Metronome On' : '🔕 Metronome Off'}
                         </button>
                     </div>
 
@@ -1525,6 +1584,134 @@
             const [bestChallengeTime, setBestChallengeTime] = useState(null);
             const challengeIntervalRef = useRef(null);
 
+            // Practice Metronome State
+            const [practiceBpm, setPracticeBpm] = useState(100);
+            const [practiceBeats, setPracticeBeats] = useState(4);
+            const [metronomeEnabled, setMetronomeEnabled] = useState(false);
+            const [currentBeat, setCurrentBeat] = useState(0);
+            const metronomeRef = useRef(null);
+
+            // Persistence + Hash Routing
+            const STORAGE_KEY = 'ultimateAppState';
+            const allowedViews = new Set(['dashboard', 'practice', 'songs', 'theory', 'profile']);
+            const initRef = useRef(false);
+
+            const applyHash = () => {
+                try {
+                    const raw = window.location.hash.replace(/^#/, '');
+                    if (!raw) return;
+                    const [viewRaw, param] = raw.split(':');
+                    if (allowedViews.has(viewRaw)) {
+                        if (viewRaw !== currentView) setCurrentView(viewRaw);
+                        if (viewRaw === 'practice' && param) {
+                            const chordName = decodeURIComponent(param);
+                            if (chordName && chordName !== currentChord) setCurrentChord(chordName);
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Failed to parse hash', e);
+                }
+            };
+
+            useEffect(() => {
+                // Load persisted state on mount
+                try {
+                    const saved = localStorage.getItem(STORAGE_KEY);
+                    if (saved) {
+                        const s = JSON.parse(saved);
+                        if (s.studentName) setStudentName(s.studentName);
+                        if (s.selectedInstrument) setSelectedInstrument(s.selectedInstrument);
+                        if (s.currentView && allowedViews.has(s.currentView)) setCurrentView(s.currentView);
+                        if (s.currentChord) setCurrentChord(s.currentChord);
+                        if (s.userProgress) setUserProgress(s.userProgress);
+                        if (s.pianoHand) setPianoHand(s.pianoHand);
+                        if (s.activeKey) setActiveKey(s.activeKey);
+                        if (Array.isArray(s.progression)) setProgression(s.progression);
+                        if (typeof s.darkMode === 'boolean') setDarkMode(s.darkMode);
+                        if (typeof s.bestChallengeTime === 'number') setBestChallengeTime(s.bestChallengeTime);
+                        if (typeof s.practiceBpm === 'number') setPracticeBpm(s.practiceBpm);
+                        if (typeof s.practiceBeats === 'number') setPracticeBeats(s.practiceBeats);
+                        if (typeof s.metronomeEnabled === 'boolean') setMetronomeEnabled(s.metronomeEnabled);
+                    } else {
+                        // Back-compat individual keys
+                        const up = localStorage.getItem('ultimateUserProgress');
+                        if (up) setUserProgress(JSON.parse(up));
+                        const bt = localStorage.getItem('ultimateBestTime');
+                        if (bt) setBestChallengeTime(Number(bt));
+                    }
+                } catch (e) {
+                    console.warn('Failed to load saved state', e);
+                }
+                // Apply hash after loading persisted state
+                applyHash();
+                initRef.current = true;
+            }, []);
+
+            useEffect(() => {
+                // Keep hash in sync with view (and chord for practice)
+                if (!initRef.current) return;
+                const target = '#' + (currentView || 'dashboard') + (currentView === 'practice' && currentChord ? ':' + encodeURIComponent(currentChord) : '');
+                if (window.location.hash !== target) {
+                    window.location.hash = target;
+                }
+            }, [currentView, currentChord]);
+
+            useEffect(() => {
+                window.addEventListener('hashchange', applyHash);
+                return () => window.removeEventListener('hashchange', applyHash);
+            }, []);
+
+            useEffect(() => {
+                // Persist state on change
+                if (!initRef.current) return;
+                try {
+                    const state = {
+                        studentName,
+                        selectedInstrument,
+                        currentView,
+                        currentChord,
+                        userProgress,
+                        pianoHand,
+                        activeKey,
+                        progression,
+                        darkMode,
+                        bestChallengeTime,
+                        practiceBpm,
+                        practiceBeats,
+                        metronomeEnabled,
+                    };
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+                    // Back-compat
+                    localStorage.setItem('ultimateUserProgress', JSON.stringify(userProgress));
+                    if (bestChallengeTime != null) {
+                        localStorage.setItem('ultimateBestTime', String(bestChallengeTime));
+                    }
+                } catch (e) {
+                    console.warn('Failed to save state', e);
+                }
+            }, [studentName, selectedInstrument, currentView, currentChord, userProgress, pianoHand, activeKey, progression, darkMode, bestChallengeTime, practiceBpm, practiceBeats, metronomeEnabled]);
+
+            // Metronome runner (Practice view)
+            useEffect(() => {
+                if (metronomeRef.current) {
+                    clearInterval(metronomeRef.current);
+                    metronomeRef.current = null;
+                }
+                if (currentView !== 'practice' || !metronomeEnabled) {
+                    setCurrentBeat(0);
+                    return;
+                }
+                const intervalMs = Math.max(60_000 / Math.max(30, practiceBpm), 10);
+                let beat = 0;
+                metronomeRef.current = setInterval(() => {
+                    beat = (beat % Math.max(1, practiceBeats)) + 1;
+                    setCurrentBeat(beat);
+                    playTick(beat === 1);
+                }, intervalMs);
+                return () => {
+                    if (metronomeRef.current) clearInterval(metronomeRef.current);
+                };
+            }, [currentView, metronomeEnabled, practiceBpm, practiceBeats]);
 
             const triggerAchievement = (keyOrMessage) => {
                 const achievement = ACHIEVEMENT_DATA[keyOrMessage];
@@ -1913,6 +2100,47 @@
                                         </div>
 
                                         <div className="space-y-6">
+                                            <div className="bg-white rounded-xl shadow-lg p-6">
+                                                <h3 className="text-xl font-semibold mb-4">Metronome</h3>
+                                                <div className="flex items-center gap-3 mb-4">
+                                                    <button
+                                                        onClick={() => setMetronomeEnabled(v => !v)}
+                                                        className={`px-4 py-2 rounded-lg font-semibold ${metronomeEnabled ? 'bg-yellow-500 hover:bg-yellow-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'}`}
+                                                        title="Start/Stop metronome">
+                                                        {metronomeEnabled ? '🔔 On' : '🔕 Off'}
+                                                    </button>
+                                                    <div className="flex items-center gap-2">
+                                                        <label className="text-sm text-gray-600">BPM</label>
+                                                        <input type="range" min="30" max="240" step="1"
+                                                               value={practiceBpm}
+                                                               onChange={e => setPracticeBpm(Number(e.target.value))}
+                                                               className="w-40" />
+                                                        <input type="number" min="30" max="240" step="1"
+                                                               value={practiceBpm}
+                                                               onChange={e => setPracticeBpm(Math.min(240, Math.max(30, Number(e.target.value) || 0)))}
+                                                               className="w-20 px-2 py-1 border rounded" />
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <label className="text-sm text-gray-600">Beats</label>
+                                                        <select value={practiceBeats}
+                                                                onChange={e => setPracticeBeats(Number(e.target.value))}
+                                                                className="px-2 py-1 border rounded">
+                                                            {[1,2,3,4,5,6,7,8].map(n => (
+                                                                <option value={n} key={n}>{n}/4</option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    {Array.from({length: practiceBeats}).map((_, i) => {
+                                                        const n = i + 1;
+                                                        return (
+                                                            <span key={n} className={`inline-block w-3 h-3 rounded-full ${currentBeat === n && metronomeEnabled ? 'bg-yellow-500' : 'bg-gray-300'}`}></span>
+                                                        );
+                                                    })}
+                                                    <span className="ml-2 text-xs text-gray-500">{practiceBpm} BPM</span>
+                                                </div>
+                                            </div>
                                             <div className="bg-white rounded-xl shadow-lg p-6">
                                                 <h3 className="text-xl font-semibold mb-4">Chord Information</h3>
                                                 {chordInfo ? (
