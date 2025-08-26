@@ -3,6 +3,7 @@ import GuitarDiagram from '../diagrams/GuitarDiagram'
 import PianoDiagram from '../diagrams/PianoDiagram'
 import { useProgress } from '../../contexts/ProgressContext'
 import { useClassroomMode } from '../../contexts/ClassroomModeContext'
+import { MAJORS_ORDER, getDiatonicForKey } from '../../utils/theory'
 
 // Shared basic chord data — keep small and readable for classroom demo
 interface Chord {
@@ -10,22 +11,6 @@ interface Chord {
   guitarPositions: { string: number; fret: number }[]
   guitarFingers: number[]
   pianoNotes: string[]
-}
-
-const MAJORS_ORDER = ['C','G','D','A','E','B','F#','Db','Ab','Eb','Bb','F'] as const
-const RELATIVE_MINORS: Record<string, string> = {
-  C: 'Am', G: 'Em', D: 'Bm', A: 'F#m', E: 'C#m', B: 'G#m', 'F#': 'D#m', Db: 'Bbm', Ab: 'Fm', Eb: 'Cm', Bb: 'Gm', F: 'Dm'
-}
-
-function getDiatonicForKey(keyCenter: string) {
-  const idx = (MAJORS_ORDER as readonly string[]).indexOf(keyCenter)
-  if (idx === -1) return { majors: [] as string[], minors: [] as string[] }
-  const I = MAJORS_ORDER[idx]
-  const V = MAJORS_ORDER[(idx + 1) % 12]
-  const IV = MAJORS_ORDER[(idx + 12 - 1) % 12]
-  const majors = [I, IV, V]
-  const minors = [RELATIVE_MINORS[I], RELATIVE_MINORS[V], RELATIVE_MINORS[IV]]
-  return { majors, minors }
 }
 
 const chordData: Chord[] = [
