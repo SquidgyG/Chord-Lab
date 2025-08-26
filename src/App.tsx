@@ -8,6 +8,7 @@ import LearningPathway from './components/learning-path/LearningPathway'
 import { useClassroomMode } from './contexts/ClassroomModeContext'
 import ChordWheel from './components/ChordWheel'
 import { useTheme } from './contexts/ThemeContext'
+import ScrollingPractice from './components/practice-mode/ScrollingPractice'
 
 function App() {
   const { classroomMode, toggleClassroomMode } = useClassroomMode()
@@ -28,6 +29,12 @@ function App() {
       </NavLink>
       <NavLink to="/practice" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
         Practice
+      </NavLink>
+      <NavLink
+        to="/practice/scrolling"
+        className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}
+      >
+        Scrolling
       </NavLink>
       <NavLink to="/learn" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
         Learn
@@ -140,6 +147,7 @@ function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/create" element={<ChordProgressionBuilder />} />
           <Route path="/practice" element={<PracticeMode />} />
+          <Route path="/practice/scrolling" element={<ScrollingPractice />} />
           <Route path="/learn" element={<LearningPathway />} />
           <Route path="/wheel" element={<ChordWheel />} />
           <Route path="/metronome" element={<Metronome />} />

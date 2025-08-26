@@ -37,6 +37,12 @@ const Dashboard = () => {
                 Practice
               </Link>
               <Link
+                to="/practice/scrolling"
+                className="px-4 py-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700"
+              >
+                Scrolling
+              </Link>
+              <Link
                 to="/learn"
                 className="px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700"
               >
