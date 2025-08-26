@@ -56,9 +56,17 @@ const useAudio = () => {
   const isInitialized = useRef(false);
   
   // Initialize audio context on first user interaction
+  type AudioContextCtor = { new(): AudioContext };
+  function getAudioContextCtor(): AudioContextCtor | null {
+    const w = window as unknown as Window & { webkitAudioContext?: AudioContextCtor };
+    return (window.AudioContext as unknown as AudioContextCtor) || w.webkitAudioContext || null;
+  }
+
   const initAudio = () => {
     if (!isInitialized.current) {
-      const context = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const Ctor = getAudioContextCtor();
+      if (!Ctor) return null;
+      const context = new Ctor();
       setAudioContext(context);
       isInitialized.current = true;
       return context;

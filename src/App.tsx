@@ -5,10 +5,13 @@ import PracticeMode from './components/practice-mode/PracticeMode'
 import Metronome from './components/practice-mode/Metronome'
 import LearningPathway from './components/learning-path/LearningPathway'
 import { useClassroomMode } from './contexts/ClassroomModeContext'
+import { useProgress } from './contexts/ProgressContext'
 import ChordWheel from './components/ChordWheel'
+import ClassroomBoard from './components/classroom/ClassroomBoard'
 
 function App() {
   const { classroomMode, toggleClassroomMode } = useClassroomMode()
+  const { teacherUnlock, toggleTeacherUnlock } = useProgress()
 
   const linkBase = 'px-3 py-2 rounded-lg whitespace-nowrap'
   const linkActive = 'bg-blue-600 text-white'
@@ -33,6 +36,9 @@ function App() {
               <NavLink to="/learn" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
                 Learn
               </NavLink>
+              <NavLink to="/classroom" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
+                Classroom
+              </NavLink>
               <NavLink to="/wheel" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
                 Chord Wheel
               </NavLink>
@@ -49,6 +55,13 @@ function App() {
             >
               {classroomMode ? 'Classroom: On' : 'Classroom: Off'}
             </button>
+            <button
+              onClick={toggleTeacherUnlock}
+              className={`px-3 py-2 rounded-lg border ${teacherUnlock ? 'bg-green-100 border-green-300 text-green-900' : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+              title="Unlock all features for teacher demo/testing"
+            >
+              {teacherUnlock ? 'Teacher Unlock: On' : 'Teacher Unlock: Off'}
+            </button>
           </div>
         </div>
       </header>
@@ -59,6 +72,7 @@ function App() {
           <Route path="/create" element={<ChordProgressionBuilder />} />
           <Route path="/practice" element={<PracticeMode />} />
           <Route path="/learn" element={<LearningPathway />} />
+          <Route path="/classroom" element={<ClassroomBoard />} />
           <Route path="/wheel" element={<ChordWheel />} />
           <Route path="/metronome" element={<Metronome />} />
           <Route path="*" element={<Navigate to="/" replace />} />

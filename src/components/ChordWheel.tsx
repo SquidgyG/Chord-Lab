@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import type { SVGProps } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getChordTheme } from '../utils/diagramTheme'
 
@@ -83,6 +84,8 @@ export default function ChordWheel() {
     return { majors, minors }
   }, [activeKey])
 
+  type DraggablePathProps = SVGProps<SVGPathElement> & { draggable?: boolean }
+
   return (
     <div className="bg-white rounded-2xl shadow-lg p-4 max-w-4xl mx-auto">
       <div className="flex items-center justify-between gap-4 mb-2">
@@ -136,6 +139,10 @@ export default function ChordWheel() {
                     strokeOpacity={isDiaMaj || isHovered ? 0.35 : 0.12}
                     strokeWidth={isDiaMaj || isHovered ? 2 : 1}
                     onClick={() => onSelect(maj)}
+                    {...({ draggable: true } as DraggablePathProps)}
+                    onDragStart={(e) => {
+                      e.dataTransfer?.setData('text/plain', maj)
+                    }}
                     filter={isDiaMaj || isHovered ? 'url(#glow)' : undefined}
                     style={{ cursor: 'pointer', transition: 'all 120ms ease-out' }}
                   />
@@ -148,6 +155,10 @@ export default function ChordWheel() {
                     strokeOpacity={isDiaMin || isHovered ? 0.35 : 0.12}
                     strokeWidth={isDiaMin || isHovered ? 2 : 1}
                     onClick={() => onSelect(min)}
+                    {...({ draggable: true } as DraggablePathProps)}
+                    onDragStart={(e) => {
+                      e.dataTransfer?.setData('text/plain', min)
+                    }}
                     filter={isDiaMin || isHovered ? 'url(#glow)' : undefined}
                     style={{ cursor: 'pointer', transition: 'all 120ms ease-out' }}
                   />

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 export type ClassroomModeContextValue = {
@@ -14,6 +15,7 @@ export function ClassroomModeProvider({ children }: { children: React.ReactNode 
       const saved = localStorage.getItem('classroomMode');
       return saved ? JSON.parse(saved) : false;
     } catch {
+      // ignore localStorage read errors
       return false;
     }
   });
@@ -21,7 +23,10 @@ export function ClassroomModeProvider({ children }: { children: React.ReactNode 
   useEffect(() => {
     try {
       localStorage.setItem('classroomMode', JSON.stringify(classroomMode));
-    } catch {}
+    } catch {
+      // ignore localStorage write errors
+      void 0;
+    }
   }, [classroomMode]);
 
   const value = useMemo(

@@ -39,9 +39,17 @@ const useMetronome = (initialBpm = 120, initialBeatsPerMeasure = 4): [MetronomeS
   const audioContextRef = useRef<AudioContext | null>(null);
   
   // Initialize audio context
+  type AudioContextCtor = { new(): AudioContext };
+  function getAudioContextCtor(): AudioContextCtor | null {
+    const w = window as unknown as Window & { webkitAudioContext?: AudioContextCtor };
+    return (window.AudioContext as unknown as AudioContextCtor) || w.webkitAudioContext || null;
+  }
+
   const initAudioContext = () => {
     if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const Ctor = getAudioContextCtor();
+      if (!Ctor) return null;
+      audioContextRef.current = new Ctor();
     }
     return audioContextRef.current;
   };
@@ -77,7 +85,6 @@ const useMetronome = (initialBpm = 120, initialBeatsPerMeasure = 4): [MetronomeS
     
     const interval = (60 / bpm) * 1000; // Convert BPM to milliseconds
     
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     intervalRef.current = window.setInterval(() => {
       setBeat(prevBeat => {
         const newBeat = (prevBeat + 1) % beatsPerMeasure;
@@ -104,7 +111,10 @@ const useMetronome = (initialBpm = 120, initialBeatsPerMeasure = 4): [MetronomeS
     setBpm(newBpm);
     try {
       localStorage.setItem('metronome:bpm', String(newBpm));
-    } catch {}
+    } catch {
+      // ignore persistence errors
+      void 0;
+    }
     if (isPlaying) {
       stop();
       start();
@@ -116,7 +126,10 @@ const useMetronome = (initialBpm = 120, initialBeatsPerMeasure = 4): [MetronomeS
     setBeatsPerMeasure(newBeats);
     try {
       localStorage.setItem('metronome:beatsPerMeasure', String(newBeats));
-    } catch {}
+    } catch {
+      // ignore persistence errors
+      void 0;
+    }
     if (isPlaying) {
       setBeat(0); // Reset beat count
     }

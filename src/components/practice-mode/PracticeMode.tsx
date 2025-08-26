@@ -18,7 +18,7 @@ const RELATIVE_MINORS: Record<string, string> = {
 };
 
 function getDiatonicForKey(keyCenter: string) {
-  const idx = MAJORS_ORDER.indexOf(keyCenter as any);
+  const idx = (MAJORS_ORDER as readonly string[]).indexOf(keyCenter);
   if (idx === -1) return { majors: [] as string[], minors: [] as string[] };
   const I = MAJORS_ORDER[idx];
   const V = MAJORS_ORDER[(idx + 1) % 12];
@@ -39,8 +39,8 @@ const PracticeMode = () => {
   const nodesRef = useRef<{ osc: OscillatorNode; gain: GainNode }[]>([]);
   const [audioActive, setAudioActive] = useState(false);
   
-  // Sample chord data
-  const chords: Chord[] = [
+  // Sample chord data (memoized)
+  const chords: Chord[] = useMemo(() => [
     // Majors
     { name: 'C', guitarPositions: [ { string: 2, fret: 1 }, { string: 4, fret: 2 }, { string: 5, fret: 3 } ], guitarFingers: [1,2,3], pianoNotes: ['C4','E4','G4'] },
     { name: 'G', guitarPositions: [ { string: 1, fret: 3 }, { string: 2, fret: 0 }, { string: 5, fret: 2 }, { string: 6, fret: 3 } ], guitarFingers: [3,0,2,4], pianoNotes: ['G3','B3','D4'] },
@@ -49,14 +49,14 @@ const PracticeMode = () => {
     { name: 'Am', guitarPositions: [ { string: 2, fret: 1 }, { string: 3, fret: 2 }, { string: 4, fret: 2 } ], guitarFingers: [1,2,3], pianoNotes: ['A3','C4','E4'] },
     { name: 'Em', guitarPositions: [ { string: 4, fret: 2 }, { string: 5, fret: 2 } ], guitarFingers: [2,3], pianoNotes: ['E3','G3','B3'] },
     { name: 'Dm', guitarPositions: [ { string: 1, fret: 1 }, { string: 2, fret: 3 }, { string: 3, fret: 2 } ], guitarFingers: [1,3,2], pianoNotes: ['D4','F4','A4'] },
-  ];
+  ], []);
   
   // Read URL params (?key=, ?chord=) and set initial state
   useEffect(() => {
     const sp = new URLSearchParams(location.search);
     const keyParam = sp.get('key');
     const chordParam = sp.get('chord');
-    if (keyParam && MAJORS_ORDER.includes(keyParam as any)) {
+    if (keyParam && (MAJORS_ORDER as readonly string[]).includes(keyParam)) {
       setKeyCenter(keyParam);
     }
     if (chordParam) {
@@ -79,12 +79,19 @@ const PracticeMode = () => {
   };
 
   // WebAudio helpers
+  type AudioContextCtor = { new(): AudioContext };
+  function getAudioContextCtor(): AudioContextCtor | null {
+    const w = window as unknown as Window & { webkitAudioContext?: AudioContextCtor };
+    return (window.AudioContext as unknown as AudioContextCtor) || w.webkitAudioContext || null;
+  }
+
   function ensureAudioContext(): AudioContext {
     if (!audioCtxRef.current) {
-      const AC: any = (window as any).AudioContext || (window as any).webkitAudioContext;
-      audioCtxRef.current = new AC();
+      const Ctor = getAudioContextCtor();
+      if (!Ctor) throw new Error('Web Audio API not supported');
+      audioCtxRef.current = new Ctor();
     }
-    return audioCtxRef.current!;
+    return audioCtxRef.current as AudioContext;
   }
 
   function noteToFreq(note: string): number {
@@ -103,9 +110,9 @@ const PracticeMode = () => {
 
   function stopAudio() {
     nodesRef.current.forEach(({ osc, gain }) => {
-      try { osc.stop(); } catch {}
-      try { osc.disconnect(); } catch {}
-      try { gain.disconnect(); } catch {}
+      try { osc.stop(); } catch { /* ignore stop errors */ void 0; }
+      try { osc.disconnect(); } catch { /* ignore disconnect */ void 0; }
+      try { gain.disconnect(); } catch { /* ignore disconnect */ void 0; }
     });
     nodesRef.current = [];
     setAudioActive(false);
