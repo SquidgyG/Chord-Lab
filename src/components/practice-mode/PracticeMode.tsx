@@ -272,24 +272,35 @@ const PracticeMode = () => {
   }, [keyCenter])
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">Practice Mode</h2>
+    <div className="bg-white dark:bg-gray-800/50 rounded-xl shadow-lg p-6">
+      <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Practice Mode</h2>
       {keyCenter && (
-        <div className="mb-4 p-3 rounded-lg border border-gray-200 bg-gray-50">
+        <div className="mb-4 p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30">
           <div className="flex items-center justify-between flex-wrap gap-2">
-            <div className="text-gray-800 font-semibold">Key: {keyCenter} major</div>
-            <div className="text-sm text-gray-600">These chords fit well in this key:</div>
+            <div className="text-gray-800 dark:text-gray-200 font-semibold">
+              Key: {keyCenter} major
+            </div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">
+              These chords fit well in this key:
+            </div>
           </div>
           <div className="mt-2 flex flex-wrap gap-2">
             {diatonicChips.map(({ label, available, color }) => (
               <button
                 key={label}
                 onClick={() => {
-                  const c = chords.find(c => c.name === label);
-                  if (c) setCurrentChord(c);
+                  const c = chords.find(c => c.name === label)
+                  if (c) setCurrentChord(c)
                 }}
-                className={`px-2.5 py-1 rounded-md text-xs font-bold ${available ? 'text-white' : 'text-gray-800 cursor-not-allowed opacity-80'}`}
-                style={{ background: available ? color.primary : color.background, border: `1px solid ${color.primary}` }}
+                className={`px-2.5 py-1 rounded-md text-xs font-bold ${
+                  available
+                    ? 'text-white'
+                    : 'text-gray-800 dark:text-gray-300 cursor-not-allowed opacity-80'
+                }`}
+                style={{
+                  background: available ? color.primary : color.background,
+                  border: `1px solid ${color.primary}`,
+                }}
                 title={available ? `Practice ${label}` : 'Diagram coming soon'}
               >
                 {label}
@@ -298,82 +309,114 @@ const PracticeMode = () => {
           </div>
         </div>
       )}
-      
+
       <div className="mb-6 flex flex-wrap gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Instrument</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Instrument
+          </label>
           <div className="flex space-x-2">
-            <button 
+            <button
               onClick={() => setSelectedInstrument('guitar')}
-              className={`px-4 py-2 rounded-lg ${selectedInstrument === 'guitar' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+              className={`px-4 py-2 rounded-lg ${
+                selectedInstrument === 'guitar'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-200 dark:bg-gray-700 dark:text-gray-300'
+              }`}
             >
               Guitar
             </button>
-            <button 
+            <button
               onClick={() => setSelectedInstrument('piano')}
-              className={`px-4 py-2 rounded-lg ${selectedInstrument === 'piano' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+              className={`px-4 py-2 rounded-lg ${
+                selectedInstrument === 'piano'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-200 dark:bg-gray-700 dark:text-gray-300'
+              }`}
             >
               Piano
             </button>
           </div>
         </div>
-        
+
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Tempo: {bpm} BPM</label>
-          <input 
-            type="range" 
-            min="40" 
-            max="200" 
-            value={bpm} 
-            onChange={(e) => setBpm(parseInt(e.target.value))}
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Tempo: {bpm} BPM
+          </label>
+          <input
+            type="range"
+            min="40"
+            max="200"
+            value={bpm}
+            onChange={e => setBpm(parseInt(e.target.value))}
             className="w-32"
           />
         </div>
-        
+
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Tips</label>
-          <button 
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Tips
+          </label>
+          <button
             onClick={() => setShowTips(!showTips)}
-            className={`px-4 py-2 rounded-lg ${showTips ? 'bg-green-500 text-white' : 'bg-gray-200'}`}
+            className={`px-4 py-2 rounded-lg ${
+              showTips
+                ? 'bg-green-500 text-white'
+                : 'bg-gray-200 dark:bg-gray-700 dark:text-gray-300'
+            }`}
           >
             {showTips ? 'On' : 'Off'}
           </button>
         </div>
       </div>
-      
+
       {currentChord && (
         <div className="mb-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-bold text-gray-800">{currentChord.name}</h3>
+            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">
+              {currentChord.name}
+            </h3>
             <div className="flex space-x-2">
-              <button 
+              <button
                 onClick={playChord}
-                className={`px-4 py-2 rounded-lg transition-colors ${isPlaying ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  isPlaying
+                    ? 'bg-red-500 hover:bg-red-600 text-white'
+                    : 'bg-blue-500 hover:bg-blue-600 text-white'
+                }`}
               >
                 {isPlaying ? 'Stop' : 'Start'}
               </button>
               <button
                 onClick={() => playNotes(currentChord.pianoNotes, 'strum')}
-                className={`px-4 py-2 rounded-lg ${audioActive ? 'bg-emerald-600 text-white' : 'bg-emerald-500 hover:bg-emerald-600 text-white'}`}
+                className={`px-4 py-2 rounded-lg ${
+                  audioActive
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-emerald-500 hover:bg-emerald-600 text-white'
+                }`}
                 title="Play a quick strum"
               >
                 Strum
               </button>
               <button
                 onClick={() => playNotes(currentChord.pianoNotes, 'arp')}
-                className={`px-4 py-2 rounded-lg ${audioActive ? 'bg-indigo-600 text-white' : 'bg-indigo-500 hover:bg-indigo-600 text-white'}`}
+                className={`px-4 py-2 rounded-lg ${
+                  audioActive
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-indigo-500 hover:bg-indigo-600 text-white'
+                }`}
                 title="Play an arpeggio"
               >
                 Arp
               </button>
               <button
                 onClick={stopAudio}
-                className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800"
+                className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200"
                 title="Stop audio playback"
               >
                 Stop Audio
               </button>
-              <button 
+              <button
                 onClick={nextChord}
                 className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
               >
@@ -381,44 +424,43 @@ const PracticeMode = () => {
               </button>
             </div>
           </div>
-          
+
           <div className="flex justify-center my-6">
             {selectedInstrument === 'guitar' ? (
-              <GuitarDiagram 
-                chordName={currentChord.name} 
-                positions={currentChord.guitarPositions} 
-                fingers={currentChord.guitarFingers} 
+              <GuitarDiagram
+                chordName={currentChord.name}
+                positions={currentChord.guitarPositions}
+                fingers={currentChord.guitarFingers}
               />
             ) : (
-              <PianoDiagram 
-                chordName={currentChord.name} 
-                notes={currentChord.pianoNotes} 
-              />
+              <PianoDiagram chordName={currentChord.name} notes={currentChord.pianoNotes} />
             )}
           </div>
-          
+
           {showTips && (
-            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
-              <h4 className="font-bold text-blue-800 mb-2">Practice Tip</h4>
-              <p className="text-blue-700">
-                Practice this chord slowly at first, focusing on clean fingering. 
-                Make sure each note rings clearly without any buzzing.
+            <div className="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-4 rounded">
+              <h4 className="font-bold text-blue-800 dark:text-blue-300 mb-2">Practice Tip</h4>
+              <p className="text-blue-700 dark:text-blue-400">
+                Practice this chord slowly at first, focusing on clean fingering. Make sure each
+                note rings clearly without any buzzing.
               </p>
             </div>
           )}
         </div>
       )}
-      
-      <div className="mt-6 pt-4 border-t border-gray-200">
-        <h4 className="font-bold text-gray-800 mb-2">Other Chords to Practice</h4>
+
+      <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <h4 className="font-bold text-gray-800 dark:text-gray-100 mb-2">
+          Other Chords to Practice
+        </h4>
         <div className="flex flex-wrap gap-2">
           {chords
             .filter(chord => chord.name !== currentChord?.name)
             .map(chord => (
-              <button 
+              <button
                 key={chord.name}
                 onClick={() => setCurrentChord(chord)}
-                className="px-3 py-1 bg-gray-100 hover:bg-blue-100 text-gray-800 rounded-lg transition-colors"
+                className="px-3 py-1 bg-gray-100 hover:bg-blue-100 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 rounded-lg transition-colors"
               >
                 {chord.name}
               </button>

@@ -84,18 +84,20 @@ export default function ChordWheel() {
   }, [activeKey])
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-4 max-w-4xl mx-auto">
+    <div className="bg-white dark:bg-gray-800/50 rounded-2xl shadow-lg p-4 max-w-4xl mx-auto">
       <div className="flex items-center justify-between gap-4 mb-2">
-        <h2 className="text-xl font-bold text-gray-800">Chord Wheel</h2>
+        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Chord Wheel</h2>
         <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600">Key</label>
+          <label className="text-sm text-gray-600 dark:text-gray-400">Key</label>
           <select
             value={activeKey}
-            onChange={(e) => setActiveKey(e.target.value)}
-            className="px-2 py-1 border border-gray-300 rounded-md bg-white text-gray-800"
+            onChange={e => setActiveKey(e.target.value)}
+            className="px-2 py-1 border border-gray-300 rounded-md bg-white text-gray-800 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
           >
-            {majorKeys.map((k) => (
-              <option key={k} value={k}>{k} major</option>
+            {majorKeys.map(k => (
+              <option key={k} value={k}>
+                {k} major
+              </option>
             ))}
           </select>
         </div>
@@ -161,6 +163,7 @@ export default function ChordWheel() {
                     fontSize={18}
                     fontWeight={800}
                     fill="#0f172a"
+                    className="dark:fill-gray-900"
                     opacity={isDiaMaj || isHovered ? 1 : 0.45}
                     style={{ pointerEvents: 'none' }}
                   >
@@ -174,6 +177,7 @@ export default function ChordWheel() {
                     fontSize={14}
                     fontWeight={800}
                     fill="#0f172a"
+                    className="dark:fill-gray-900"
                     opacity={isDiaMin || isHovered ? 1 : 0.45}
                     style={{ pointerEvents: 'none' }}
                   >
@@ -184,15 +188,28 @@ export default function ChordWheel() {
             })}
 
             {/* Center readout */}
-            <circle r={rInner - 18} fill="#ffffff" stroke="#e5e7eb" />
-            <text textAnchor="middle" dominantBaseline="central" fontSize={24} fontWeight={800} fill="#111827">
+            <circle
+              r={rInner - 18}
+              fill="#ffffff"
+              className="dark:fill-gray-700"
+              stroke="#e5e7eb"
+              strokeWidth={2}
+            />
+            <text
+              textAnchor="middle"
+              dominantBaseline="central"
+              fontSize={24}
+              fontWeight={800}
+              fill="#111827"
+              className="dark:fill-gray-100"
+            >
               {selected}
             </text>
           </g>
         </svg>
       </div>
       <div className="mt-3 space-y-2">
-        <p className="text-sm text-gray-700">
+        <p className="text-sm text-gray-700 dark:text-gray-400">
           <span className="font-semibold">In {activeKey} major</span>, highlighted sectors fit
           well: I, IV, V majors and ii, iii, vi minors.
         </p>
@@ -205,12 +222,12 @@ export default function ChordWheel() {
           </button>
           <button
             onClick={() => void navigate(`/practice?chord=${encodeURIComponent(selected)}`)}
-            className="px-3 py-2 rounded-lg bg-gray-900 text-white hover:bg-black"
+            className="px-3 py-2 rounded-lg bg-gray-900 text-white hover:bg-black dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white"
           >
             Practice {selected}
           </button>
         </div>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-gray-500 dark:text-gray-500">
           Tip: Click a sector to select it. Outer ring = majors; inner ring = relative minors.
         </p>
       </div>
