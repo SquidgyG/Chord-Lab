@@ -1,12 +1,6 @@
-import { useState } from 'react';
-import ChordProgressionBuilder from './chord-builder/ChordProgressionBuilder';
-import PracticeMode from './practice-mode/PracticeMode';
-import Metronome from './practice-mode/Metronome';
-import LearningPathway from './learning-path/LearningPathway';
+import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState<'progression' | 'practice' | 'learn' | 'metronome'>('progression');
-  
   // Sample data for quick practice
   const quickChords = [
     { name: 'C', guitar: [{ string: 2, fret: 1 }, { string: 4, fret: 2 }, { string: 5, fret: 3 }], piano: ['C4', 'E4', 'G4'] },
@@ -18,24 +12,21 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <header className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+        {/* Welcome */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-800">🎵 Chord Master</h1>
-              <p className="text-gray-600 mt-1">Your interactive chord learning companion</p>
+              <h1 className="text-3xl font-bold text-gray-800">Welcome to Chord Lab</h1>
+              <p className="text-gray-600 mt-1">Choose a section below to get started</p>
             </div>
-            <div className="mt-4 md:mt-0 flex items-center space-x-4">
-              <div className="text-right">
-                <p className="font-medium text-gray-800">Alex Guitarist</p>
-                <p className="text-sm text-gray-600">Guitar • Intermediate</p>
-              </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-                AG
-              </div>
+            <div className="mt-4 md:mt-0 flex items-center gap-2">
+              <Link to="/create" className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Chord Builder</Link>
+              <Link to="/practice" className="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700">Practice</Link>
+              <Link to="/learn" className="px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700">Learn</Link>
+              <Link to="/metronome" className="px-4 py-2 rounded-lg bg-gray-800 text-white hover:bg-gray-900">Metronome</Link>
             </div>
           </div>
-        </header>
+        </div>
         
         {/* Quick Practice */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
@@ -53,52 +44,7 @@ const Dashboard = () => {
           </div>
         </div>
         
-        {/* Navigation Tabs */}
-        <div className="flex overflow-x-auto mb-6 bg-white rounded-2xl shadow-lg p-2">
-          <button
-            onClick={() => setActiveTab('progression')}
-            className={`px-4 py-2 rounded-lg whitespace-nowrap ${activeTab === 'progression' ? 'bg-blue-500 text-white' : 'text-gray-600 hover:bg-gray-100'}`}
-          >
-            Chord Builder
-          </button>
-          <button
-            onClick={() => setActiveTab('practice')}
-            className={`px-4 py-2 rounded-lg whitespace-nowrap ${activeTab === 'practice' ? 'bg-blue-500 text-white' : 'text-gray-600 hover:bg-gray-100'}`}
-          >
-            Practice Mode
-          </button>
-          <button
-            onClick={() => setActiveTab('learn')}
-            className={`px-4 py-2 rounded-lg whitespace-nowrap ${activeTab === 'learn' ? 'bg-blue-500 text-white' : 'text-gray-600 hover:bg-gray-100'}`}
-          >
-            Learning Path
-          </button>
-          <button
-            onClick={() => setActiveTab('metronome')}
-            className={`px-4 py-2 rounded-lg whitespace-nowrap ${activeTab === 'metronome' ? 'bg-blue-500 text-white' : 'text-gray-600 hover:bg-gray-100'}`}
-          >
-            Metronome
-          </button>
-        </div>
-        
-        {/* Tab Content */}
-        <div className="mb-6">
-          {activeTab === 'progression' && (
-            <ChordProgressionBuilder />
-          )}
-          
-          {activeTab === 'practice' && (
-            <PracticeMode />
-          )}
-          
-          {activeTab === 'learn' && (
-            <LearningPathway />
-          )}
-          
-          {activeTab === 'metronome' && (
-            <Metronome />
-          )}
-        </div>
+        {/* Tab Content removed; routes live in App header */}
         
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">

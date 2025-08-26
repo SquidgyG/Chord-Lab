@@ -16,8 +16,24 @@ type MetronomeControls = {
 
 const useMetronome = (initialBpm = 120, initialBeatsPerMeasure = 4): [MetronomeState, MetronomeControls] => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [bpm, setBpm] = useState(initialBpm);
-  const [beatsPerMeasure, setBeatsPerMeasure] = useState(initialBeatsPerMeasure);
+  const [bpm, setBpm] = useState<number>(() => {
+    try {
+      const raw = localStorage.getItem('metronome:bpm');
+      const parsed = raw ? parseInt(raw, 10) : NaN;
+      return Number.isFinite(parsed) ? parsed : initialBpm;
+    } catch {
+      return initialBpm;
+    }
+  });
+  const [beatsPerMeasure, setBeatsPerMeasure] = useState<number>(() => {
+    try {
+      const raw = localStorage.getItem('metronome:beatsPerMeasure');
+      const parsed = raw ? parseInt(raw, 10) : NaN;
+      return Number.isFinite(parsed) ? parsed : initialBeatsPerMeasure;
+    } catch {
+      return initialBeatsPerMeasure;
+    }
+  });
   const [beat, setBeat] = useState(0);
   const intervalRef = useRef<number | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -86,6 +102,9 @@ const useMetronome = (initialBpm = 120, initialBeatsPerMeasure = 4): [MetronomeS
   // Update BPM and restart if playing
   const updateBpm = (newBpm: number) => {
     setBpm(newBpm);
+    try {
+      localStorage.setItem('metronome:bpm', String(newBpm));
+    } catch {}
     if (isPlaying) {
       stop();
       start();
@@ -95,6 +114,9 @@ const useMetronome = (initialBpm = 120, initialBeatsPerMeasure = 4): [MetronomeS
   // Update beats per measure
   const updateBeatsPerMeasure = (newBeats: number) => {
     setBeatsPerMeasure(newBeats);
+    try {
+      localStorage.setItem('metronome:beatsPerMeasure', String(newBeats));
+    } catch {}
     if (isPlaying) {
       setBeat(0); // Reset beat count
     }
