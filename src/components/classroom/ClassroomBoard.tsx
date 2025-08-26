@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import GuitarDiagram from '../diagrams/GuitarDiagram'
 import PianoDiagram from '../diagrams/PianoDiagram'
 import { useProgress } from '../../contexts/ProgressContext'
@@ -26,18 +26,54 @@ const ClassroomBoard = () => {
   const { teacherUnlock } = useProgress()
   const { classroomMode } = useClassroomMode()
 
-  const [showChordGrid, setShowChordGrid] = useState(true)
-  const [showGuitar, setShowGuitar] = useState(true)
-  const [showPiano, setShowPiano] = useState(false)
+  // Load initial UI state (panels, key, chord) from localStorage once
+  type BoardState = { showChordGrid: boolean; showGuitar: boolean; showPiano: boolean; keyCenter: string; selectedChordName: string }
+  const initialState = useMemo<BoardState>(() => {
+    try {
+      const raw = localStorage.getItem('classroom.board.state')
+      if (raw) {
+        const p = JSON.parse(raw) as Partial<BoardState>
+        const validKey = typeof p.keyCenter === 'string' && (MAJORS_ORDER as readonly string[]).includes(p.keyCenter) ? p.keyCenter : 'C'
+        const validChord = typeof p.selectedChordName === 'string' ? p.selectedChordName : 'C'
+        return {
+          showChordGrid: !!p.showChordGrid,
+          showGuitar: p.showGuitar === undefined ? true : !!p.showGuitar,
+          showPiano: !!p.showPiano,
+          keyCenter: validKey,
+          selectedChordName: validChord,
+        }
+      }
+    } catch {
+      // ignore localStorage read/parse errors
+      void 0
+    }
+    return { showChordGrid: true, showGuitar: true, showPiano: false, keyCenter: 'C', selectedChordName: 'C' }
+  }, [])
 
-  const [keyCenter, setKeyCenter] = useState<string>('C')
-  const [selectedChordName, setSelectedChordName] = useState<string>('C')
+  const [showChordGrid, setShowChordGrid] = useState<boolean>(() => initialState.showChordGrid)
+  const [showGuitar, setShowGuitar] = useState<boolean>(() => initialState.showGuitar)
+  const [showPiano, setShowPiano] = useState<boolean>(() => initialState.showPiano)
+
+  const [keyCenter, setKeyCenter] = useState<string>(() => initialState.keyCenter)
+  const [selectedChordName, setSelectedChordName] = useState<string>(() => initialState.selectedChordName)
   const selectedChord = useMemo(() => chordData.find(c => c.name === selectedChordName) || chordData[0], [selectedChordName])
 
   const diatonicChips = useMemo(() => {
     const { majors, minors } = getDiatonicForKey(keyCenter)
     return [...majors, ...minors]
   }, [keyCenter])
+
+  // Persist UI state on change
+  useEffect(() => {
+    try {
+      localStorage.setItem('classroom.board.state', JSON.stringify({
+        showChordGrid, showGuitar, showPiano, keyCenter, selectedChordName,
+      }))
+    } catch {
+      // ignore localStorage write errors
+      void 0
+    }
+  }, [showChordGrid, showGuitar, showPiano, keyCenter, selectedChordName])
 
   const panels = [
     showChordGrid ? 'grid' : null,
