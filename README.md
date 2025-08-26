@@ -5,6 +5,14 @@ Interactive chord learning app for guitar and piano. Two distribution targets:
 - Hosted (recommended): GitHub Pages static site. No installs for students.
 - Offline (optional): Single-file HTML `chord-lab-standalone.html` that opens locally.
 
+Live Site
+
+- https://squidgyg.github.io/Chord-Lab/
+
+Archive
+
+- Legacy HTMLs are preserved in `archive/` for reference only.
+
 Quick start
 
 ```bash

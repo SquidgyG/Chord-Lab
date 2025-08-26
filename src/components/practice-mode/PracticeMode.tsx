@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import GuitarDiagram from '../diagrams/GuitarDiagram';
 import PianoDiagram from '../diagrams/PianoDiagram';
+import useMetronome from '../../hooks/useMetronome';
 
 interface Chord {
   name: string;
@@ -12,8 +13,7 @@ interface Chord {
 const PracticeMode = () => {
   const [selectedInstrument, setSelectedInstrument] = useState<'guitar' | 'piano'>('guitar');
   const [currentChord, setCurrentChord] = useState<Chord | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [bpm, setBpm] = useState(60);
+  const [{ isPlaying, bpm }, { start, stop, setBpm }] = useMetronome(60, 4);
   const [showTips, setShowTips] = useState(true);
   
   // Sample chord data
@@ -58,11 +58,13 @@ const PracticeMode = () => {
     }
   }, []);
   
-  // Function to play chord (placeholder)
+  // Start/Stop metronome
   const playChord = () => {
-    setIsPlaying(true);
-    // In a real app, this would trigger audio playback
-    setTimeout(() => setIsPlaying(false), 1000);
+    if (isPlaying) {
+      stop();
+    } else {
+      start();
+    }
   };
   
   // Function to get a random chord
@@ -132,10 +134,9 @@ const PracticeMode = () => {
             <div className="flex space-x-2">
               <button 
                 onClick={playChord}
-                disabled={isPlaying}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 transition-colors"
+                className={`px-4 py-2 rounded-lg transition-colors ${isPlaying ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'}`}
               >
-                {isPlaying ? 'Playing...' : 'Play'}
+                {isPlaying ? 'Stop' : 'Start'}
               </button>
               <button 
                 onClick={nextChord}
