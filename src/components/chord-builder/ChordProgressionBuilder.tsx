@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import useAudio from '../../hooks/useAudio';
+import { chords as chordData } from '../../data/chords';
 
 interface Chord {
   id: string;
@@ -33,29 +34,11 @@ const ChordProgressionBuilder = () => {
     localStorage.setItem('chordProgression', JSON.stringify(chords));
   }, [chords]);
 
-  const NOTE_SEQUENCE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-
-  const chordToNotes = (name: string): string[] => {
-    const isMinor = name.endsWith('m');
-    const root = isMinor ? name.slice(0, -1) : name;
-    const rootIndex = NOTE_SEQUENCE.indexOf(root);
-    if (rootIndex === -1) return [];
-
-    const thirdIndex = (rootIndex + (isMinor ? 3 : 4)) % 12;
-    const fifthIndex = (rootIndex + 7) % 12;
-
-    return [
-      `${root}4`,
-      `${NOTE_SEQUENCE[thirdIndex]}4`,
-      `${NOTE_SEQUENCE[fifthIndex]}4`,
-    ];
-  };
-
   const handlePlay = async () => {
     initAudio();
     setIsPlaying(true);
     for (const chord of chords) {
-      const notes = chordToNotes(chord.name);
+      const notes = chordData[chord.name]?.pianoNotes ?? [];
       if (notes.length > 0) {
         playChord(notes, 0.8);
         await new Promise((resolve) => setTimeout(resolve, 1000));
