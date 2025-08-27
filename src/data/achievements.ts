@@ -36,4 +36,28 @@ export const achievements: Record<string, Achievement> = {
     description: 'Play along with a song for the first time.',
     icon: '🎶',
   },
+  CHORD_MASTER: {
+    id: 'CHORD_MASTER',
+    name: 'Chord Master',
+    description: 'Play 100+ chords.',
+    icon: '🏆',
+  },
+  STREAK_MASTER: {
+    id: 'STREAK_MASTER',
+    name: 'Streak Master',
+    description: 'Achieve a 50+ chord streak.',
+    icon: '🔥',
+  },
+  SPEED_DEMON: {
+    id: 'SPEED_DEMON',
+    name: 'Speed Demon',
+    description: 'Set a new challenge record.',
+    icon: '⚡️',
+  },
+  DEDICATED_LEARNER: {
+    id: 'DEDICATED_LEARNER',
+    name: 'Dedicated Learner',
+    description: 'Practice for 5+ minutes.',
+    icon: '🧑‍🎓',
+  },
 };
