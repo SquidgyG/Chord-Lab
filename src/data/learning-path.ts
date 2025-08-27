@@ -231,4 +231,36 @@ export const learningPath: Level[] = [
       },
     ],
   },
+  {
+    id: 6,
+    title: 'Level 6 – Creator',
+    subtitle: 'Advanced / HPGE',
+    learningIntentions: [
+      'Choose a progression and key, and figure out the chords.',
+      'Arrange a short piece of music with intro, outro, and dynamics.',
+    ],
+    lessons: [
+      {
+        id: '6-k1',
+        title: 'Creative Challenge',
+        description: 'Pick a progression and a key, and build the chords on your instrument.',
+        completed: false,
+        type: 'knowledge',
+      },
+      {
+        id: '6-s1',
+        title: 'Skill: Arrangement',
+        description: 'Add an intro/outro, dynamic arc, and texture switch to your chosen progression.',
+        completed: false,
+        type: 'skill',
+      },
+      {
+        id: '6-e1',
+        title: 'Evidence to Complete the Ladder',
+        description: 'Explain your numeral analysis and show two voicing/shape approaches. Perform your arrangement twice.',
+        completed: false,
+        type: 'evidence',
+      },
+    ],
+  },
 ];

@@ -1,202 +1,275 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
+import { getChordTheme } from '../../utils/diagramTheme';
+import GuitarDiagram from '../diagrams/GuitarDiagram';
+import PianoDiagram from '../diagrams/PianoDiagram';
+import useMetronome from '../../hooks/useMetronome';
 
-// --- Mock/Placeholder Imports ---
-// These would be in separate files in a real application.
-// They are included here to make the component runnable.
-
-const getChordTheme = (chordName) => {
-  // A simple placeholder for diagram theme logic
-  const colors = {
-    major: { primary: '#3b82f6', background: '#dbeafe' },
-    minor: { primary: '#8b5cf6', background: '#ede9fe' },
-    default: { primary: '#6b7280', background: '#f3f4f6' },
-  };
-  if (chordName.includes('m')) return colors.minor;
-  if (['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 'Bb', 'F'].includes(chordName)) return colors.major;
-  return colors.default;
-};
-
-const GuitarDiagram = ({ chordName, positions, fingers }) => (
-  <div className="p-4 border rounded-lg bg-gray-50 dark:bg-gray-700">
-    <h4 className="font-bold text-lg dark:text-white">{chordName} - Guitar</h4>
-    <pre className="dark:text-gray-300">{JSON.stringify({ positions, fingers }, null, 2)}</pre>
-  </div>
-);
-
-const PianoDiagram = ({ chordName, notes }) => (
-  <div className="p-4 border rounded-lg bg-gray-50 dark:bg-gray-700">
-    <h4 className="font-bold text-lg dark:text-white">{chordName} - Piano</h4>
-    <p className="dark:text-gray-300">Notes: {notes.join(', ')}</p>
-  </div>
-);
-
-const useMetronome = (initialBpm, beatsPerMeasure) => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [bpm, setBpm] = useState(initialBpm);
-  // Placeholder for metronome logic
-  const start = () => setIsPlaying(true);
-  const stop = () => setIsPlaying(false);
-  return [{ isPlaying, bpm }, { start, stop, setBpm }];
-};
-
-// --- Theory Utils ---
-const MAJORS_ORDER = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 'Bb', 'F'];
-const RELATIVE_MINORS = { C: 'Am', G: 'Em', D: 'Bm', A: 'F#m', E: 'C#m', B: 'G#m', 'F#': 'D#m', Db: 'Bbm', Ab: 'Fm', Eb: 'Cm', Bb: 'Gm', F: 'Dm' };
-
-function getDiatonicForKey(keyCenter) {
-  const idx = MAJORS_ORDER.indexOf(keyCenter);
-  if (idx === -1) return { majors: [], minors: [] };
-  const I = MAJORS_ORDER[idx];
-  const V = MAJORS_ORDER[(idx + 1) % 12];
-  const IV = MAJORS_ORDER[(idx + 11) % 12];
-  const majors = [I, IV, V];
-  const minors = [RELATIVE_MINORS[I], RELATIVE_MINORS[V], RELATIVE_MINORS[IV]];
-  return { majors, minors };
+interface Chord {
+  name: string;
+  guitarPositions: { string: number; fret: number }[];
+  guitarFingers: number[];
+  pianoNotes: string[];
 }
 
+const MAJORS_ORDER = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 'Bb', 'F'] as const
+type MajorKey = (typeof MAJORS_ORDER)[number]
 
-// --- Chord Data ---
-const chords = [
+const RELATIVE_MINORS: Record<MajorKey, string> = {
+  C: 'Am',
+  G: 'Em',
+  D: 'Bm',
+  A: 'F#m',
+  E: 'C#m',
+  B: 'G#m',
+  'F#': 'D#m',
+  Db: 'Bbm',
+  Ab: 'Fm',
+  Eb: 'Cm',
+  Bb: 'Gm',
+  F: 'Dm',
+}
+
+// Sample chord data
+const chords: Chord[] = [
   // Majors
-  { name: 'C', guitarPositions: [{ string: 2, fret: 1 }, { string: 4, fret: 2 }, { string: 5, fret: 3 }], guitarFingers: [1, 2, 3], pianoNotes: ['C4', 'E4', 'G4'] },
-  { name: 'G', guitarPositions: [{ string: 1, fret: 3 }, { string: 2, fret: 0 }, { string: 5, fret: 2 }, { string: 6, fret: 3 }], guitarFingers: [3, 0, 2, 4], pianoNotes: ['G3', 'B3', 'D4'] },
-  { name: 'F', guitarPositions: [{ string: 1, fret: 1 }, { string: 2, fret: 1 }, { string: 3, fret: 2 }, { string: 4, fret: 3 }], guitarFingers: [1, 1, 2, 3], pianoNotes: ['F3', 'A3', 'C4'] },
+  {
+    name: 'C',
+    guitarPositions: [
+      { string: 2, fret: 1 },
+      { string: 4, fret: 2 },
+      { string: 5, fret: 3 },
+    ],
+    guitarFingers: [1, 2, 3],
+    pianoNotes: ['C4', 'E4', 'G4'],
+  },
+  {
+    name: 'G',
+    guitarPositions: [
+      { string: 1, fret: 3 },
+      { string: 2, fret: 0 },
+      { string: 5, fret: 2 },
+      { string: 6, fret: 3 },
+    ],
+    guitarFingers: [3, 0, 2, 4],
+    pianoNotes: ['G3', 'B3', 'D4'],
+  },
+  {
+    name: 'F',
+    guitarPositions: [
+      { string: 1, fret: 1 },
+      { string: 2, fret: 1 },
+      { string: 3, fret: 2 },
+      { string: 4, fret: 3 },
+    ],
+    guitarFingers: [1, 1, 2, 3],
+    pianoNotes: ['F3', 'A3', 'C4'],
+  },
   // Minors
-  { name: 'Am', guitarPositions: [{ string: 2, fret: 1 }, { string: 3, fret: 2 }, { string: 4, fret: 2 }], guitarFingers: [1, 2, 3], pianoNotes: ['A3', 'C4', 'E4'] },
-  { name: 'Em', guitarPositions: [{ string: 4, fret: 2 }, { string: 5, fret: 2 }], guitarFingers: [2, 3], pianoNotes: ['E3', 'G3', 'B3'] },
-  { name: 'Dm', guitarPositions: [{ string: 1, fret: 1 }, { string: 2, fret: 3 }, { string: 3, fret: 2 }], guitarFingers: [1, 3, 2], pianoNotes: ['D4', 'F4', 'A4'] },
-];
+  {
+    name: 'Am',
+    guitarPositions: [
+      { string: 2, fret: 1 },
+      { string: 3, fret: 2 },
+      { string: 4, fret: 2 },
+    ],
+    guitarFingers: [1, 2, 3],
+    pianoNotes: ['A3', 'C4', 'E4'],
+  },
+  {
+    name: 'Em',
+    guitarPositions: [
+      { string: 4, fret: 2 },
+      { string: 5, fret: 2 },
+    ],
+    guitarFingers: [2, 3],
+    pianoNotes: ['E3', 'G3', 'B3'],
+  },
+  {
+    name: 'Dm',
+    guitarPositions: [
+      { string: 1, fret: 1 },
+      { string: 2, fret: 3 },
+      { string: 3, fret: 2 },
+    ],
+    guitarFingers: [1, 3, 2],
+    pianoNotes: ['D4', 'F4', 'A4'],
+  },
+]
+
+function getDiatonicForKey(keyCenter: MajorKey) {
+  const idx = MAJORS_ORDER.indexOf(keyCenter)
+  if (idx === -1) return { majors: [], minors: [] }
+  const I = MAJORS_ORDER[idx]
+  const V = MAJORS_ORDER[(idx + 1) % 12]
+  const IV = MAJORS_ORDER[(idx + 11) % 12]
+  const majors = [I, IV, V]
+  const minors = [RELATIVE_MINORS[I], RELATIVE_MINORS[V], RELATIVE_MINORS[IV]]
+  return { majors, minors }
+}
 
 const PracticeMode = () => {
-  const [selectedInstrument, setSelectedInstrument] = useState('guitar');
-  const [currentChord, setCurrentChord] = useState(null);
-  const [{ isPlaying, bpm }, { start, stop, setBpm }] = useMetronome(60, 4);
-  const [showTips, setShowTips] = useState(true);
-  const location = useLocation();
-  const [keyCenter, setKeyCenter] = useState(null);
-  const audioCtxRef = useRef(null);
-  const nodesRef = useRef([]);
-  const [audioActive, setAudioActive] = useState(false);
+  const [selectedInstrument, setSelectedInstrument] = useState<'guitar' | 'piano'>('guitar')
+  const [currentChord, setCurrentChord] = useState<Chord | null>(null)
+  const [{ isPlaying, bpm }, { start, stop, setBpm }] = useMetronome(60, 4)
+  const [showTips, setShowTips] = useState(true)
+  const location = useLocation()
+  const [keyCenter, setKeyCenter] = useState<MajorKey | null>(null)
+  const audioCtxRef = useRef<AudioContext | null>(null)
+  const nodesRef = useRef<{ osc: OscillatorNode; gain: GainNode }[]>([])
+  const [audioActive, setAudioActive] = useState(false)
 
   // Read URL params (?key=, ?chord=) and set initial state
   useEffect(() => {
-    const sp = new URLSearchParams(location.search);
-    const keyParam = sp.get('key');
-    const chordParam = sp.get('chord');
-    if (keyParam && MAJORS_ORDER.includes(keyParam)) {
-      setKeyCenter(keyParam);
+    const sp = new URLSearchParams(location.search)
+    const keyParam = sp.get('key')
+    const chordParam = sp.get('chord')
+    if (keyParam && (MAJORS_ORDER as readonly string[]).includes(keyParam)) {
+      setKeyCenter(keyParam as MajorKey)
     }
     if (chordParam) {
-      const target = chords.find(c => c.name.toLowerCase() === chordParam.toLowerCase());
-      if (target) setCurrentChord(target);
+      const target = chords.find(c => c.name.toLowerCase() === chordParam.toLowerCase())
+      if (target) setCurrentChord(target)
     }
     if (!chordParam && chords.length > 0 && !currentChord) {
-      setCurrentChord(chords[0]);
+      setCurrentChord(chords[0])
     }
-  }, [location.search, currentChord]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search])
 
   // Start/Stop metronome
   const playChord = () => {
     if (isPlaying) {
-      stop();
+      stop()
     } else {
-      start();
+      start()
     }
-  };
+  }
 
   // WebAudio helpers
-  function getAudioContextCtor() {
-    const w = window;
-    return w.AudioContext || w.webkitAudioContext || null;
-  }
-
-  function ensureAudioContext() {
+  function ensureAudioContext(): AudioContext | null {
     if (!audioCtxRef.current) {
-      const Ctor = getAudioContextCtor();
-      if (!Ctor) throw new Error('Web Audio API not supported');
-      audioCtxRef.current = new Ctor();
+      const AudioContext = window.AudioContext ?? window.webkitAudioContext
+      if (AudioContext) {
+        audioCtxRef.current = new AudioContext()
+      }
     }
-    return audioCtxRef.current;
+    return audioCtxRef.current
   }
 
-  function noteToFreq(note) {
-    const m = /^([A-Ga-g])([#b]?)(\d)$/.exec(note);
-    if (!m) return 440;
-    const letter = m[1].toUpperCase();
-    const accidental = m[2];
-    const octave = parseInt(m[3], 10);
-    const key = accidental === 'b' ? `${letter}b` : accidental === '#' ? `${letter}#` : letter;
-    const SEMIS = { C: 0, 'C#': 1, Db: 1, D: 2, 'D#': 3, Eb: 3, E: 4, F: 5, 'F#': 6, Gb: 6, G: 7, 'G#': 8, Ab: 8, A: 9, 'A#': 10, Bb: 10, B: 11 };
-    const semi = SEMIS[key] ?? 0;
-    const midi = (octave + 1) * 12 + semi;
-    return 440 * Math.pow(2, (midi - 69) / 12);
+  function noteToFreq(note: string): number {
+    // Accept forms like C4, C#4, Db4
+    const m = /^([A-Ga-g])([#b]?)(\d)$/.exec(note)
+    if (!m) return 440
+    const letter = m[1].toUpperCase()
+    const accidental = m[2]
+    const octave = parseInt(m[3], 10)
+    const key = accidental === 'b' ? `${letter}b` : accidental === '#' ? `${letter}#` : letter
+    const SEMIS: Record<string, number> = {
+      C: 0,
+      'C#': 1,
+      Db: 1,
+      D: 2,
+      'D#': 3,
+      Eb: 3,
+      E: 4,
+      F: 5,
+      'F#': 6,
+      Gb: 6,
+      G: 7,
+      'G#': 8,
+      Ab: 8,
+      A: 9,
+      'A#': 10,
+      Bb: 10,
+      B: 11,
+    }
+    const semi = SEMIS[key] ?? 0
+    const midi = (octave + 1) * 12 + semi // C-1 = 0
+    return 440 * Math.pow(2, (midi - 69) / 12)
   }
 
   function stopAudio() {
     nodesRef.current.forEach(({ osc, gain }) => {
-      try { osc.stop(); } catch { /* ignore */ }
-      try { osc.disconnect(); } catch { /* ignore */ }
-      try { gain.disconnect(); } catch { /* ignore */ }
-    });
-    nodesRef.current = [];
-    setAudioActive(false);
+      try {
+        osc.stop()
+      } catch {
+        /* ignore */
+      }
+      try {
+        osc.disconnect()
+      } catch {
+        /* ignore */
+      }
+      try {
+        gain.disconnect()
+      } catch {
+        /* ignore */
+      }
+    })
+    nodesRef.current = []
+    setAudioActive(false)
   }
 
-  function playNotes(notes, mode = 'strum') {
-    const ctx = ensureAudioContext();
-    if (!ctx) return;
+  function playNotes(notes: string[], mode: 'strum' | 'arp' = 'strum') {
+    const ctx = ensureAudioContext()
+    if (!ctx) return
 
-    const now = ctx.currentTime;
-    const spacing = mode === 'strum' ? 0.045 : 0.16;
-    const sustain = mode === 'strum' ? 0.9 : 0.8;
-    const total = notes.length * spacing + sustain + 0.2;
-    const waveform = selectedInstrument === 'guitar' ? 'triangle' : 'sine';
-
+    const now = ctx.currentTime
+    const spacing = mode === 'strum' ? 0.045 : 0.16
+    const sustain = mode === 'strum' ? 0.9 : 0.8
+    const total = notes.length * spacing + sustain + 0.2
+    // Slight detune per note for richer sound
+    const waveform = selectedInstrument === 'guitar' ? 'triangle' : 'sine'
     notes.forEach((n, i) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = waveform;
-      osc.frequency.value = noteToFreq(n);
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.type = waveform
+      osc.frequency.value = noteToFreq(n)
       if (selectedInstrument === 'guitar') {
-        osc.detune.value = (i - notes.length / 2) * 3;
+        osc.detune.value = (i - notes.length / 2) * 3
       }
-      gain.gain.setValueAtTime(0, now + i * spacing);
-      gain.gain.linearRampToValueAtTime(0.9, now + i * spacing + 0.02);
-      gain.gain.linearRampToValueAtTime(0.0, now + i * spacing + sustain);
-      osc.connect(gain).connect(ctx.destination);
-      osc.start(now + i * spacing);
-      osc.stop(now + i * spacing + sustain + 0.05);
-      nodesRef.current.push({ osc, gain });
-    });
-
-    setAudioActive(true);
-    window.setTimeout(() => setAudioActive(false), Math.ceil(total * 1000));
+      gain.gain.setValueAtTime(0, now + i * spacing)
+      gain.gain.linearRampToValueAtTime(0.9, now + i * spacing + 0.02)
+      gain.gain.linearRampToValueAtTime(0.0, now + i * spacing + sustain)
+      osc.connect(gain).connect(ctx.destination)
+      osc.start(now + i * spacing)
+      osc.stop(now + i * spacing + sustain + 0.05)
+      nodesRef.current.push({ osc, gain })
+    })
+    setAudioActive(true)
+    // Auto-reset audioActive after playback window
+    window.setTimeout(() => setAudioActive(false), Math.ceil(total * 1000))
   }
 
   useEffect(() => {
-    return () => stopAudio();
-  }, []);
+    return () => stopAudio()
+  }, [])
 
+  // Function to get a random chord
   const getRandomChord = () => {
-    const randomIndex = Math.floor(Math.random() * chords.length);
-    return chords[randomIndex];
-  };
+    const randomIndex = Math.floor(Math.random() * chords.length)
+    return chords[randomIndex]
+  }
 
+  // Function to go to next chord
   const nextChord = () => {
-    setCurrentChord(getRandomChord());
-  };
+    setCurrentChord(getRandomChord())
+  }
+
+  // Calculate interval in milliseconds from BPM
+  // const interval = 60000 / bpm;
 
   const diatonicChips = useMemo(() => {
-    if (!keyCenter) return [];
-    const { majors, minors } = getDiatonicForKey(keyCenter);
-    const list = [...majors, ...minors];
+    if (!keyCenter) return []
+    const { majors, minors } = getDiatonicForKey(keyCenter)
+    const list = [...majors, ...minors]
     return list.map(label => ({
       label,
       available: chords.some(c => c.name === label),
       color: getChordTheme(label),
-    }));
-  }, [keyCenter]);
+    }))
+  }, [keyCenter])
 
   return (
     <div className="bg-white dark:bg-gray-800/50 rounded-xl shadow-lg p-6">
@@ -216,8 +289,8 @@ const PracticeMode = () => {
               <button
                 key={label}
                 onClick={() => {
-                  const c = chords.find(c => c.name === label);
-                  if (c) setCurrentChord(c);
+                  const c = chords.find(c => c.name === label)
+                  if (c) setCurrentChord(c)
                 }}
                 className={`px-2.5 py-1 rounded-md text-xs font-bold ${
                   available
