@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import useAudio from '../../hooks/useAudio';
 
 interface Chord {
   id: string;
@@ -19,11 +20,49 @@ const ChordProgressionBuilder = () => {
         ];
   });
 
+  const [selectedKey, setSelectedKey] = useState('C');
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const { initAudio, playChord } = useAudio();
+
+  useEffect(() => {
+    initAudio();
+  }, [initAudio]);
+
   useEffect(() => {
     localStorage.setItem('chordProgression', JSON.stringify(chords));
   }, [chords]);
-  
-  const [selectedKey, setSelectedKey] = useState('C');
+
+  const NOTE_SEQUENCE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+  const chordToNotes = (name: string): string[] => {
+    const isMinor = name.endsWith('m');
+    const root = isMinor ? name.slice(0, -1) : name;
+    const rootIndex = NOTE_SEQUENCE.indexOf(root);
+    if (rootIndex === -1) return [];
+
+    const thirdIndex = (rootIndex + (isMinor ? 3 : 4)) % 12;
+    const fifthIndex = (rootIndex + 7) % 12;
+
+    return [
+      `${root}4`,
+      `${NOTE_SEQUENCE[thirdIndex]}4`,
+      `${NOTE_SEQUENCE[fifthIndex]}4`,
+    ];
+  };
+
+  const handlePlay = async () => {
+    initAudio();
+    setIsPlaying(true);
+    for (const chord of chords) {
+      const notes = chordToNotes(chord.name);
+      if (notes.length > 0) {
+        playChord(notes, 0.8);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+    }
+    setIsPlaying(false);
+  };
   
   const addChord = (chordName: string) => {
     const newChord = {
@@ -117,9 +156,11 @@ const ChordProgressionBuilder = () => {
           Load Saved Progression
         </button>
         <button
-          className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+          onClick={handlePlay}
+          disabled={isPlaying}
+          className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Play Progression
+          {isPlaying ? 'Playing...' : 'Play Progression'}
         </button>
       </div>
     </div>
