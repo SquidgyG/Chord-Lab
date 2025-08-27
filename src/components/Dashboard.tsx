@@ -1,13 +1,10 @@
 import { Link } from 'react-router-dom';
+import { CHORDS } from '../data/chords';
 
 const Dashboard = () => {
   // Sample data for quick practice
-  const quickChords = [
-    { name: 'C', guitar: [{ string: 2, fret: 1 }, { string: 4, fret: 2 }, { string: 5, fret: 3 }], piano: ['C4', 'E4', 'G4'] },
-    { name: 'G', guitar: [{ string: 1, fret: 3 }, { string: 5, fret: 2 }, { string: 6, fret: 3 }], piano: ['G3', 'B3', 'D4'] },
-    { name: 'Am', guitar: [{ string: 2, fret: 1 }, { string: 3, fret: 2 }, { string: 4, fret: 2 }], piano: ['A3', 'C4', 'E4'] },
-    { name: 'F', guitar: [{ string: 1, fret: 1 }, { string: 2, fret: 1 }, { string: 3, fret: 2 }, { string: 4, fret: 3 }], piano: ['F3', 'A3', 'C4'] }
-  ];
+  const quickChords = CHORDS.filter(chord => ['C', 'G', 'Am', 'F'].includes(chord.name))
+    .map(chord => ({ name: chord.name, guitar: chord.guitarPositions, piano: chord.pianoNotes }));
   
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">

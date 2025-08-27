@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import useAudio from '../../hooks/useAudio';
+import { CHORDS } from '../../data/chords';
 
 interface Chord {
   id: string;
@@ -54,12 +55,10 @@ const ChordProgressionBuilder = () => {
     ];
   };
 
-  const chordDictionary: Record<string, string[]> = {};
-  ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'Am', 'Bm', 'Cm', 'Dm', 'Em', 'Fm', 'Gm'].forEach(
-    chord => {
-      chordDictionary[chord] = buildChord(chord);
-    }
-  );
+    const chordDictionary: Record<string, string[]> = {};
+    CHORDS.forEach(chord => {
+      chordDictionary[chord.name] = buildChord(chord.name);
+    });
 
   const handlePlay = async () => {
     initAudio();
@@ -94,7 +93,7 @@ const ChordProgressionBuilder = () => {
     }
   };
   
-  const commonChords = ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'Am', 'Bm', 'Cm', 'Dm', 'Em', 'Fm', 'Gm'];
+  const commonChords = CHORDS.map(chord => chord.name);
   
   return (
     <div className="bg-white rounded-xl shadow-lg p-6">

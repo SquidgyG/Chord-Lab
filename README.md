@@ -34,8 +34,13 @@ An interactive music learning application that teaches piano and guitar chords t
 5. **Listen and Play**: Click notes/strings to hear sounds and practice timing
 
 ### Supported Chords
+The current official chord set focuses on commonly used shapes:
+
 - **Major chords**: C, F, G, D, A, E, B
 - **Minor chords**: Am, Em, Dm, Bm, F#m, C#m, G#m
+
+Chord definitions live in `src/data/chords.ts` so future additions remain consistent.
+
 - **Extensions coming soon**: 7th chords, suspended chords, and more
 
 ## Browser Compatibility

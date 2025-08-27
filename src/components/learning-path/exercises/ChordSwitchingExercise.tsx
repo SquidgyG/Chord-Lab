@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import useMetronome from '../../../hooks/useMetronome'
 import GuitarDiagram from '../../diagrams/GuitarDiagram'
+import { CHORDS } from '../../../data/chords'
 
 type ChordName = 'C' | 'F' | 'G' | 'Am' | 'D' | 'Em'
 interface ChordData {
@@ -9,62 +10,18 @@ interface ChordData {
   guitarFingers: number[]
 }
 
-const chords: Record<ChordName, ChordData> = {
-  C: {
-    name: 'C',
-    guitarPositions: [
-      { string: 2, fret: 1 },
-      { string: 4, fret: 2 },
-      { string: 5, fret: 3 },
-    ],
-    guitarFingers: [1, 2, 3],
-  },
-  F: {
-    name: 'F',
-    guitarPositions: [
-      { string: 1, fret: 1 },
-      { string: 2, fret: 1 },
-      { string: 3, fret: 2 },
-      { string: 4, fret: 3 },
-    ],
-    guitarFingers: [1, 1, 2, 3],
-  },
-  G: {
-    name: 'G',
-    guitarPositions: [
-      { string: 1, fret: 3 },
-      { string: 5, fret: 2 },
-      { string: 6, fret: 3 },
-    ],
-    guitarFingers: [3, 2, 4],
-  },
-  Am: {
-    name: 'Am',
-    guitarPositions: [
-      { string: 2, fret: 1 },
-      { string: 3, fret: 2 },
-      { string: 4, fret: 2 },
-    ],
-    guitarFingers: [1, 2, 3],
-  },
-  D: {
-    name: 'D',
-    guitarPositions: [
-      { string: 1, fret: 2 },
-      { string: 2, fret: 3 },
-      { string: 3, fret: 2 },
-    ],
-    guitarFingers: [2, 3, 1],
-  },
-  Em: {
-    name: 'Em',
-    guitarPositions: [
-      { string: 4, fret: 2 },
-      { string: 5, fret: 2 },
-    ],
-    guitarFingers: [2, 3],
-  },
-}
+const chordNames: ChordName[] = ['C', 'F', 'G', 'Am', 'D', 'Em']
+const chords: Record<ChordName, ChordData> = chordNames.reduce((acc, name) => {
+  const chord = CHORDS.find(c => c.name === name)
+  if (chord) {
+    acc[name] = {
+      name,
+      guitarPositions: chord.guitarPositions,
+      guitarFingers: chord.guitarFingers,
+    }
+  }
+  return acc
+}, {} as Record<ChordName, ChordData>)
 
 interface ChordSwitchingExerciseProps {
   progression: ChordName[]
