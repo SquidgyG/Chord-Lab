@@ -4,10 +4,11 @@ import NameTheNoteQuiz from './quizzes/NameTheNoteQuiz'
 import RhythmExercise from './exercises/RhythmExercise'
 import ChordSwitchingExercise from './exercises/ChordSwitchingExercise'
 
-const lessonComponents: Record<string, React.FC> = {
-  '1-e1': NameTheNoteQuiz,
-  '1-s2': RhythmExercise,
-  '2-s1': ChordSwitchingExercise,
+const lessonComponents: Record<string, () => React.ReactElement> = {
+  '1-e1': () => <NameTheNoteQuiz />,
+  '1-s2': () => <RhythmExercise />,
+  '2-s1': () => <ChordSwitchingExercise progression={['C', 'F']} />,
+  '3-s1': () => <ChordSwitchingExercise progression={['C', 'G', 'Am', 'F']} />,
 }
 
 const LearningPathway = () => {
@@ -79,7 +80,7 @@ const LearningPathway = () => {
         <h4 className="font-bold text-gray-800 dark:text-gray-100 mb-3">Lessons & Tasks</h4>
         <div className="space-y-3">
           {levelData.lessons.map(lesson => {
-            const LessonComponent = lessonComponents[lesson.id]
+            const lessonComponent = lessonComponents[lesson.id]
             return (
               <div
                 key={lesson.id}
@@ -113,9 +114,9 @@ const LearningPathway = () => {
                     {lesson.completed && <span className="text-green-500">✓</span>}
                   </div>
                 </div>
-                {LessonComponent && (
+                {lessonComponent && (
                   <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <LessonComponent />
+                    {lessonComponent()}
                   </div>
                 )}
               </div>

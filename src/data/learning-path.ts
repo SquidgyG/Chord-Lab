@@ -107,4 +107,50 @@ export const learningPath: Level[] = [
       },
     ],
   },
+  {
+    id: 3,
+    title: 'Level 3 – Player',
+    subtitle: 'Competent',
+    learningIntentions: [
+      'Play the C–G–Am–F progression cleanly and in time.',
+      'Control dynamics to create musical interest.',
+    ],
+    lessons: [
+      {
+        id: '3-k1',
+        title: 'Core Knowledge: The I–V–vi–IV Progression',
+        description: 'Learn the C–G–Am–F progression, one of the most common in pop music.',
+        completed: false,
+        type: 'knowledge',
+      },
+      {
+        id: '3-s1',
+        title: 'Skill: 4-Chord Loop',
+        description: 'Play the 4-chord loop for 16 bars, keeping a steady tempo and clean transitions.',
+        completed: false,
+        type: 'skill',
+      },
+      {
+        id: '3-s2',
+        title: 'Skill: Dynamic Control',
+        description: 'Practice playing the progression softer for a "verse" and louder for a "chorus".',
+        completed: false,
+        type: 'skill',
+      },
+      {
+        id: '3-e1',
+        title: 'Evidence to Level Up',
+        description: 'Perform the loop at ♩=80–90 with consistent tone and count-in. Name each chord’s root while playing.',
+        completed: false,
+        type: 'evidence',
+      },
+      {
+        id: '3-b1',
+        title: 'Bonus 3.5 – Texture Patterns',
+        description: 'Keyboard: RH broken-chord 1-5-3-5. Guitar: Down-up pattern D DU UDU.',
+        completed: false,
+        type: 'bonus',
+      },
+    ],
+  },
 ];
