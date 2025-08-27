@@ -39,7 +39,7 @@ describe('PracticeMode', () => {
 
   it('should change the instrument when the piano button is clicked', () => {
     renderWithProviders(['/practice']);
-    const pianoButton = screen.getByText('Piano');
+    const pianoButton = screen.getByRole('button', { name: /piano/i });
     fireEvent.click(pianoButton);
     // This is a proxy for the instrument changing. A better test would check the rendered diagram.
     // For now, we'll just check that the button is selected.

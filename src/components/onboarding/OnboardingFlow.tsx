@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useUserProfile } from '../../contexts/UserProfileContext'
 import WelcomeTutorial from './WelcomeTutorial'
+import { GUITAR_ICON, PIANO_ICON } from '../../assets/instrumentIcons'
 
 const OnboardingFlow: React.FC = () => {
   const { setProfile } = useUserProfile()
@@ -69,19 +70,27 @@ const OnboardingFlow: React.FC = () => {
             <div className="flex gap-4">
               <button
                 onClick={() => setInstrument('guitar')}
-                className={`w-full p-4 rounded-lg border-2 ${
+                aria-label="Choose guitar as your instrument"
+                className={`w-full flex flex-col items-center justify-center p-4 h-24 rounded-lg border-2 ${
                   instrument === 'guitar' ? 'border-blue-500' : ''
                 }`}
               >
-                Guitar
+                <span className="text-3xl" aria-hidden="true">
+                  {GUITAR_ICON}
+                </span>
+                <span className="mt-1 text-sm">Guitar</span>
               </button>
               <button
                 onClick={() => setInstrument('piano')}
-                className={`w-full p-4 rounded-lg border-2 ${
+                aria-label="Choose piano as your instrument"
+                className={`w-full flex flex-col items-center justify-center p-4 h-24 rounded-lg border-2 ${
                   instrument === 'piano' ? 'border-blue-500' : ''
                 }`}
               >
-                Piano
+                <span className="text-3xl" aria-hidden="true">
+                  {PIANO_ICON}
+                </span>
+                <span className="mt-1 text-sm">Piano</span>
               </button>
             </div>
             <button

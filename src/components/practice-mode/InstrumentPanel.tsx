@@ -1,6 +1,7 @@
 import type { FC } from 'react';
 import GuitarDiagram from '../diagrams/GuitarDiagram';
 import PianoDiagram from '../diagrams/PianoDiagram';
+import { GUITAR_ICON, PIANO_ICON } from '../../assets/instrumentIcons';
 
 interface Chord {
   name: string;
@@ -35,23 +36,31 @@ const InstrumentPanel: FC<InstrumentPanelProps> = ({
         <div className="flex space-x-2 mb-4">
           <button
             onClick={() => onInstrumentChange('guitar')}
-            className={`px-4 py-2 rounded-lg ${
+            aria-label="Select guitar instrument"
+            className={`flex flex-col items-center justify-center px-4 py-4 h-24 rounded-lg ${
               selectedInstrument === 'guitar'
                 ? 'bg-blue-500 text-white'
                 : 'bg-gray-200 dark:bg-gray-700 dark:text-gray-300'
             }`}
           >
-            Guitar
+            <span className="text-3xl" aria-hidden="true">
+              {GUITAR_ICON}
+            </span>
+            <span className="mt-1 text-sm">Guitar</span>
           </button>
           <button
             onClick={() => onInstrumentChange('piano')}
-            className={`px-4 py-2 rounded-lg ${
+            aria-label="Select piano instrument"
+            className={`flex flex-col items-center justify-center px-4 py-4 h-24 rounded-lg ${
               selectedInstrument === 'piano'
                 ? 'bg-blue-500 text-white'
                 : 'bg-gray-200 dark:bg-gray-700 dark:text-gray-300'
             }`}
           >
-            Piano
+            <span className="text-3xl" aria-hidden="true">
+              {PIANO_ICON}
+            </span>
+            <span className="mt-1 text-sm">Piano</span>
           </button>
         </div>
       </div>
