@@ -20,33 +20,39 @@ import { ProfilePage } from './components/profile/ProfilePage'
 function App() {
   const { classroomMode, toggleClassroomMode } = useClassroomMode()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isMoreOpen, setIsMoreOpen] = useState(false)
   const { theme, setTheme } = useTheme()
   // --- MERGED HOOK (from feature/code-improvements) ---
   const { profile } = useUserProfile()
 
-  const linkBase = 'px-3 py-2 rounded-lg whitespace-nowrap'
+  const linkBase = 'px-3 py-2 rounded-lg whitespace-nowrap block'
   const linkActive = 'bg-blue-600 text-white'
   const linkIdle = 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
 
-  const navLinks = (
+  const coreNavLinks = (
     <>
       <NavLink to="/" end className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
         Home
       </NavLink>
-      <NavLink to="/create" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
-        Chord Builder
-      </NavLink>
       <NavLink to="/practice" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
         Practice
+      </NavLink>
+      <NavLink to="/learn" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
+        Learn
+      </NavLink>
+    </>
+  )
+
+  const moreNavLinks = (
+    <>
+      <NavLink to="/create" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
+        Chord Builder
       </NavLink>
       <NavLink
         to="/practice/scrolling"
         className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}
       >
         Scrolling
-      </NavLink>
-      <NavLink to="/learn" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
-        Learn
       </NavLink>
       <NavLink to="/wheel" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
         Chord Wheel
@@ -57,9 +63,37 @@ function App() {
       <NavLink to="/classroom" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
         Classroom
       </NavLink>
-       <NavLink to="/profile" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
+      <NavLink to="/profile" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
         Profile
       </NavLink>
+    </>
+  )
+
+  const navLinks = (
+    <>
+      {coreNavLinks}
+      <div className="relative">
+        <button
+          onClick={() => setIsMoreOpen(!isMoreOpen)}
+          className={`${linkBase} ${linkIdle} flex items-center`}
+        >
+          More
+          <svg
+            className="w-4 h-4 ml-1"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 9l6 6 6-6" />
+          </svg>
+        </button>
+        {isMoreOpen && (
+          <div className="absolute right-0 mt-2 flex flex-col bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-2 z-20">
+            {moreNavLinks}
+          </div>
+        )}
+      </div>
     </>
   )
 
@@ -158,7 +192,13 @@ function App() {
           </div>
           {isMenuOpen && (
             <nav className="md:hidden bg-white dark:bg-gray-800 shadow-md absolute top-full left-0 right-0 z-10">
-              <div className="flex flex-col gap-1 p-2">{navLinks}</div>
+              <div className="flex flex-col gap-1 p-2">
+                {coreNavLinks}
+                <details>
+                  <summary className={`${linkBase} ${linkIdle} cursor-pointer`}>More</summary>
+                  <div className="flex flex-col gap-1 mt-1 pl-4">{moreNavLinks}</div>
+                </details>
+              </div>
             </nav>
           )}
         </header>
