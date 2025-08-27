@@ -8,25 +8,37 @@ interface Chord {
 }
 
 const ChordProgressionBuilder = () => {
-  const [chords, setChords] = useState<Chord[]>([
-    { id: '1', name: 'C', key: 'C' },
-    { id: '2', name: 'G', key: 'G' },
-    { id: '3', name: 'Am', key: 'A' },
-    { id: '4', name: 'F', key: 'F' },
-  ]);
+  const [chords, setChords] = useState<Chord[]>(() => {
+    const saved = localStorage.getItem('chordProgression');
+    return saved
+      ? (JSON.parse(saved) as Chord[])
+      : [
+          { id: '1', name: 'C', key: 'C' },
+          { id: '2', name: 'G', key: 'G' },
+          { id: '3', name: 'Am', key: 'A' },
+          { id: '4', name: 'F', key: 'F' },
+        ];
+  });
 
   const [selectedKey, setSelectedKey] = useState('C');
   const [isPlaying, setIsPlaying] = useState(false);
 
+  // useAudio hook needs to be implemented.
   const { initAudio, playChord } = useAudio();
 
+  // Initialise audio on component mount
   useEffect(() => {
     initAudio();
   }, [initAudio]);
 
+  // Save the chord progression to local storage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('chordProgression', JSON.stringify(chords));
+  }, [chords]);
+
   const NOTE_SEQUENCE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
-  const chordToNotes = (name: string): string[] => {
+  const buildChord = (name: string): string[] => {
     const isMinor = name.endsWith('m');
     const root = isMinor ? name.slice(0, -1) : name;
     const rootIndex = NOTE_SEQUENCE.indexOf(root);
@@ -42,14 +54,21 @@ const ChordProgressionBuilder = () => {
     ];
   };
 
+  const chordDictionary: Record<string, string[]> = {};
+  ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'Am', 'Bm', 'Cm', 'Dm', 'Em', 'Fm', 'Gm'].forEach(
+    chord => {
+      chordDictionary[chord] = buildChord(chord);
+    }
+  );
+
   const handlePlay = async () => {
     initAudio();
     setIsPlaying(true);
     for (const chord of chords) {
-      const notes = chordToNotes(chord.name);
+      const notes = chordDictionary[chord.name] ?? [];
       if (notes.length > 0) {
         playChord(notes, 0.8);
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
     }
     setIsPlaying(false);
@@ -66,6 +85,13 @@ const ChordProgressionBuilder = () => {
   
   const removeChord = (id: string) => {
     setChords(chords.filter(chord => chord.id !== id));
+  };
+
+  const loadSavedProgression = () => {
+    const saved = localStorage.getItem('chordProgression');
+    if (saved) {
+      setChords(JSON.parse(saved) as Chord[]);
+    }
   };
   
   const commonChords = ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'Am', 'Bm', 'Cm', 'Dm', 'Em', 'Fm', 'Gm'];
@@ -126,12 +152,18 @@ const ChordProgressionBuilder = () => {
         </div>
       </div>
       
-      <div className="mt-6 flex justify-between">
-        <button 
+      <div className="mt-6 flex flex-wrap gap-2 justify-between">
+        <button
           onClick={() => setChords([])}
           className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
         >
           Clear All
+        </button>
+        <button
+          onClick={loadSavedProgression}
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+        >
+          Load Saved Progression
         </button>
         <button
           onClick={handlePlay}

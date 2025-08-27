@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type KeyboardEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getChordTheme } from '../utils/diagramTheme'
 
@@ -130,67 +130,94 @@ export default function ChordWheel() {
               const isDiaMin = diatonic.minors.has(min)
               const isHovered = hovered === i
 
-              return (
-                <g
-                  key={maj}
-                  data-testid={`sector-${maj}`}
-                  onMouseEnter={() => setHovered(i)}
-                  onMouseLeave={() => setHovered(null)}
-                >
-                  {/* Major sector */}
-                  <path
-                    d={outer}
-                    fill={majColor}
-                    fillOpacity={isDiaMaj || isHovered ? 1 : 0.15}
-                    stroke={isDiaMaj || isHovered ? '#111827' : '#111'}
-                    strokeOpacity={isDiaMaj || isHovered ? 0.35 : 0.12}
-                    strokeWidth={isDiaMaj || isHovered ? 2 : 1}
-                    onClick={() => onSelect(maj)}
-                    filter={isDiaMaj || isHovered ? 'url(#glow)' : undefined}
-                    style={{ cursor: 'pointer', transition: 'all 120ms ease-out' }}
-                  />
-                  {/* Minor sector */}
-                  <path
-                    d={inner}
-                    fill={minColor}
-                    fillOpacity={isDiaMin || isHovered ? 1 : 0.15}
-                    stroke={isDiaMin || isHovered ? '#111827' : '#111'}
-                    strokeOpacity={isDiaMin || isHovered ? 0.35 : 0.12}
-                    strokeWidth={isDiaMin || isHovered ? 2 : 1}
-                    onClick={() => onSelect(min)}
-                    filter={isDiaMin || isHovered ? 'url(#glow)' : undefined}
-                    style={{ cursor: 'pointer', transition: 'all 120ms ease-out' }}
-                  />
+              const handleKeyDown = (chord: string) => (e: KeyboardEvent<SVGGElement>) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  onSelect(chord)
+                }
+              }
 
-                  {/* Labels */}
-                  <text
-                    x={lxMaj}
-                    y={lyMaj}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    fontSize={18}
-                    fontWeight={800}
-                    fill="#0f172a"
-                    className="dark:fill-gray-900"
-                    opacity={isDiaMaj || isHovered ? 1 : 0.45}
-                    style={{ pointerEvents: 'none' }}
+              return (
+                <g key={maj} data-testid={`sector-${maj}`}>
+                  {/* Major sector */}
+                  <g
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Select ${maj} major`}
+                    onClick={() => onSelect(maj)}
+                    onKeyDown={handleKeyDown(maj)}
+                    onMouseEnter={() => setHovered(i)}
+                    onMouseLeave={() => setHovered(null)}
+                    onFocus={() => setHovered(i)}
+                    onBlur={() => setHovered(null)}
+                    className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 dark:focus-visible:outline-white"
+                    style={{ cursor: 'pointer' }}
                   >
-                    {maj}
-                  </text>
-                  <text
-                    x={lxMin}
-                    y={lyMin}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    fontSize={14}
-                    fontWeight={800}
-                    fill="#0f172a"
-                    className="dark:fill-gray-900"
-                    opacity={isDiaMin || isHovered ? 1 : 0.45}
-                    style={{ pointerEvents: 'none' }}
+                    <path
+                      d={outer}
+                      fill={majColor}
+                      fillOpacity={isDiaMaj || isHovered ? 1 : 0.15}
+                      stroke={isDiaMaj || isHovered ? '#111827' : '#111'}
+                      strokeOpacity={isDiaMaj || isHovered ? 0.35 : 0.12}
+                      strokeWidth={isDiaMaj || isHovered ? 2 : 1}
+                      filter={isDiaMaj || isHovered ? 'url(#glow)' : undefined}
+                      style={{ transition: 'all 120ms ease-out' }}
+                    />
+                    <text
+                      x={lxMaj}
+                      y={lyMaj}
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      fontSize={18}
+                      fontWeight={800}
+                      fill="#0f172a"
+                      className="dark:fill-gray-900"
+                      opacity={isDiaMaj || isHovered ? 1 : 0.45}
+                      style={{ pointerEvents: 'none' }}
+                    >
+                      {maj}
+                    </text>
+                  </g>
+
+                  {/* Minor sector */}
+                  <g
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Select ${min} minor`}
+                    onClick={() => onSelect(min)}
+                    onKeyDown={handleKeyDown(min)}
+                    onMouseEnter={() => setHovered(i)}
+                    onMouseLeave={() => setHovered(null)}
+                    onFocus={() => setHovered(i)}
+                    onBlur={() => setHovered(null)}
+                    className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 dark:focus-visible:outline-white"
+                    style={{ cursor: 'pointer' }}
                   >
-                    {min}
-                  </text>
+                    <path
+                      d={inner}
+                      fill={minColor}
+                      fillOpacity={isDiaMin || isHovered ? 1 : 0.15}
+                      stroke={isDiaMin || isHovered ? '#111827' : '#111'}
+                      strokeOpacity={isDiaMin || isHovered ? 0.35 : 0.12}
+                      strokeWidth={isDiaMin || isHovered ? 2 : 1}
+                      filter={isDiaMin || isHovered ? 'url(#glow)' : undefined}
+                      style={{ transition: 'all 120ms ease-out' }}
+                    />
+                    <text
+                      x={lxMin}
+                      y={lyMin}
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      fontSize={14}
+                      fontWeight={800}
+                      fill="#0f172a"
+                      className="dark:fill-gray-900"
+                      opacity={isDiaMin || isHovered ? 1 : 0.45}
+                      style={{ pointerEvents: 'none' }}
+                    >
+                      {min}
+                    </text>
+                  </g>
                 </g>
               )
             })}

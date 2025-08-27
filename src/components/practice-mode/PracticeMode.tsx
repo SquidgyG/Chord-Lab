@@ -10,12 +10,14 @@ import Statistics from './Statistics';
 import PracticeMetronomeControls from './PracticeMetronomeControls';
 import InstrumentPanel from './InstrumentPanel';
 import SongPractice from './SongPractice';
+import { useHighestUnlockedLevel } from '../learning-path/LearningPathway';
 
 interface Chord {
   name: string;
   guitarPositions: { string: number; fret: number }[];
   guitarFingers: number[];
   pianoNotes: string[];
+  level: number;
 }
 
 const MAJORS_ORDER = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 'Bb', 'F'] as const;
@@ -48,6 +50,7 @@ const chords: Chord[] = [
     ],
     guitarFingers: [1, 2, 3],
     pianoNotes: ['C4', 'E4', 'G4'],
+    level: 2,
   },
   {
     name: 'G',
@@ -59,6 +62,7 @@ const chords: Chord[] = [
     ],
     guitarFingers: [3, 0, 2, 4],
     pianoNotes: ['G3', 'B3', 'D4'],
+    level: 3,
   },
   {
     name: 'F',
@@ -70,6 +74,7 @@ const chords: Chord[] = [
     ],
     guitarFingers: [1, 1, 2, 3],
     pianoNotes: ['F3', 'A3', 'C4'],
+    level: 2,
   },
   // Minors
   {
@@ -81,6 +86,7 @@ const chords: Chord[] = [
     ],
     guitarFingers: [1, 2, 3],
     pianoNotes: ['A3', 'C4', 'E4'],
+    level: 3,
   },
   {
     name: 'Em',
@@ -90,6 +96,7 @@ const chords: Chord[] = [
     ],
     guitarFingers: [2, 3],
     pianoNotes: ['E3', 'G3', 'B3'],
+    level: 4,
   },
   {
     name: 'Dm',
@@ -100,6 +107,7 @@ const chords: Chord[] = [
     ],
     guitarFingers: [1, 3, 2],
     pianoNotes: ['D4', 'F4', 'A4'],
+    level: 4,
   },
 ];
 
@@ -115,8 +123,16 @@ function getDiatonicForKey(keyCenter: MajorKey) {
 }
 
 const PracticeMode: FC = () => {
-  const [selectedInstrument, setSelectedInstrument] = useState<'guitar' | 'piano'>('guitar');
-  const [currentChord, setCurrentChord] = useState<Chord | null>(chords[0]);
+  const highestUnlockedLevel = useHighestUnlockedLevel();
+  const availableChords = useMemo(
+    () => chords.filter(c => c.level <= highestUnlockedLevel),
+    [highestUnlockedLevel]
+  );
+  const [selectedInstrument, setSelectedInstrument] =
+    useState<'guitar' | 'piano'>('guitar');
+  const [currentChord, setCurrentChord] = useState<Chord | null>(
+    availableChords[0] || null
+  );
   const [showSongPractice, setShowSongPractice] = useState(false);
   const { unlockAchievement } = useAchievements();
   const [{ isPlaying, bpm }, { start, stop, setBpm }] = useMetronome(60, 4);
@@ -140,6 +156,15 @@ const PracticeMode: FC = () => {
   const [keyCenter, setKeyCenter] = useState<MajorKey | null>(null);
   const { playChord, playGuitarNote, initAudio, fretToNote } = useAudio();
 
+  useEffect(() => {
+    if (currentChord && currentChord.level > highestUnlockedLevel) {
+      setCurrentChord(availableChords[0] || null);
+    }
+    if (!currentChord && availableChords.length > 0) {
+      setCurrentChord(availableChords[0]);
+    }
+  }, [highestUnlockedLevel, availableChords, currentChord]);
+
   // Read URL params (?key=, ?chord=) and set initial state
   useEffect(() => {
     const sp = new URLSearchParams(location.search);
@@ -149,14 +174,16 @@ const PracticeMode: FC = () => {
       setKeyCenter(keyParam as MajorKey);
     }
     if (chordParam) {
-      const target = chords.find(c => c.name.toLowerCase() === chordParam.toLowerCase());
+      const target = availableChords.find(
+        c => c.name.toLowerCase() === chordParam.toLowerCase()
+      );
       if (target) setCurrentChord(target);
     }
-    if (!chordParam && chords.length > 0 && !currentChord) {
-      setCurrentChord(chords[0]);
+    if (!chordParam && availableChords.length > 0 && !currentChord) {
+      setCurrentChord(availableChords[0]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.search]);
+  }, [location.search, availableChords]);
 
   useEffect(() => {
     if (currentChord) {
@@ -201,27 +228,34 @@ const PracticeMode: FC = () => {
   };
 
   // Function to get a random chord
-  const getRandomChord = (): Chord => {
-    const randomIndex = Math.floor(Math.random() * chords.length);
-    return chords[randomIndex];
+  const getRandomChord = (): Chord | null => {
+    if (availableChords.length === 0) return null;
+    const randomIndex = Math.floor(Math.random() * availableChords.length);
+    return availableChords[randomIndex];
   };
 
   // Function to go to next chord
   const nextChord = () => {
     incrementChordsPlayed();
-    setCurrentChord(getRandomChord());
+    const next = getRandomChord();
+    if (next) setCurrentChord(next);
   };
 
   const diatonicChips = useMemo(() => {
     if (!keyCenter) return [];
     const { majors, minors } = getDiatonicForKey(keyCenter);
     const list: string[] = [...majors, ...minors];
-    return list.map((label: string) => ({
-      label,
-      available: chords.some((c: Chord) => c.name === label),
-      color: getChordTheme(label),
-    }));
-  }, [keyCenter]);
+    return list.map((label: string) => {
+      const chord = chords.find((c: Chord) => c.name === label);
+      const available = !!chord && chord.level <= highestUnlockedLevel;
+      return {
+        label,
+        available,
+        locked: !!chord && chord.level > highestUnlockedLevel,
+        color: getChordTheme(label),
+      };
+    });
+  }, [keyCenter, highestUnlockedLevel]);
 
   if (showSongPractice) {
     return <SongPractice onClose={() => setShowSongPractice(false)} />;
@@ -245,19 +279,23 @@ const PracticeMode: FC = () => {
               ({
                 label,
                 available,
+                locked,
                 color,
               }: {
                 label: string;
                 available: boolean;
+                locked: boolean;
                 color: { primary: string; background: string };
               }) => (
                 <button
                   key={label}
                   onClick={() => {
+                    if (!available) return;
                     const c = chords.find((c: Chord) => c.name === label);
                     if (c) setCurrentChord(c);
                   }}
-                  className={`px-2.5 py-1 rounded-md text-xs font-bold ${
+                  disabled={!available}
+                  className={`px-2.5 py-1 rounded-md text-xs font-bold relative ${
                     available
                       ? 'text-white'
                       : 'text-gray-800 dark:text-gray-300 cursor-not-allowed opacity-80'
@@ -266,9 +304,20 @@ const PracticeMode: FC = () => {
                     background: available ? color.primary : color.background,
                     border: `1px solid ${color.primary}`,
                   }}
-                  title={available ? `Practice ${label}` : 'Diagram coming soon'}
+                  title={
+                    available
+                      ? `Practice ${label}`
+                      : locked
+                      ? 'Locked: finish previous levels'
+                      : 'Diagram coming soon'
+                  }
                 >
                   {label}
+                  {locked && (
+                    <span className="ml-1 text-[10px] bg-gray-600 text-white px-1 rounded">
+                      Locked
+                    </span>
+                  )}
                 </button>
               ),
             )}
@@ -358,15 +407,30 @@ const PracticeMode: FC = () => {
         <div data-testid="other-chords" className="flex flex-wrap gap-2">
           {chords
             .filter((chord: Chord) => chord.name !== currentChord?.name)
-            .map((chord: Chord) => (
-              <button
-                key={chord.name}
-                onClick={() => setCurrentChord(chord)}
-                className="px-3 py-1 bg-gray-100 hover:bg-blue-100 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 rounded-lg transition-colors"
-              >
-                {chord.name}
-              </button>
-            ))}
+            .map((chord: Chord) => {
+              const locked = chord.level > highestUnlockedLevel;
+              return (
+                <button
+                  key={chord.name}
+                  onClick={() => {
+                    if (!locked) setCurrentChord(chord);
+                  }}
+                  disabled={locked}
+                  className={`px-3 py-1 rounded-lg transition-colors ${
+                    locked
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500'
+                      : 'bg-gray-100 hover:bg-blue-100 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200'
+                  }`}
+                >
+                  {chord.name}
+                  {locked && (
+                    <span className="ml-1 text-xs bg-gray-500 text-white px-1 rounded">
+                      Locked
+                    </span>
+                  )}
+                </button>
+              );
+            })}
         </div>
       </div>
       <Statistics
