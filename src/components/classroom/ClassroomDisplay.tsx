@@ -32,7 +32,6 @@ const ClassroomDisplay: React.FC<ClassroomDisplayProps> = ({ displayedChords, in
           )
         })}
       </div>
-    </div>
   )
 }
 

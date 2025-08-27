@@ -1,5 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import Soundfont, { InstrumentPlayer } from 'soundfont-player';
+import Soundfont from 'soundfont-player';
+
+interface InstrumentPlayer {
+  play: (note: string, time?: number, options?: { duration?: number }) => void;
+}
 
 // Guitar string base notes (standard tuning)
 const GUITAR_STRING_NOTES = ['E2', 'A2', 'D3', 'G3', 'B3', 'E4'];
