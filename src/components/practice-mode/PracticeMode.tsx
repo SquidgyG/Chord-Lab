@@ -1,14 +1,14 @@
 import { useState, useEffect, useMemo, useRef, type FC } from 'react';
 import { useLocation } from 'react-router-dom';
 import { getChordTheme } from '../../utils/diagramTheme';
-import GuitarDiagram from '../diagrams/GuitarDiagram';
-import PianoDiagram from '../diagrams/PianoDiagram';
 import useMetronome from '../../hooks/useMetronome';
 import { useAchievements } from '../../contexts/AchievementContext';
 import useAudio from '../../hooks/useAudio';
 import usePracticeStatistics from '../../hooks/usePracticeStatistics';
 import ChallengeMode from './ChallengeMode';
 import Statistics from './Statistics';
+import PracticeMetronomeControls from './PracticeMetronomeControls';
+import InstrumentPanel from './InstrumentPanel';
 
 interface Chord {
   name: string;
@@ -273,50 +273,6 @@ const PracticeMode: FC = () => {
       <div className="mb-6 flex flex-wrap gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Instrument
-          </label>
-          <div className="flex space-x-2">
-            <button
-              onClick={() => setSelectedInstrument('guitar')}
-              className={`px-4 py-2 rounded-lg ${
-                selectedInstrument === 'guitar'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 dark:text-gray-300'
-              }`}
-            >
-              Guitar
-            </button>
-            <button
-              onClick={() => setSelectedInstrument('piano')}
-              className={`px-4 py-2 rounded-lg ${
-                selectedInstrument === 'piano'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 dark:text-gray-300'
-              }`}
-            >
-              Piano
-            </button>
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Tempo: {bpm} BPM
-          </label>
-          <input
-            type="range"
-            min="40"
-            max="200"
-            value={bpm}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setBpm(parseInt(e.target.value))
-            }
-            className="w-32"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Tips
           </label>
           <button
@@ -339,31 +295,14 @@ const PracticeMode: FC = () => {
             >
               {currentChord.name}
             </h3>
-            <div className="flex space-x-2">
-              <button
-                onClick={toggleMetronome}
-                className={`px-4 py-2 rounded-lg transition-colors ${
-                  isPlaying
-                    ? 'bg-red-500 hover:bg-red-600 text-white'
-                    : 'bg-blue-500 hover:bg-blue-600 text-white'
-                }`}
-              >
-                {isPlaying ? 'Stop Metronome' : 'Start Metronome'}
-              </button>
-              <button
-                onClick={handleStrum}
-                className={`px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white`}
-                title="Play a quick strum"
-              >
-                Strum
-              </button>
-              <button
-                onClick={nextChord}
-                className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
-              >
-                Next Chord
-              </button>
-            </div>
+            <PracticeMetronomeControls
+              isPlaying={isPlaying}
+              bpm={bpm}
+              setBpm={setBpm}
+              toggleMetronome={toggleMetronome}
+              handleStrum={handleStrum}
+              nextChord={nextChord}
+            />
           </div>
 
           <ChallengeMode
@@ -374,22 +313,14 @@ const PracticeMode: FC = () => {
             bestChallengeTime={bestChallengeTime}
           />
 
-          <div className="flex justify-center my-6" onClick={initAudio}>
-            {selectedInstrument === 'guitar' ? (
-              <GuitarDiagram
-                chordName={currentChord.name}
-                positions={currentChord.guitarPositions}
-                fingers={currentChord.guitarFingers}
-                onPlayNote={playGuitarNote}
-              />
-            ) : (
-              <PianoDiagram
-                chordName={currentChord.name}
-                notes={currentChord.pianoNotes}
-                onPlayNote={note => playChord([note], 0.5, 'piano')}
-              />
-            )}
-          </div>
+          <InstrumentPanel
+            selectedInstrument={selectedInstrument}
+            onInstrumentChange={setSelectedInstrument}
+            chord={currentChord}
+            playGuitarNote={playGuitarNote}
+            playPianoNote={note => playChord([note], 0.5, 'piano')}
+            initAudio={initAudio}
+          />
 
           {showTips && (
             <div className="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-4 rounded">
