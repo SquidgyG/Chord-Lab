@@ -4,6 +4,7 @@ import { getChordTheme } from '../../utils/diagramTheme'
 import GuitarDiagram from '../diagrams/GuitarDiagram'
 import PianoDiagram from '../diagrams/PianoDiagram'
 import useMetronome from '../../hooks/useMetronome'
+import { useAchievements } from '../../contexts/AchievementContext'
 
 interface Chord {
   name: string
@@ -111,6 +112,8 @@ function getDiatonicForKey(keyCenter: MajorKey) {
 const PracticeMode: FC = () => {
   const [selectedInstrument, setSelectedInstrument] = useState<'guitar' | 'piano'>('guitar')
   const [currentChord, setCurrentChord] = useState<Chord | null>(chords[0])
+  const practicedChordsRef = useRef<Set<string>>(new Set())
+  const { unlockAchievement } = useAchievements()
   const [{ isPlaying, bpm }, { start, stop, setBpm }] = useMetronome(60, 4)
   const [showTips, setShowTips] = useState<boolean>(true)
   const location = useLocation()
@@ -136,6 +139,25 @@ const PracticeMode: FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search])
+
+  useEffect(() => {
+    if (currentChord) {
+      const practicedChords = practicedChordsRef.current
+      if (!practicedChords.has(currentChord.name)) {
+        practicedChords.add(currentChord.name)
+
+        if (practicedChords.size === 1) {
+          unlockAchievement('FIRST_CHORD')
+        }
+        if (practicedChords.size === 5) {
+          unlockAchievement('CHORD_NOVICE')
+        }
+        if (practicedChords.size === 10) {
+          unlockAchievement('CHORD_APPRENTICE')
+        }
+      }
+    }
+  }, [currentChord, unlockAchievement])
 
   // Start/Stop metronome
   const playChord = () => {

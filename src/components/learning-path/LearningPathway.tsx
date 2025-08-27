@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { learningPath } from '../../data/learning-path'
+import { useAchievements } from '../../contexts/AchievementContext'
 import NameTheNoteQuiz from './quizzes/NameTheNoteQuiz'
 import RhythmExercise from './exercises/RhythmExercise'
 import ChordSwitchingExercise from './exercises/ChordSwitchingExercise'
@@ -31,13 +32,33 @@ const lessonComponents: Record<string, () => React.ReactElement> = {
 
 const LearningPathway = () => {
   const [currentLevel, setCurrentLevel] = useState(1)
+  const [completedLessonIds, setCompletedLessonIds] = useState<Set<string>>(() => {
+    const saved = localStorage.getItem('completedLessonIds')
+    return saved ? new Set(JSON.parse(saved)) : new Set()
+  })
+  const { unlockAchievement } = useAchievements()
+
+  useEffect(() => {
+    localStorage.setItem('completedLessonIds', JSON.stringify(Array.from(completedLessonIds)))
+  }, [completedLessonIds])
+
+  const handleCompleteLesson = (lessonId: string) => {
+    const newCompletedLessonIds = new Set(completedLessonIds)
+    newCompletedLessonIds.add(lessonId)
+    setCompletedLessonIds(newCompletedLessonIds)
+
+    if (newCompletedLessonIds.size === 1) {
+      unlockAchievement('FIRST_LESSON')
+    }
+  }
+
   const levelData = learningPath.find(level => level.id === currentLevel)
 
   if (!levelData) {
     return <div>Level not found!</div>
   }
 
-  const completedLessons = levelData.lessons.filter(lesson => lesson.completed).length
+  const completedLessons = levelData.lessons.filter(lesson => completedLessonIds.has(lesson.id)).length
   const totalLessons = levelData.lessons.length
   const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0
 
@@ -99,11 +120,12 @@ const LearningPathway = () => {
         <div className="space-y-3">
           {levelData.lessons.map(lesson => {
             const lessonComponent = lessonComponents[lesson.id]
+            const isCompleted = completedLessonIds.has(lesson.id)
             return (
               <div
                 key={lesson.id}
                 className={`p-4 rounded-lg border ${
-                  lesson.completed
+                  isCompleted
                     ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700'
                     : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
                 }`}
@@ -129,13 +151,21 @@ const LearningPathway = () => {
                     >
                       {lesson.type}
                     </span>
-                    {lesson.completed && <span className="text-green-500">✓</span>}
+                    {isCompleted && <span className="text-green-500">✓</span>}
                   </div>
                 </div>
                 {lessonComponent && (
                   <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                     {lessonComponent()}
                   </div>
+                )}
+                {!isCompleted && (
+                  <button
+                    onClick={() => handleCompleteLesson(lesson.id)}
+                    className="mt-4 px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm"
+                  >
+                    Mark as Complete
+                  </button>
                 )}
               </div>
             )
