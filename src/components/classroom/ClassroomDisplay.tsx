@@ -4,7 +4,7 @@ import PianoDiagram from '../diagrams/PianoDiagram'
 
 interface ChordDefinition {
   notes: string[];
-  guitarPositions: { string: number; fret: number }[];
+  guitarPositions: { string: number; fret: number; finger?: number }[];
 }
 
 interface ClassroomDisplayProps {

@@ -18,16 +18,58 @@ const numeralMap: Record<string, number> = {
 
 interface ChordDefinition {
   notes: string[];
-  guitarPositions: { string: number; fret: number }[];
+  guitarPositions: { string: number; fret: number; finger?: number }[];
 }
 
 const chordData: Record<string, ChordDefinition> = {
-  C: { notes: ['C4', 'E4', 'G4'], guitarPositions: [{ string: 2, fret: 1 }, { string: 4, fret: 2 }, { string: 5, fret: 3 }] },
-  G: { notes: ['G3', 'B3', 'D4'], guitarPositions: [{ string: 1, fret: 3 }, { string: 5, fret: 2 }, { string: 6, fret: 3 }] },
-  Am: { notes: ['A3', 'C4', 'E4'], guitarPositions: [{ string: 2, fret: 1 }, { string: 3, fret: 2 }, { string: 4, fret: 2 }] },
-  F: { notes: ['F3', 'A3', 'C4'], guitarPositions: [{ string: 1, fret: 1 }, { string: 2, fret: 1 }, { string: 3, fret: 2 }, { string: 4, fret: 3 }] },
-  D: { notes: ['D4', 'F#4', 'A4'], guitarPositions: [{ string: 1, fret: 2 }, { string: 2, fret: 3 }, { string: 3, fret: 2 }] },
-  Em: { notes: ['E3', 'G3', 'B3'], guitarPositions: [{ string: 4, fret: 2 }, { string: 5, fret: 2 }] },
+  C: {
+    notes: ['C4', 'E4', 'G4'],
+    guitarPositions: [
+      { string: 2, fret: 1, finger: 1 },
+      { string: 4, fret: 2, finger: 2 },
+      { string: 5, fret: 3, finger: 3 },
+    ],
+  },
+  G: {
+    notes: ['G3', 'B3', 'D4'],
+    guitarPositions: [
+      { string: 1, fret: 3, finger: 3 },
+      { string: 5, fret: 2, finger: 2 },
+      { string: 6, fret: 3, finger: 4 },
+    ],
+  },
+  Am: {
+    notes: ['A3', 'C4', 'E4'],
+    guitarPositions: [
+      { string: 2, fret: 1, finger: 1 },
+      { string: 3, fret: 2, finger: 2 },
+      { string: 4, fret: 2, finger: 3 },
+    ],
+  },
+  F: {
+    notes: ['F3', 'A3', 'C4'],
+    guitarPositions: [
+      { string: 1, fret: 1, finger: 1 },
+      { string: 2, fret: 1, finger: 1 },
+      { string: 3, fret: 2, finger: 2 },
+      { string: 4, fret: 3, finger: 3 },
+    ],
+  },
+  D: {
+    notes: ['D4', 'F#4', 'A4'],
+    guitarPositions: [
+      { string: 1, fret: 2, finger: 2 },
+      { string: 2, fret: 3, finger: 3 },
+      { string: 3, fret: 2, finger: 1 },
+    ],
+  },
+  Em: {
+    notes: ['E3', 'G3', 'B3'],
+    guitarPositions: [
+      { string: 4, fret: 2, finger: 2 },
+      { string: 5, fret: 2, finger: 3 },
+    ],
+  },
   // Add other chords as needed
 };
 

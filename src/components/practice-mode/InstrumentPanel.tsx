@@ -4,8 +4,7 @@ import PianoDiagram from '../diagrams/PianoDiagram';
 
 interface Chord {
   name: string;
-  guitarPositions: { string: number; fret: number }[];
-  guitarFingers: number[];
+  guitarPositions: { string: number; fret: number; finger: number }[];
   pianoNotes: string[];
 }
 
@@ -62,7 +61,6 @@ const InstrumentPanel: FC<InstrumentPanelProps> = ({
             <GuitarDiagram
               chordName={chord.name}
               positions={chord.guitarPositions}
-              fingers={chord.guitarFingers}
               onPlayNote={playGuitarNote}
             />
           ) : (

@@ -5,64 +5,57 @@ import GuitarDiagram from '../../diagrams/GuitarDiagram'
 type ChordName = 'C' | 'F' | 'G' | 'Am' | 'D' | 'Em'
 interface ChordData {
   name: ChordName
-  guitarPositions: { string: number; fret: number }[]
-  guitarFingers: number[]
+  guitarPositions: { string: number; fret: number; finger: number }[]
 }
 
 const chords: Record<ChordName, ChordData> = {
   C: {
     name: 'C',
     guitarPositions: [
-      { string: 2, fret: 1 },
-      { string: 4, fret: 2 },
-      { string: 5, fret: 3 },
+      { string: 2, fret: 1, finger: 1 },
+      { string: 4, fret: 2, finger: 2 },
+      { string: 5, fret: 3, finger: 3 },
     ],
-    guitarFingers: [1, 2, 3],
   },
   F: {
     name: 'F',
     guitarPositions: [
-      { string: 1, fret: 1 },
-      { string: 2, fret: 1 },
-      { string: 3, fret: 2 },
-      { string: 4, fret: 3 },
+      { string: 1, fret: 1, finger: 1 },
+      { string: 2, fret: 1, finger: 1 },
+      { string: 3, fret: 2, finger: 2 },
+      { string: 4, fret: 3, finger: 3 },
     ],
-    guitarFingers: [1, 1, 2, 3],
   },
   G: {
     name: 'G',
     guitarPositions: [
-      { string: 1, fret: 3 },
-      { string: 5, fret: 2 },
-      { string: 6, fret: 3 },
+      { string: 1, fret: 3, finger: 3 },
+      { string: 5, fret: 2, finger: 2 },
+      { string: 6, fret: 3, finger: 4 },
     ],
-    guitarFingers: [3, 2, 4],
   },
   Am: {
     name: 'Am',
     guitarPositions: [
-      { string: 2, fret: 1 },
-      { string: 3, fret: 2 },
-      { string: 4, fret: 2 },
+      { string: 2, fret: 1, finger: 1 },
+      { string: 3, fret: 2, finger: 2 },
+      { string: 4, fret: 2, finger: 3 },
     ],
-    guitarFingers: [1, 2, 3],
   },
   D: {
     name: 'D',
     guitarPositions: [
-      { string: 1, fret: 2 },
-      { string: 2, fret: 3 },
-      { string: 3, fret: 2 },
+      { string: 1, fret: 2, finger: 2 },
+      { string: 2, fret: 3, finger: 3 },
+      { string: 3, fret: 2, finger: 1 },
     ],
-    guitarFingers: [2, 3, 1],
   },
   Em: {
     name: 'Em',
     guitarPositions: [
-      { string: 4, fret: 2 },
-      { string: 5, fret: 2 },
+      { string: 4, fret: 2, finger: 2 },
+      { string: 5, fret: 2, finger: 3 },
     ],
-    guitarFingers: [2, 3],
   },
 }
 
@@ -125,7 +118,6 @@ const ChordSwitchingExercise: React.FC<ChordSwitchingExerciseProps> = ({ progres
             <GuitarDiagram
               chordName={chords[chordName].name}
               positions={chords[chordName].guitarPositions}
-              fingers={chords[chordName].guitarFingers}
             />
           </div>
         ))}

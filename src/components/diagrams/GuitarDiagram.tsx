@@ -18,7 +18,6 @@ interface Barre {
 interface GuitarDiagramProps {
   chordName: string;
   positions: FretPosition[];
-  fingers?: number[]; // To match feature branch, although main uses pos.finger
   noteStrip?: (string | null)[];
   barres?: Barre[];
   onPlayNote?: (string: number, fret: number) => void;
