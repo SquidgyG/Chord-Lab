@@ -1,15 +1,15 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
-import { getChordTheme } from '../../utils/diagramTheme';
-import GuitarDiagram from '../diagrams/GuitarDiagram';
-import PianoDiagram from '../diagrams/PianoDiagram';
-import useMetronome from '../../hooks/useMetronome';
+import { useState, useEffect, useMemo, useRef, type FC } from 'react'
+import { useLocation } from 'react-router-dom'
+import { getChordTheme } from '../../utils/diagramTheme'
+import GuitarDiagram from '../diagrams/GuitarDiagram'
+import PianoDiagram from '../diagrams/PianoDiagram'
+import useMetronome from '../../hooks/useMetronome'
 
 interface Chord {
-  name: string;
-  guitarPositions: { string: number; fret: number }[];
-  guitarFingers: number[];
-  pianoNotes: string[];
+  name: string
+  guitarPositions: { string: number; fret: number }[]
+  guitarFingers: number[]
+  pianoNotes: string[]
 }
 
 const MAJORS_ORDER = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 'Bb', 'F'] as const
@@ -108,16 +108,16 @@ function getDiatonicForKey(keyCenter: MajorKey) {
   return { majors, minors }
 }
 
-const PracticeMode = () => {
+const PracticeMode: FC = () => {
   const [selectedInstrument, setSelectedInstrument] = useState<'guitar' | 'piano'>('guitar')
-  const [currentChord, setCurrentChord] = useState<Chord | null>(null)
+  const [currentChord, setCurrentChord] = useState<Chord | null>(chords[0])
   const [{ isPlaying, bpm }, { start, stop, setBpm }] = useMetronome(60, 4)
-  const [showTips, setShowTips] = useState(true)
+  const [showTips, setShowTips] = useState<boolean>(true)
   const location = useLocation()
   const [keyCenter, setKeyCenter] = useState<MajorKey | null>(null)
   const audioCtxRef = useRef<AudioContext | null>(null)
   const nodesRef = useRef<{ osc: OscillatorNode; gain: GainNode }[]>([])
-  const [audioActive, setAudioActive] = useState(false)
+  const [audioActive, setAudioActive] = useState<boolean>(false)
 
   // Read URL params (?key=, ?chord=) and set initial state
   useEffect(() => {
@@ -190,7 +190,7 @@ const PracticeMode = () => {
   }
 
   function stopAudio() {
-    nodesRef.current.forEach(({ osc, gain }) => {
+    nodesRef.current.forEach(({ osc, gain }: { osc: OscillatorNode; gain: GainNode }) => {
       try {
         osc.stop()
       } catch {
@@ -221,7 +221,7 @@ const PracticeMode = () => {
     const total = notes.length * spacing + sustain + 0.2
     // Slight detune per note for richer sound
     const waveform = selectedInstrument === 'guitar' ? 'triangle' : 'sine'
-    notes.forEach((n, i) => {
+    notes.forEach((n: string, i: number) => {
       const osc = ctx.createOscillator()
       const gain = ctx.createGain()
       osc.type = waveform
@@ -247,7 +247,7 @@ const PracticeMode = () => {
   }, [])
 
   // Function to get a random chord
-  const getRandomChord = () => {
+  const getRandomChord = (): Chord => {
     const randomIndex = Math.floor(Math.random() * chords.length)
     return chords[randomIndex]
   }
@@ -263,10 +263,10 @@ const PracticeMode = () => {
   const diatonicChips = useMemo(() => {
     if (!keyCenter) return []
     const { majors, minors } = getDiatonicForKey(keyCenter)
-    const list = [...majors, ...minors]
-    return list.map(label => ({
+    const list: string[] = [...majors, ...minors]
+    return list.map((label: string) => ({
       label,
-      available: chords.some(c => c.name === label),
+      available: chords.some((c: Chord) => c.name === label),
       color: getChordTheme(label),
     }))
   }, [keyCenter])
@@ -285,11 +285,11 @@ const PracticeMode = () => {
             </div>
           </div>
           <div data-testid="diatonic-chords" className="mt-2 flex flex-wrap gap-2">
-            {diatonicChips.map(({ label, available, color }) => (
+            {diatonicChips.map(({ label, available, color }: { label: string; available: boolean; color: { primary: string; background: string } }) => (
               <button
                 key={label}
                 onClick={() => {
-                  const c = chords.find(c => c.name === label)
+                  const c = chords.find((c: Chord) => c.name === label)
                   if (c) setCurrentChord(c)
                 }}
                 className={`px-2.5 py-1 rounded-md text-xs font-bold ${
@@ -348,7 +348,7 @@ const PracticeMode = () => {
             min="40"
             max="200"
             value={bpm}
-            onChange={e => setBpm(parseInt(e.target.value))}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBpm(parseInt(e.target.value))}
             className="w-32"
           />
         </div>
@@ -458,8 +458,8 @@ const PracticeMode = () => {
         </h4>
         <div data-testid="other-chords" className="flex flex-wrap gap-2">
           {chords
-            .filter(chord => chord.name !== currentChord?.name)
-            .map(chord => (
+            .filter((chord: Chord) => chord.name !== currentChord?.name)
+            .map((chord: Chord) => (
               <button
                 key={chord.name}
                 onClick={() => setCurrentChord(chord)}
@@ -471,7 +471,7 @@ const PracticeMode = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PracticeMode;
+export default PracticeMode
