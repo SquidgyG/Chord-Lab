@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react'
 import { getDiatonicChords } from '../../utils/music-theory'
 import GuitarDiagram from '../diagrams/GuitarDiagram'
 import PianoDiagram from '../diagrams/PianoDiagram'
+import ClassroomDisplay from '../classroom/ClassroomDisplay'
 
 const keys = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 'Bb', 'F']
 const progressions = ['I–V–vi–IV', 'vi–IV–I–V', 'ii–V–I', 'I–vi–IV–V']
@@ -30,10 +31,11 @@ const chordData: Record<string, ChordDefinition> = {
   // Add other chords as needed
 };
 
-const CreatorMode: React.FC = () => {
+const ClassroomMode: React.FC = () => {
   const [selectedKey, setSelectedKey] = useState('C')
   const [selectedProgression, setSelectedProgression] = useState('I–V–vi–IV')
   const [instrument, setInstrument] = useState<'guitar' | 'piano'>('guitar')
+  const [displayedChords, setDisplayedChords] = useState<string[]>([])
 
   const generatedChords = useMemo(() => {
     const diatonic = getDiatonicChords(selectedKey)
@@ -92,6 +94,14 @@ const CreatorMode: React.FC = () => {
             <button onClick={() => setInstrument('piano')} className={`px-3 py-1 text-sm rounded-md ${instrument === 'piano' ? 'bg-white dark:bg-gray-900' : ''}`}>Piano</button>
           </div>
         </div>
+        <div>
+          <button
+            onClick={() => setDisplayedChords(prev => [...prev, ...generatedChords])}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Add to Display
+          </button>
+        </div>
       </div>
       <div className="mt-6">
         <h4 className="font-bold text-gray-700 dark:text-gray-200">Generated Progression:</h4>
@@ -113,8 +123,21 @@ const CreatorMode: React.FC = () => {
           })}
         </div>
       </div>
+
+      <div className="mt-8">
+        <div className="flex justify-between items-center mb-4">
+          <h4 className="font-bold text-gray-700 dark:text-gray-200">Displayed Chords:</h4>
+          <button
+            onClick={() => setDisplayedChords([])}
+            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+          >
+            Clear
+          </button>
+        </div>
+        <ClassroomDisplay displayedChords={displayedChords} instrument={instrument} chordData={chordData} />
+      </div>
     </div>
   )
 }
 
-export default CreatorMode
+export default ClassroomMode
