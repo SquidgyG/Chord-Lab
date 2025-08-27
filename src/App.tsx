@@ -9,6 +9,7 @@ import { useClassroomMode } from './contexts/ClassroomModeContext'
 import ChordWheel from './components/ChordWheel'
 import { useTheme } from './contexts/ThemeContext'
 import ScrollingPractice from './components/practice-mode/ScrollingPractice'
+import ClassroomMode from './components/classroom/ClassroomMode'
 // --- MERGED IMPORTS (from both branches) ---
 import { useUserProfile } from './contexts/UserProfileContext'
 import OnboardingFlow from './components/onboarding/OnboardingFlow'
@@ -52,6 +53,9 @@ function App() {
       </NavLink>
       <NavLink to="/metronome" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
         Metronome
+      </NavLink>
+      <NavLink to="/classroom" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
+        Classroom
       </NavLink>
        <NavLink to="/profile" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
         Profile
@@ -168,6 +172,7 @@ function App() {
             <Route path="/learn" element={<LearningPathway />} />
             <Route path="/wheel" element={<ChordWheel />} />
             <Route path="/metronome" element={<Metronome />} />
+            <Route path="/classroom" element={<ClassroomMode />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

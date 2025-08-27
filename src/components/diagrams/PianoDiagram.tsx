@@ -1,207 +1,234 @@
-import { useState, useMemo } from 'react'
-import { getChordTheme } from '../../utils/diagramTheme'
-import { getChordInversion } from '../../utils/music-theory'
+import { useMemo, useState } from 'react';
+import { getChordTheme } from '../../utils/diagramTheme';
+import { getChordInversion, getNoteName } from '../../utils/music-theory';
 
-interface PianoKey {
-  note: string
-  type: 'white' | 'black'
-  position: number // Position in the keyboard layout
-  isPressed?: boolean
-}
+// --- Static Data for Keyboard Layout (from 'main') ---
+const KEYBOARD_LAYOUT = {
+  whiteKeys: [
+    { note: 'F4', position: 0 }, { note: 'G4', position: 1 }, { note: 'A4', position: 2 },
+    { note: 'B4', position: 3 }, { note: 'C5', position: 4 }, { note: 'D5', position: 5 },
+    { note: 'E5', position: 6 }, { note: 'F5', position: 7 }, { note: 'G5', position: 8 },
+    { note: 'A5', position: 9 }, { note: 'B5', position: 10 }
+  ],
+  blackKeys: [
+    { note: 'F#4', position: 1 }, { note: 'G#4', position: 2 }, { note: 'A#4', position: 3 },
+    { note: 'C#5', position: 5 }, { note: 'D#5', position: 6 }, { note: 'F#5', position: 8 },
+    { note: 'G#5', position: 9 }, { note: 'A#5', position: 10 }
+  ],
+  totalWhiteKeys: 11,
+};
 
+// --- Interfaces (Merged) ---
 interface PianoDiagramProps {
-  chordName: string
-  notes: string[] // Notes that should be pressed for this chord
-  inversion?: 0 | 1 | 2
-  hand?: 'left' | 'right'
-  showLabels?: boolean // optional note labels under keys
-  onPlayNote?: (note: string) => void
+  chordName: string;
+  notes: string[]; // Notes with octaves, e.g., ["C4", "E4", "G4"]
+  inversion?: 0 | 1 | 2;
+  showLabels?: boolean;
+  onPlayNote?: (note: string) => void;
 }
 
+// --- Helper Components (from 'main') ---
+const Sheet = ({ theme, children }: { theme: any; children: React.ReactNode }) => (
+  <section
+    className="sheet"
+    style={{
+      padding: '26px',
+      border: '16px solid',
+      borderColor: theme.primary,
+      backgroundColor: theme.background,
+      boxShadow: '0 10px 28px rgba(0,0,0,.12)',
+      position: 'relative',
+      overflow: 'hidden',
+      fontFamily: '"Readex Pro", system-ui, sans-serif',
+    }}
+  >
+    {children}
+  </section>
+);
+
+const Title = ({ children }: { children: React.ReactNode }) => (
+  <h1
+    style={{
+      textAlign: 'center',
+      fontSize: '46px',
+      fontWeight: 800,
+      margin: '0 0 20px',
+      letterSpacing: '.4px',
+      zIndex: 1,
+      position: 'relative',
+    }}
+  >
+    {children}
+  </h1>
+);
+
+const KeyboardWrap = ({ children }: { children: React.ReactNode }) => (
+  <div
+    className="keyboard-wrap"
+    style={{
+      position: 'relative',
+      zIndex: 1,
+      padding: '18px',
+      borderRadius: '14px',
+      background: '#fff',
+      boxShadow: '0 16px 40px rgba(0,0,0,.20), 0 8px 18px rgba(0,0,0,.12)',
+    }}
+  >
+    {children}
+  </div>
+);
+
+// --- Main Component (Merged) ---
 const PianoDiagram = ({
   chordName,
   notes,
   inversion = 0,
-  hand = 'right',
   showLabels = true,
   onPlayNote,
 }: PianoDiagramProps) => {
-  const [selectedHand, setSelectedHand] = useState<'left' | 'right'>(hand)
-  const theme = getChordTheme(chordName)
+  const theme = getChordTheme(chordName);
+  const [userPressedKeys, setUserPressedKeys] = useState<Set<string>>(new Set());
 
   const invertedNotes = useMemo(
     () => getChordInversion(notes, inversion),
     [notes, inversion]
-  )
-
-  // Generate piano keys for 2 octaves (C4 to C6)
-  const generateKeys = (): PianoKey[] => {
-    const keys: PianoKey[] = []
-    const whiteNotes = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
-    const blackNotes = ['C#', 'D#', 'F#', 'G#', 'A#']
-
-    let position = 0
-
-    for (let octave = 4; octave <= 5; octave++) {
-      // Add white keys
-      whiteNotes.forEach(note => {
-        const fullNote = `${note}${octave}`
-        keys.push({
-          note: fullNote,
-          type: 'white',
-          position: position++,
-          isPressed: invertedNotes.includes(fullNote),
-        })
-      })
-
-      // Add black keys (except between E-F and B-C)
-      if (octave < 5) {
-        // Don't add black keys for the last octave
-        blackNotes.forEach(note => {
-          // Skip E-F and B-C gaps
-          if (!(note === 'E#' || note === 'B#')) {
-            const fullNote = `${note}${octave}`
-            keys.push({
-              note: fullNote,
-              type: 'black',
-              position: position - 0.5, // Position between white keys
-              isPressed: invertedNotes.includes(fullNote),
-            })
-          }
-        })
-      }
-    }
-
-    return keys
-  }
-
-  const keys = generateKeys()
-  const [userPressedKeys, setUserPressedKeys] = useState<Set<string>>(new Set())
+  );
 
   const handleKeyPress = (note: string) => {
-    onPlayNote?.(note)
-    setUserPressedKeys(prev => new Set(prev).add(note))
+    onPlayNote?.(note);
+    setUserPressedKeys(prev => new Set(prev).add(note));
     setTimeout(() => {
       setUserPressedKeys(prev => {
-        const newSet = new Set(prev)
-        newSet.delete(note)
-        return newSet
-      })
-    }, 200)
-  }
+        const newSet = new Set(prev);
+        newSet.delete(note);
+        return newSet;
+      });
+    }, 300); // Visual feedback duration
+  };
 
-  // Find the pressed keys
-  const chordPressedKeys = keys.filter(key => key.isPressed)
-  
+  const allKeys = [
+    ...KEYBOARD_LAYOUT.whiteKeys.map(k => ({ ...k, type: 'white' as const })),
+    ...KEYBOARD_LAYOUT.blackKeys.map(k => ({ ...k, type: 'black' as const })),
+  ];
+
+  // A key is considered "pressed" if it's in the chord or recently clicked by the user.
+  const isNotePressed = (note: string) =>
+    invertedNotes.includes(note) || userPressedKeys.has(note);
+
+  const pressedKeysToDisplay = allKeys.filter(key => invertedNotes.includes(key.note));
+
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6 max-w-2xl mx-auto" style={{ border: `4px solid ${theme.primary}` }}>
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-extrabold text-gray-900" style={{ letterSpacing: '.3px' }}>{chordName}</h3>
-        <div className="flex space-x-2">
-          <button 
-            onClick={() => setSelectedHand('right')}
-            className={`px-3 py-1 text-sm rounded ${selectedHand === 'right' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-          >
-            Right Hand
-          </button>
-          <button 
-            onClick={() => setSelectedHand('left')}
-            className={`px-3 py-1 text-sm rounded ${selectedHand === 'left' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-          >
-            Left Hand
-          </button>
+    <Sheet theme={theme}>
+      <Title>{chordName}</Title>
+      <KeyboardWrap>
+        <div
+          className="keyboard"
+          role="img"
+          aria-label={`${chordName} chord chart`}
+          style={{
+            position: 'relative',
+            border: '2px solid #111',
+            height: '370px',
+            display: 'grid',
+            gridTemplateColumns: `repeat(${KEYBOARD_LAYOUT.totalWhiteKeys}, 1fr)`,
+            gap: 0,
+            overflow: 'hidden',
+            background: '#ffffff',
+            borderRadius: '10px',
+          }}
+        >
+          {/* Keyboard background with vertical lines */}
+          <div style={{
+            content: '""',
+            position: 'absolute',
+            inset: 0,
+            zIndex: 2,
+            pointerEvents: 'none',
+            background: `repeating-linear-gradient(to right, rgba(0,0,0,.68) 0 2px, transparent 2px calc(100% / ${KEYBOARD_LAYOUT.totalWhiteKeys}))`
+          }}></div>
+
+          {/* White Keys */}
+          {KEYBOARD_LAYOUT.whiteKeys.map(({ note }) => (
+            <div
+              key={note}
+              className="white"
+              style={{
+                position: 'relative',
+                background: isNotePressed(note) ? theme.background : '#fff',
+                zIndex: 1,
+                cursor: onPlayNote ? 'pointer' : 'default',
+                transition: 'background 0.1s ease-in-out',
+              }}
+              onClick={() => handleKeyPress(note)}
+            ></div>
+          ))}
+
+          {/* Black Keys */}
+          {KEYBOARD_LAYOUT.blackKeys.map(({ note, position }) => (
+            <div
+              key={note}
+              className="black"
+              style={{
+                position: 'absolute',
+                top: 0,
+                width: `calc(100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * .64)`,
+                height: '62%',
+                background: isNotePressed(note) ? theme.primary : '#000',
+                border: '1px solid #111',
+                borderBottomLeftRadius: '6px',
+                borderBottomRightRadius: '6px',
+                boxShadow: 'inset 0 -5px 0 rgba(255,255,255,.08)',
+                zIndex: 5,
+                left: `calc(100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * ${position} - (100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * .32))`,
+                cursor: onPlayNote ? 'pointer' : 'default',
+                transition: 'background 0.1s ease-in-out',
+              }}
+              onClick={() => handleKeyPress(note)}
+            ></div>
+          ))}
+
+          {/* Note Labels (only for the main chord notes) */}
+          {showLabels && pressedKeysToDisplay.map(({ note, type }) => {
+            const noteName = getNoteName(note);
+            const style: React.CSSProperties = {
+              position: 'absolute',
+              transform: 'translateX(-50%)',
+              width: '86px',
+              height: '86px',
+              borderRadius: '999px',
+              display: 'grid',
+              placeItems: 'center',
+              fontWeight: 800,
+              fontSize: '30px',
+              background: '#fff',
+              border: '4px solid #000',
+              color: '#000',
+              textShadow: 'none',
+              zIndex: 7,
+              pointerEvents: 'none', // Labels shouldn't block clicks
+            };
+
+            if (type === 'white') {
+              const keyInfo = KEYBOARD_LAYOUT.whiteKeys.find(k => k.note === note);
+              if (!keyInfo) return null;
+              style.bottom = '18px';
+              style.left = `calc(100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * ${keyInfo.position} + 100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * .5)`;
+            } else { // black
+              const keyInfo = KEYBOARD_LAYOUT.blackKeys.find(k => k.note === note);
+              if (!keyInfo) return null;
+              style.top = `calc(62% - 10px - 43px)`; // Position above the key
+              style.left = `calc(100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * ${keyInfo.position})`;
+            }
+
+            return (
+              <div key={`note-${note}`} className={`note ${type}`} style={style}>
+                {noteName}
+              </div>
+            );
+          })}
         </div>
-      </div>
-      
-      <div className="relative h-48 bg-gray-800 rounded-lg p-4">
-        <div className="flex relative h-full">
-          {keys
-            .filter(key => key.type === 'white')
-            .map((key) => {
-              const isPressed = key.isPressed || userPressedKeys.has(key.note);
-              return (
-                <div
-                  key={key.note}
-                  className={`relative h-full rounded-b flex items-end justify-center pb-2 cursor-pointer`}
-                  style={{
-                    width: '30px',
-                    background: isPressed ? theme.background : '#ffffff',
-                    borderLeft: '1px solid #d1d5db',
-                    borderRight: '1px solid #d1d5db',
-                    borderBottomLeftRadius: '10px',
-                    borderBottomRightRadius: '10px',
-                    boxShadow: isPressed
-                      ? 'inset 0 -6px 0 rgba(0,0,0,.18)'
-                      : 'inset 0 -4px 0 rgba(0,0,0,.10)'
-                  }}
-                  onClick={() => handleKeyPress(key.note)}
-                  onTouchStart={(e) => { e.preventDefault(); handleKeyPress(key.note); }}
-                >
-                  {showLabels && (
-                    <span className={`text-xs ${isPressed ? 'text-gray-800' : 'text-gray-500'}`}>
-                      {key.note}
-                    </span>
-                  )}
-                </div>
-              )
-            })}
-          
-          {/* Black keys */}
-          <div className="absolute top-0 left-0 h-3/5 w-full">
-            <div className="flex relative h-full">
-              {keys
-                .filter(key => key.type === 'black')
-                .map((key) => {
-                  const isPressed = key.isPressed || userPressedKeys.has(key.note);
-                  // Calculate position based on white key positions
-                  const whiteKeyIndex = Math.floor(key.position);
-                  const leftPosition = whiteKeyIndex * 30 - 15;
-                  
-                  return (
-                    <div 
-                      key={key.note}
-                      className={`absolute h-full w-6 rounded-b z-10 cursor-pointer`}
-                      style={{ 
-                        left: `${leftPosition}px`,
-                        background: isPressed ? theme.primary : '#0f172a',
-                        borderLeft: '1px solid #000',
-                        borderRight: '1px solid #000',
-                        borderBottomLeftRadius: '8px',
-                        borderBottomRightRadius: '8px',
-                        boxShadow: isPressed
-                          ? 'inset 0 -6px 0 rgba(255,255,255,.12)'
-                          : 'inset 0 -4px 0 rgba(255,255,255,.08)'
-                      }}
-                      onClick={() => handleKeyPress(key.note)}
-                      onTouchStart={(e) => { e.preventDefault(); handleKeyPress(key.note); }}
-                    >
-                      {showLabels && (
-                        <div className="h-full flex items-end justify-center pb-2">
-                          <span className="text-xs text-white">
-                            {key.note}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div className="mt-4">
-        <p className="text-gray-600 text-sm">
-          <span className="font-medium">Notes in chord:</span> {chordPressedKeys.map(k => k.note).join(', ') || 'None'}
-        </p>
-      </div>
-      
-      <div className="mt-4 text-center">
-        <button className="px-4 py-2 text-white rounded-lg transition-colors" style={{ background: theme.primary }}>
-          Play Chord
-        </button>
-      </div>
-    </div>
+      </KeyboardWrap>
+    </Sheet>
   );
 };
 
