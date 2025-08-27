@@ -154,7 +154,7 @@ const PracticeMode: FC = () => {
   const location = useLocation();
   const practicedChordsRef = useRef<Set<string>>(new Set());
   const [keyCenter, setKeyCenter] = useState<MajorKey | null>(null);
-  const { playChord, playGuitarNote, initAudio, fretToNote } = useAudio();
+  const { playChord, playGuitarNote, initAudio, fretToNote, guitarLoaded } = useAudio();
 
   useEffect(() => {
     if (currentChord && currentChord.level > highestUnlockedLevel) {
@@ -368,6 +368,7 @@ const PracticeMode: FC = () => {
               toggleMetronome={toggleMetronome}
               handleStrum={handleStrum}
               nextChord={nextChord}
+              disableStrum={selectedInstrument === 'guitar' && !guitarLoaded}
             />
           </div>
 
@@ -387,6 +388,10 @@ const PracticeMode: FC = () => {
             playPianoNote={note => playChord([note], 0.5, 'piano')}
             initAudio={initAudio}
           />
+
+          {selectedInstrument === 'guitar' && !guitarLoaded && (
+            <p className="text-gray-500 text-sm mt-2">Loading sounds...</p>
+          )}
 
           {showTips && (
             <div className="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-4 rounded">
