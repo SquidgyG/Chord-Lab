@@ -3,7 +3,7 @@ import { useUserProfile } from '../../contexts/UserProfileContext'
 import WelcomeTutorial from './WelcomeTutorial'
 
 const OnboardingFlow: React.FC = () => {
-  const { profile, setProfile } = useUserProfile()
+  const { setProfile } = useUserProfile()
   const [step, setStep] = useState(1)
   const [name, setName] = useState('')
   const [instrument, setInstrument] = useState<'guitar' | 'piano'>('guitar')
