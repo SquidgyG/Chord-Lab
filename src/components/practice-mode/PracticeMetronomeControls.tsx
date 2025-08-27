@@ -17,6 +17,11 @@ const PracticeMetronomeControls: FC<PracticeMetronomeControlsProps> = ({
   handleStrum,
   nextChord,
 }) => {
+  const presets = [
+    { label: 'Slow', bpm: 70 },
+    { label: 'Medium', bpm: 100 },
+    { label: 'Fast', bpm: 130 },
+  ];
   return (
     <div className="flex flex-col items-end gap-2">
       <div>
@@ -33,6 +38,21 @@ const PracticeMetronomeControls: FC<PracticeMetronomeControlsProps> = ({
           }
           className="w-32"
         />
+        <div className="flex gap-2 mt-2">
+          {presets.map(({ label, bpm: presetBpm }) => (
+            <button
+              key={label}
+              onClick={() => setBpm(presetBpm)}
+              className={`px-2 py-1 rounded transition-colors ${
+                bpm === presetBpm
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
       <div className="flex space-x-2">
         <button
