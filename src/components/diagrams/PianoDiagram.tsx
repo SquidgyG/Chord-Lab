@@ -1,10 +1,8 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { getChordTheme } from '../../utils/diagramTheme';
 import { getChordInversion, getNoteName } from '../../utils/music-theory';
 
-// --- Static Data for Keyboard Layout ---
-// This layout matches the printable chart, which shows 11 white keys.
-// The range seems to be from F4 to B5.
+// --- Static Data for Keyboard Layout (from 'main') ---
 const KEYBOARD_LAYOUT = {
   whiteKeys: [
     { note: 'F4', position: 0 }, { note: 'G4', position: 1 }, { note: 'A4', position: 2 },
@@ -20,16 +18,16 @@ const KEYBOARD_LAYOUT = {
   totalWhiteKeys: 11,
 };
 
-// --- Interfaces ---
+// --- Interfaces (Merged) ---
 interface PianoDiagramProps {
   chordName: string;
   notes: string[]; // Notes with octaves, e.g., ["C4", "E4", "G4"]
   inversion?: 0 | 1 | 2;
+  showLabels?: boolean;
+  onPlayNote?: (note: string) => void;
 }
 
-// --- Helper Components ---
-// These are styled to match the printable chart's CSS.
-
+// --- Helper Components (from 'main') ---
 const Sheet = ({ theme, children }: { theme: any; children: React.ReactNode }) => (
   <section
     className="sheet"
@@ -80,24 +78,44 @@ const KeyboardWrap = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
-// --- Main Component ---
-const PianoDiagram = ({ chordName, notes, inversion = 0 }: PianoDiagramProps) => {
+// --- Main Component (Merged) ---
+const PianoDiagram = ({
+  chordName,
+  notes,
+  inversion = 0,
+  showLabels = true,
+  onPlayNote,
+}: PianoDiagramProps) => {
   const theme = getChordTheme(chordName);
+  const [userPressedKeys, setUserPressedKeys] = useState<Set<string>>(new Set());
 
   const invertedNotes = useMemo(
     () => getChordInversion(notes, inversion),
     [notes, inversion]
   );
 
-  // Normalize notes to match the layout's format (e.g., C not C4)
-  const pressedNoteNames = new Set(invertedNotes.map(note => getNoteName(note)));
+  const handleKeyPress = (note: string) => {
+    onPlayNote?.(note);
+    setUserPressedKeys(prev => new Set(prev).add(note));
+    setTimeout(() => {
+      setUserPressedKeys(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(note);
+        return newSet;
+      });
+    }, 300); // Visual feedback duration
+  };
 
   const allKeys = [
     ...KEYBOARD_LAYOUT.whiteKeys.map(k => ({ ...k, type: 'white' as const })),
     ...KEYBOARD_LAYOUT.blackKeys.map(k => ({ ...k, type: 'black' as const })),
   ];
 
-  const pressedKeys = allKeys.filter(key => pressedNoteNames.has(getNoteName(key.note)));
+  // A key is considered "pressed" if it's in the chord or recently clicked by the user.
+  const isNotePressed = (note: string) =>
+    invertedNotes.includes(note) || userPressedKeys.has(note);
+
+  const pressedKeysToDisplay = allKeys.filter(key => invertedNotes.includes(key.note));
 
   return (
     <Sheet theme={theme}>
@@ -130,8 +148,19 @@ const PianoDiagram = ({ chordName, notes, inversion = 0 }: PianoDiagramProps) =>
           }}></div>
 
           {/* White Keys */}
-          {KEYBOARD_LAYOUT.whiteKeys.map(({ note, position }) => (
-            <div key={note} className="white" style={{ position: 'relative', background: '#fff', zIndex: 1 }}></div>
+          {KEYBOARD_LAYOUT.whiteKeys.map(({ note }) => (
+            <div
+              key={note}
+              className="white"
+              style={{
+                position: 'relative',
+                background: isNotePressed(note) ? theme.background : '#fff',
+                zIndex: 1,
+                cursor: onPlayNote ? 'pointer' : 'default',
+                transition: 'background 0.1s ease-in-out',
+              }}
+              onClick={() => handleKeyPress(note)}
+            ></div>
           ))}
 
           {/* Black Keys */}
@@ -144,64 +173,22 @@ const PianoDiagram = ({ chordName, notes, inversion = 0 }: PianoDiagramProps) =>
                 top: 0,
                 width: `calc(100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * .64)`,
                 height: '62%',
-                background: '#000',
+                background: isNotePressed(note) ? theme.primary : '#000',
                 border: '1px solid #111',
                 borderBottomLeftRadius: '6px',
                 borderBottomRightRadius: '6px',
                 boxShadow: 'inset 0 -5px 0 rgba(255,255,255,.08)',
                 zIndex: 5,
                 left: `calc(100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * ${position} - (100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * .32))`,
+                cursor: onPlayNote ? 'pointer' : 'default',
+                transition: 'background 0.1s ease-in-out',
               }}
+              onClick={() => handleKeyPress(note)}
             ></div>
           ))}
 
-          {/* Fills for Pressed Keys */}
-          {pressedKeys.map(({ note, type, position }) => {
-            if (type === 'white') {
-              const whiteKeyInfo = KEYBOARD_LAYOUT.whiteKeys.find(k => getNoteName(k.note) === getNoteName(note));
-              if (!whiteKeyInfo) return null;
-              return (
-                <div
-                  key={`fill-${note}`}
-                  className="fill fill-white"
-                  style={{
-                    position: 'absolute',
-                    pointerEvents: 'none',
-                    top: 0,
-                    height: '100%',
-                    zIndex: 3,
-                    boxShadow: 'inset 0 0 0 2px #000',
-                    background: theme.primary,
-                    left: `calc(100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * ${whiteKeyInfo.position})`,
-                    width: `calc(100% / ${KEYBOARD_LAYOUT.totalWhiteKeys})`,
-                  }}
-                ></div>
-              );
-            } else { // black
-              const blackKeyInfo = KEYBOARD_LAYOUT.blackKeys.find(k => getNoteName(k.note) === getNoteName(note));
-              if (!blackKeyInfo) return null;
-              return (
-                <div
-                  key={`fill-${note}`}
-                  className="fill fill-black"
-                  style={{
-                    position: 'absolute',
-                    pointerEvents: 'none',
-                    top: 0,
-                    height: '62%',
-                    zIndex: 6,
-                    boxShadow: 'inset 0 0 0 2px #000',
-                    background: theme.primary,
-                    width: `calc(100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * .64)`,
-                    left: `calc(100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * ${blackKeyInfo.position} - (100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * .32))`,
-                  }}
-                ></div>
-              );
-            }
-          })}
-
-          {/* Note Labels */}
-          {pressedKeys.map(({ note, type, position }) => {
+          {/* Note Labels (only for the main chord notes) */}
+          {showLabels && pressedKeysToDisplay.map(({ note, type }) => {
             const noteName = getNoteName(note);
             const style: React.CSSProperties = {
               position: 'absolute',
@@ -218,18 +205,19 @@ const PianoDiagram = ({ chordName, notes, inversion = 0 }: PianoDiagramProps) =>
               color: '#000',
               textShadow: 'none',
               zIndex: 7,
+              pointerEvents: 'none', // Labels shouldn't block clicks
             };
 
             if (type === 'white') {
-              const whiteKeyInfo = KEYBOARD_LAYOUT.whiteKeys.find(k => getNoteName(k.note) === getNoteName(note));
-              if (!whiteKeyInfo) return null;
+              const keyInfo = KEYBOARD_LAYOUT.whiteKeys.find(k => k.note === note);
+              if (!keyInfo) return null;
               style.bottom = '18px';
-              style.left = `calc(100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * ${whiteKeyInfo.position} + 100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * .5)`;
+              style.left = `calc(100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * ${keyInfo.position} + 100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * .5)`;
             } else { // black
-              const blackKeyInfo = KEYBOARD_LAYOUT.blackKeys.find(k => getNoteName(k.note) === getNoteName(note));
-              if (!blackKeyInfo) return null;
-              style.top = `calc(62% - 10px - 43px)`;
-              style.left = `calc(100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * ${blackKeyInfo.position})`;
+              const keyInfo = KEYBOARD_LAYOUT.blackKeys.find(k => k.note === note);
+              if (!keyInfo) return null;
+              style.top = `calc(62% - 10px - 43px)`; // Position above the key
+              style.left = `calc(100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * ${keyInfo.position})`;
             }
 
             return (
