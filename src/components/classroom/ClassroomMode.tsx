@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react'
+import { Link } from 'react-router-dom'
 import { getDiatonicChords } from '../../utils/music-theory'
 import GuitarDiagram from '../diagrams/GuitarDiagram'
 import PianoDiagram from '../diagrams/PianoDiagram'
@@ -50,6 +51,14 @@ const ClassroomMode: React.FC = () => {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <div className="flex justify-end mb-4">
+        <Link
+          to="/classroom/games"
+          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+        >
+          Games Dashboard
+        </Link>
+      </div>
       <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Creator Mode</h3>
       <div className="flex flex-wrap gap-4 mb-4 items-end">
         <div>
