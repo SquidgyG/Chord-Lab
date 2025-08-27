@@ -19,6 +19,7 @@ interface ChordDiagramProps {
   fingers?: number[] // 1-4 for fretting fingers
   noteStrip?: string[] // optional per-string note labels (low E -> high E)
   barres?: Barre[]
+  onPlayNote?: (string: number, fret: number) => void
 }
 
 const GuitarDiagram = ({
@@ -27,6 +28,7 @@ const GuitarDiagram = ({
   fingers = [],
   noteStrip,
   barres = [],
+  onPlayNote,
 }: ChordDiagramProps) => {
   const [orientation, setOrientation] = useState<'normal' | 'left-handed' | 'player-mirrored'>(
     'normal'
@@ -164,10 +166,20 @@ const GuitarDiagram = ({
           {Array.from({ length: strings }).map((_, col) => {
             const stringNum = orientation === 'left-handed' ? col + 1 : strings - col
             const widthPx = stringWidths[stringNum - 1]
+            const [vibrating, setVibrating] = useState(false);
+
+            const handleStringClick = () => {
+              const position = positions.find(p => p.string === stringNum);
+              const fret = position ? position.fret : 0;
+              onPlayNote?.(stringNum, fret);
+              setVibrating(true);
+              setTimeout(() => setVibrating(false), 500);
+            };
+
             return (
               <div
                 key={`string-${col}`}
-                className="absolute"
+                className={`absolute cursor-pointer ${vibrating ? 'vibrating' : ''}`}
                 style={{
                   top: 0,
                   bottom: 0,
@@ -178,6 +190,7 @@ const GuitarDiagram = ({
                   borderRadius: '2px',
                   zIndex: 8,
                 }}
+                onClick={handleStringClick}
               >
                 {/* String label */}
                 <div
