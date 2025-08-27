@@ -1,11 +1,11 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
-export type ClassroomModeContextValue = {
+export interface ClassroomModeContextValue {
   classroomMode: boolean;
   setClassroomMode: (v: boolean) => void;
   toggleClassroomMode: () => void;
-};
+}
 
 const ClassroomModeContext = createContext<ClassroomModeContextValue | undefined>(undefined);
 
@@ -13,7 +13,8 @@ export function ClassroomModeProvider({ children }: { children: React.ReactNode 
   const [classroomMode, setClassroomMode] = useState<boolean>(() => {
     try {
       const saved = localStorage.getItem('classroomMode');
-      return saved ? JSON.parse(saved) : false;
+      const parsed = saved ? (JSON.parse(saved) as unknown) : false;
+      return typeof parsed === 'boolean' ? parsed : false;
     } catch {
       // ignore localStorage read errors
       return false;

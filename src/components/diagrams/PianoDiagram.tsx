@@ -1,68 +1,82 @@
-import { useState } from 'react';
-import { getChordTheme } from '../../utils/diagramTheme';
+import { useState, useMemo } from 'react'
+import { getChordTheme } from '../../utils/diagramTheme'
+import { getChordInversion } from '../../utils/music-theory'
 
 interface PianoKey {
-  note: string;
-  type: 'white' | 'black';
-  position: number;  // Position in the keyboard layout
-  isPressed?: boolean;
+  note: string
+  type: 'white' | 'black'
+  position: number // Position in the keyboard layout
+  isPressed?: boolean
 }
 
 interface PianoDiagramProps {
-  chordName: string;
-  notes: string[];  // Notes that should be pressed for this chord
-  hand?: 'left' | 'right';
-  showLabels?: boolean; // optional note labels under keys
+  chordName: string
+  notes: string[] // Notes that should be pressed for this chord
+  inversion?: 0 | 1 | 2
+  hand?: 'left' | 'right'
+  showLabels?: boolean // optional note labels under keys
 }
 
-const PianoDiagram = ({ chordName, notes, hand = 'right', showLabels = true }: PianoDiagramProps) => {
-  const [selectedHand, setSelectedHand] = useState<'left' | 'right'>(hand);
-  const theme = getChordTheme(chordName);
-  
+const PianoDiagram = ({
+  chordName,
+  notes,
+  inversion = 0,
+  hand = 'right',
+  showLabels = true,
+}: PianoDiagramProps) => {
+  const [selectedHand, setSelectedHand] = useState<'left' | 'right'>(hand)
+  const theme = getChordTheme(chordName)
+
+  const invertedNotes = useMemo(
+    () => getChordInversion(notes, inversion),
+    [notes, inversion]
+  )
+
   // Generate piano keys for 2 octaves (C4 to C6)
   const generateKeys = (): PianoKey[] => {
-    const keys: PianoKey[] = [];
-    const whiteNotes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
-    const blackNotes = ['C#', 'D#', 'F#', 'G#', 'A#'];
-    
-    let position = 0;
-    
+    const keys: PianoKey[] = []
+    const whiteNotes = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+    const blackNotes = ['C#', 'D#', 'F#', 'G#', 'A#']
+
+    let position = 0
+
     for (let octave = 4; octave <= 5; octave++) {
       // Add white keys
       whiteNotes.forEach(note => {
-        const fullNote = `${note}${octave}`;
+        const fullNote = `${note}${octave}`
         keys.push({
           note: fullNote,
           type: 'white',
           position: position++,
-          isPressed: notes.includes(fullNote)
-        });
-      });
-      
+          isPressed: invertedNotes.includes(fullNote),
+        })
+      })
+
       // Add black keys (except between E-F and B-C)
-      if (octave < 5) {  // Don't add black keys for the last octave
+      if (octave < 5) {
+        // Don't add black keys for the last octave
         blackNotes.forEach(note => {
           // Skip E-F and B-C gaps
           if (!(note === 'E#' || note === 'B#')) {
-            const fullNote = `${note}${octave}`;
+            const fullNote = `${note}${octave}`
             keys.push({
               note: fullNote,
               type: 'black',
-              position: position - 0.5,  // Position between white keys
-              isPressed: notes.includes(fullNote)
-            });
+              position: position - 0.5, // Position between white keys
+              isPressed: invertedNotes.includes(fullNote),
+            })
           }
-        });
+        })
       }
     }
-    
-    return keys;
-  };
-  
-  const keys = generateKeys();
-  
+
+    return keys
+  }
+
+  const keys = generateKeys()
+
   // Find the pressed keys
-  const pressedKeys = keys.filter(key => key.isPressed);
+  const pressedKeys = keys.filter(key => key.isPressed)
   
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 max-w-2xl mx-auto" style={{ border: `4px solid ${theme.primary}` }}>
