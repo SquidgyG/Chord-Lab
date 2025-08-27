@@ -4,6 +4,7 @@ import NameTheNoteQuiz from './quizzes/NameTheNoteQuiz'
 import RhythmExercise from './exercises/RhythmExercise'
 import ChordSwitchingExercise from './exercises/ChordSwitchingExercise'
 import TheoryQuiz from './quizzes/TheoryQuiz'
+import AdvancedTechniqueExercise from './exercises/AdvancedTechniqueExercise'
 
 const lessonComponents: Record<string, () => React.ReactElement> = {
   '1-e1': () => <NameTheNoteQuiz />,
@@ -23,6 +24,7 @@ const lessonComponents: Record<string, () => React.ReactElement> = {
       correctAnswer="E is the 6th note of the G major scale."
     />
   ),
+  '5-s1': () => <AdvancedTechniqueExercise />,
 }
 
 const LearningPathway = () => {

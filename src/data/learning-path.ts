@@ -192,4 +192,43 @@ export const learningPath: Level[] = [
       },
     ],
   },
+  {
+    id: 5,
+    title: 'Level 5 – Technician',
+    subtitle: 'Advanced Technique',
+    learningIntentions: [
+      'Play progressions using inversions (piano) or barre chords (guitar).',
+      'Use the metronome at higher tempos and make arranging choices.',
+    ],
+    lessons: [
+      {
+        id: '5-k1',
+        title: 'Core Knowledge: Advanced Voicings',
+        description: 'Keyboard: Learn 1st and 2nd inversions. Guitar: Learn E-shape and A-shape barre chords.',
+        completed: false,
+        type: 'knowledge',
+      },
+      {
+        id: '5-s1',
+        title: 'Skill: Advanced Technique Practice',
+        description: 'Play I–V–vi–IV in two keys using inversions or barre chords.',
+        completed: false,
+        type: 'skill',
+      },
+      {
+        id: '5-e1',
+        title: 'Evidence to Level Up',
+        description: 'Demonstrate the progression in C and G with two different voicing/shape plans at ♩=96–110.',
+        completed: false,
+        type: 'evidence',
+      },
+      {
+        id: '5-b1',
+        title: 'Bonus 5.5 – Pattern Power-Ups',
+        description: 'Keyboard: Syncopated comping or 1-3-5-8 patterns. Guitar: Fingerpicking or 16th-note grooves.',
+        completed: false,
+        type: 'bonus',
+      },
+    ],
+  },
 ];

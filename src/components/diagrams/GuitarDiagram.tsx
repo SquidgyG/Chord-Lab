@@ -6,94 +6,63 @@ interface FretPosition {
   fret: number;    // 0-12 (0 = open string)
 }
 
-interface ChordDiagramProps {
-  chordName: string;
-  positions: FretPosition[];
-  fingers?: number[];  // 1-4 for fretting fingers
-  noteStrip?: string[]; // optional per-string note labels (low E -> high E)
+interface Barre {
+  fret: number
+  startString: number
+  endString: number
+  finger?: number
 }
 
-const GuitarDiagram = ({ chordName, positions, fingers = [], noteStrip }: ChordDiagramProps) => {
-  const [orientation, setOrientation] = useState<'normal' | 'left-handed' | 'player-mirrored'>('normal');
-  const theme = getChordTheme(chordName);
-  
+interface ChordDiagramProps {
+  chordName: string
+  positions: FretPosition[]
+  fingers?: number[] // 1-4 for fretting fingers
+  noteStrip?: string[] // optional per-string note labels (low E -> high E)
+  barres?: Barre[]
+}
+
+const GuitarDiagram = ({
+  chordName,
+  positions,
+  fingers = [],
+  noteStrip,
+  barres = [],
+}: ChordDiagramProps) => {
+  const [orientation, setOrientation] = useState<'normal' | 'left-handed' | 'player-mirrored'>(
+    'normal'
+  )
+  const theme = getChordTheme(chordName)
+
   // Create a 6x5 grid (6 strings, 5 frets)
-  const strings = 6;
-  const frets = 5;
-  
+  const strings = 6
+  const frets = 5
+
   // Find the minimum fret position to determine starting fret
-  const minFret = positions.length ? Math.min(...positions.map(p => p.fret)) : 1;
-  const startFret = minFret > 0 ? minFret : 1;
-  
+  const minFret = positions.length ? Math.min(...positions.map(p => p.fret)) : 1
+  const startFret = minFret > 0 ? minFret : 1
+
   // Check if a string is open (0 fret)
   const isOpen = (string: number) => {
-    return positions.some(pos => pos.string === string && pos.fret === 0);
-  };
-  
+    return positions.some(pos => pos.string === string && pos.fret === 0)
+  }
+
   // Check if a string is muted (not in positions)
   const isMuted = (string: number) => {
-    return !positions.some(pos => pos.string === string);
-  };
+    return !positions.some(pos => pos.string === string)
+  }
 
   // Helpers for layout (match printable chart proportions)
   const colIndexForString = (stringNum: number) => {
-    if (orientation === 'left-handed') return stringNum - 1; // low E at left
+    if (orientation === 'left-handed') return stringNum - 1 // low E at left
     // normal and player-mirrored: low E at right
-    return strings - stringNum;
-  };
+    return strings - stringNum
+  }
 
-  const leftForCol = (col: number) => `calc((100%/${strings})*${col} + (100%/${strings})/2)`;
-  const topForFret = (fretNum: number) => `calc((100%/6) * ${(fretNum - startFret) + 0.5})`;
+  const leftForCol = (col: number) => `calc((100%/${strings})*${col} + (100%/${strings})/2)`
+  const topForFret = (fretNum: number) => `calc((100%/6) * ${fretNum - startFret + 0.5})`
 
   // String thicknesses (low E to high E)
-  const stringWidths = [18, 12, 8, 6, 4, 3];
-
-  // Barre detection: find contiguous strings on same fret using the same finger (commonly 1)
-  interface Barre {
-    fret: number
-    startString: number
-    endString: number
-    finger: number
-  }
-  const barreGroups: Barre[] = (() => {
-    const groups: Barre[] = []
-    // Map: fret -> list of {string, finger}
-    const byFret = new Map<number, { string: number; finger: number }[]>()
-    positions.forEach((pos, i) => {
-      if (pos.fret > 0) {
-        const arr = byFret.get(pos.fret) ?? []
-        arr.push({ string: pos.string, finger: fingers[i] ?? 1 })
-        byFret.set(pos.fret, arr)
-      }
-    })
-    byFret.forEach((arr, fret) => {
-      // sort by string number (low E=1 ... high E=6)
-      const sorted = arr.sort((a, b) => a.string - b.string)
-      let runStart = 0
-      while (runStart < sorted.length) {
-        let runEnd = runStart
-        const finger = sorted[runStart].finger
-        while (
-          runEnd + 1 < sorted.length &&
-          sorted[runEnd + 1].string === sorted[runEnd].string + 1 &&
-          sorted[runEnd + 1].finger === finger
-        ) {
-          runEnd++
-        }
-        const span = runEnd - runStart + 1
-        if (span >= 2) {
-          groups.push({
-            fret,
-            startString: sorted[runStart].string,
-            endString: sorted[runEnd].string,
-            finger,
-          })
-        }
-        runStart = runEnd + 1
-      }
-    })
-    return groups
-  })()
+  const stringWidths = [18, 12, 8, 6, 4, 3]
 
   return (
     <div
@@ -267,7 +236,7 @@ const GuitarDiagram = ({ chordName, positions, fingers = [], noteStrip }: ChordD
             })}
 
           {/* Barres */}
-          {barreGroups.map((b, i) => {
+          {barres.map((b, i) => {
             const startCol = colIndexForString(b.startString)
             const endCol = colIndexForString(b.endString)
             const leftExpr = `calc((100%/${strings})*${Math.min(
@@ -293,7 +262,7 @@ const GuitarDiagram = ({ chordName, positions, fingers = [], noteStrip }: ChordD
                   zIndex: 19,
                 }}
               >
-                <span style={{ fontSize: '24px' }}>{b.finger}</span>
+                <span style={{ fontSize: '24px' }}>{b.finger ?? ''}</span>
               </div>
             )
           })}
