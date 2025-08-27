@@ -1,0 +1,391 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Guitar Chord Charts – v14 (20% bigger O/X)</title>
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4 portrait; margin: 14mm; }
+  :root{ --sheet-padding: 26px; --border-radius: 22px; --title-size: 42px; }
+  *{box-sizing:border-box}
+  body{ margin:0; background:#f3f6fb; font-family: "Readex Pro", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; }
+  .sheet{ break-after: page; padding: var(--sheet-padding); border: 16px solid; border-radius: var(--border-radius); box-shadow: 0 10px 28px rgba(0,0,0,.12); position: relative; overflow: hidden; }
+  .title{ text-align:center; font-size: var(--title-size); font-weight: 800; margin: 0 0 22px; letter-spacing:.3px; color:#111; }
+  .fretboard-wrap{ width: 520px; max-width: 100%; margin: 0 auto; background:#fff; border-radius: 14px; padding: 72px 28px 22px; box-shadow: 0 16px 40px rgba(0,0,0,.20), 0 8px 18px rgba(0,0,0,.12); position: relative; }
+  .fretboard{ position: relative; height: 700px; border-radius: 10px; background:#fff; overflow: visible; }
+  .nut{ position:absolute; top:0; left:0; right:0; height: 16px; background:#000; z-index:12; }
+  .endline{ position:absolute; bottom:0; left:0; right:0; height: 6px; background:#000; z-index:11; }
+  .fret-line{ position:absolute; left:0; right:0; height: 2px; background:#111; z-index:10; }
+  .inlay{ position:absolute; left:50%; transform: translate(-50%, -50%); width:16px; height:16px; border-radius:999px; background: rgba(0,0,0,.12); z-index:9; }
+  .string{ position:absolute; top:0; bottom:0; width: var(--sw, 2px); background: var(--sc, #111); transform: translateX(-50%); border-radius: 2px; z-index:8; }
+  .xo{ position:absolute; transform: translate(-50%, -100%); text-align:center; font-weight: 800; top: 0; z-index:15; font-size: 38px; line-height: 1; }
+  .dot{ position:absolute; transform: translate(-50%, -50%); width: 72px; height: 72px; border-radius: 999px; background: var(--cc); color:#fff; z-index:20; display:grid; place-items:center; font-weight: 800; font-size: 30px; text-shadow: 0 1px 0 rgba(0,0,0,.25); }
+  .barre{ position:absolute; transform: translateY(-50%); height: 48px; border-radius: 999px; background: var(--cc); z-index:19; display:grid; place-items:center; font-weight:800; font-size: 24px; color:#fff; text-shadow: 0 1px 0 rgba(0,0,0,.25); }
+  .note-strip{ display:grid; grid-template-columns: repeat(6,1fr); gap:0; margin-top: 12px; font-weight: 800; font-size: 32px; letter-spacing:.5px; }
+  .note-strip span{ text-align:center; min-height: 1.1em; }
+</style>
+</head>
+<body>
+<section class="sheet" style="border-color:#cc39bc; background:#f8e7f6;">
+  <h1 class="title">C Major</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#bfbfbf;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      <div class="xo" style="left:calc((100%/6)*0 + (100%/6)/2); color:#cc39bc;">X</div><div class="xo" style="left:calc((100%/6)*3 + (100%/6)/2); color:#cc39bc;">O</div><div class="xo" style="left:calc((100%/6)*5 + (100%/6)/2); color:#cc39bc;">O</div>
+      
+      <div class="dot" style="left:calc((100%/6)*1 + (100%/6)/2); top:calc((100%/6)*2.5); --cc:#cc39bc;">3</div><div class="dot" style="left:calc((100%/6)*2 + (100%/6)/2); top:calc((100%/6)*1.5); --cc:#cc39bc;">2</div><div class="dot" style="left:calc((100%/6)*4 + (100%/6)/2); top:calc((100%/6)*0.5); --cc:#cc39bc;">1</div>
+    </div>
+    <div class="note-strip"><span></span><span style="color:#cc39bc;">C</span><span style="color:#cc39bc;">E</span><span style="color:#cc39bc;">G</span><span style="color:#cc39bc;">C</span><span style="color:#cc39bc;">E</span></div>
+  </div>
+</section><section class="sheet" style="border-color:#714faa; background:#ede9f4;">
+  <h1 class="title">G Major</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      <div class="xo" style="left:calc((100%/6)*2 + (100%/6)/2); color:#714faa;">O</div><div class="xo" style="left:calc((100%/6)*3 + (100%/6)/2); color:#714faa;">O</div><div class="xo" style="left:calc((100%/6)*4 + (100%/6)/2); color:#714faa;">O</div>
+      
+      <div class="dot" style="left:calc((100%/6)*0 + (100%/6)/2); top:calc((100%/6)*2.5); --cc:#714faa;">3</div><div class="dot" style="left:calc((100%/6)*1 + (100%/6)/2); top:calc((100%/6)*1.5); --cc:#714faa;">2</div><div class="dot" style="left:calc((100%/6)*5 + (100%/6)/2); top:calc((100%/6)*2.5); --cc:#714faa;">4</div>
+    </div>
+    <div class="note-strip"><span style="color:#714faa;">G</span><span style="color:#714faa;">B</span><span style="color:#714faa;">D</span><span style="color:#714faa;">G</span><span style="color:#714faa;">B</span><span style="color:#714faa;">G</span></div>
+  </div>
+</section><section class="sheet" style="border-color:#3b8bf9; background:#e7f1fe;">
+  <h1 class="title">D Major</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#bfbfbf;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#bfbfbf;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      <div class="xo" style="left:calc((100%/6)*0 + (100%/6)/2); color:#3b8bf9;">X</div><div class="xo" style="left:calc((100%/6)*1 + (100%/6)/2); color:#3b8bf9;">X</div><div class="xo" style="left:calc((100%/6)*2 + (100%/6)/2); color:#3b8bf9;">O</div>
+      
+      <div class="dot" style="left:calc((100%/6)*3 + (100%/6)/2); top:calc((100%/6)*1.5); --cc:#3b8bf9;">1</div><div class="dot" style="left:calc((100%/6)*4 + (100%/6)/2); top:calc((100%/6)*2.5); --cc:#3b8bf9;">3</div><div class="dot" style="left:calc((100%/6)*5 + (100%/6)/2); top:calc((100%/6)*1.5); --cc:#3b8bf9;">2</div>
+    </div>
+    <div class="note-strip"><span></span><span></span><span style="color:#3b8bf9;">D</span><span style="color:#3b8bf9;">A</span><span style="color:#3b8bf9;">D</span><span style="color:#3b8bf9;">F#</span></div>
+  </div>
+</section><section class="sheet" style="border-color:#02c7f9; background:#e0f8fe;">
+  <h1 class="title">A Major</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#bfbfbf;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      <div class="xo" style="left:calc((100%/6)*0 + (100%/6)/2); color:#02c7f9;">X</div><div class="xo" style="left:calc((100%/6)*1 + (100%/6)/2); color:#02c7f9;">O</div><div class="xo" style="left:calc((100%/6)*5 + (100%/6)/2); color:#02c7f9;">O</div>
+      
+      <div class="dot" style="left:calc((100%/6)*2 + (100%/6)/2); top:calc((100%/6)*1.5); --cc:#02c7f9;">1</div><div class="dot" style="left:calc((100%/6)*3 + (100%/6)/2); top:calc((100%/6)*1.5); --cc:#02c7f9;">2</div><div class="dot" style="left:calc((100%/6)*4 + (100%/6)/2); top:calc((100%/6)*1.5); --cc:#02c7f9;">3</div>
+    </div>
+    <div class="note-strip"><span></span><span style="color:#02c7f9;">A</span><span style="color:#02c7f9;">E</span><span style="color:#02c7f9;">A</span><span style="color:#02c7f9;">C#</span><span style="color:#02c7f9;">E</span></div>
+  </div>
+</section><section class="sheet" style="border-color:#00e3e2; background:#e0fbfb;">
+  <h1 class="title">E Major</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      <div class="xo" style="left:calc((100%/6)*0 + (100%/6)/2); color:#00e3e2;">O</div><div class="xo" style="left:calc((100%/6)*4 + (100%/6)/2); color:#00e3e2;">O</div><div class="xo" style="left:calc((100%/6)*5 + (100%/6)/2); color:#00e3e2;">O</div>
+      
+      <div class="dot" style="left:calc((100%/6)*1 + (100%/6)/2); top:calc((100%/6)*1.5); --cc:#00e3e2;">2</div><div class="dot" style="left:calc((100%/6)*2 + (100%/6)/2); top:calc((100%/6)*1.5); --cc:#00e3e2;">3</div><div class="dot" style="left:calc((100%/6)*3 + (100%/6)/2); top:calc((100%/6)*0.5); --cc:#00e3e2;">1</div>
+    </div>
+    <div class="note-strip"><span style="color:#00e3e2;">E</span><span style="color:#00e3e2;">B</span><span style="color:#00e3e2;">E</span><span style="color:#00e3e2;">G#</span><span style="color:#00e3e2;">B</span><span style="color:#00e3e2;">E</span></div>
+  </div>
+</section><section class="sheet" style="border-color:#00d48e; background:#e0f9f1;">
+  <h1 class="title">B Major</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#bfbfbf;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      <div class="xo" style="left:calc((100%/6)*0 + (100%/6)/2); color:#00d48e;">X</div>
+      
+      <div class="dot" style="left:calc((100%/6)*1 + (100%/6)/2); top:calc((100%/6)*1.5); --cc:#00d48e;">1</div><div class="dot" style="left:calc((100%/6)*2 + (100%/6)/2); top:calc((100%/6)*3.5); --cc:#00d48e;">3</div><div class="dot" style="left:calc((100%/6)*3 + (100%/6)/2); top:calc((100%/6)*3.5); --cc:#00d48e;">4</div><div class="dot" style="left:calc((100%/6)*4 + (100%/6)/2); top:calc((100%/6)*3.5); --cc:#00d48e;">2</div><div class="dot" style="left:calc((100%/6)*5 + (100%/6)/2); top:calc((100%/6)*1.5); --cc:#00d48e;">1</div>
+    </div>
+    <div class="note-strip"><span></span><span style="color:#00d48e;">B</span><span style="color:#00d48e;">F#</span><span style="color:#00d48e;">B</span><span style="color:#00d48e;">D#</span><span style="color:#00d48e;">F#</span></div>
+  </div>
+</section><section class="sheet" style="border-color:#37b838; background:#e7f6e7;">
+  <h1 class="title">F# Major</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      
+      <div class="barre" style="left:calc((100%/6)*4 + (100%/6)*0.12); width:calc((100%/6)*1 + (100%/6)*0.76); top:calc((100%/6)*1.5); --cc:#37b838;">1</div>
+      <div class="dot" style="left:calc((100%/6)*0 + (100%/6)/2); top:calc((100%/6)*1.5); --cc:#37b838;">1</div><div class="dot" style="left:calc((100%/6)*1 + (100%/6)/2); top:calc((100%/6)*3.5); --cc:#37b838;">3</div><div class="dot" style="left:calc((100%/6)*2 + (100%/6)/2); top:calc((100%/6)*3.5); --cc:#37b838;">4</div><div class="dot" style="left:calc((100%/6)*3 + (100%/6)/2); top:calc((100%/6)*2.5); --cc:#37b838;">2</div>
+    </div>
+    <div class="note-strip"><span style="color:#37b838;">F#</span><span style="color:#37b838;">C#</span><span style="color:#37b838;">F#</span><span style="color:#37b838;">A#</span><span style="color:#37b838;">C#</span><span style="color:#37b838;">F#</span></div>
+  </div>
+</section><section class="sheet" style="border-color:#79c505; background:#eef8e1;">
+  <h1 class="title">Db Major</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#bfbfbf;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      <div class="xo" style="left:calc((100%/6)*0 + (100%/6)/2); color:#79c505;">X</div>
+      
+      <div class="dot" style="left:calc((100%/6)*1 + (100%/6)/2); top:calc((100%/6)*3.5); --cc:#79c505;">1</div><div class="dot" style="left:calc((100%/6)*2 + (100%/6)/2); top:calc((100%/6)*5.5); --cc:#79c505;">3</div><div class="dot" style="left:calc((100%/6)*3 + (100%/6)/2); top:calc((100%/6)*5.5); --cc:#79c505;">4</div><div class="dot" style="left:calc((100%/6)*4 + (100%/6)/2); top:calc((100%/6)*5.5); --cc:#79c505;">2</div><div class="dot" style="left:calc((100%/6)*5 + (100%/6)/2); top:calc((100%/6)*3.5); --cc:#79c505;">1</div>
+    </div>
+    <div class="note-strip"><span></span><span style="color:#79c505;">Db</span><span style="color:#79c505;">Ab</span><span style="color:#79c505;">Db</span><span style="color:#79c505;">F</span><span style="color:#79c505;">Ab</span></div>
+  </div>
+</section><section class="sheet" style="border-color:#fdd500; background:#fef9e0;">
+  <h1 class="title">Ab Major</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      
+      <div class="barre" style="left:calc((100%/6)*4 + (100%/6)*0.12); width:calc((100%/6)*1 + (100%/6)*0.76); top:calc((100%/6)*3.5); --cc:#fdd500;">1</div>
+      <div class="dot" style="left:calc((100%/6)*0 + (100%/6)/2); top:calc((100%/6)*3.5); --cc:#fdd500;">1</div><div class="dot" style="left:calc((100%/6)*1 + (100%/6)/2); top:calc((100%/6)*5.5); --cc:#fdd500;">3</div><div class="dot" style="left:calc((100%/6)*2 + (100%/6)/2); top:calc((100%/6)*5.5); --cc:#fdd500;">4</div><div class="dot" style="left:calc((100%/6)*3 + (100%/6)/2); top:calc((100%/6)*4.5); --cc:#fdd500;">2</div>
+    </div>
+    <div class="note-strip"><span style="color:#fdd500;">Ab</span><span style="color:#fdd500;">Eb</span><span style="color:#fdd500;">Ab</span><span style="color:#fdd500;">C</span><span style="color:#fdd500;">Eb</span><span style="color:#fdd500;">Ab</span></div>
+  </div>
+</section><section class="sheet" style="border-color:#ff6813; background:#ffece2;">
+  <h1 class="title">Eb Major</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#bfbfbf;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#bfbfbf;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      <div class="xo" style="left:calc((100%/6)*0 + (100%/6)/2); color:#ff6813;">X</div><div class="xo" style="left:calc((100%/6)*1 + (100%/6)/2); color:#ff6813;">X</div>
+      
+      <div class="dot" style="left:calc((100%/6)*2 + (100%/6)/2); top:calc((100%/6)*0.5); --cc:#ff6813;">1</div><div class="dot" style="left:calc((100%/6)*3 + (100%/6)/2); top:calc((100%/6)*2.5); --cc:#ff6813;">3</div><div class="dot" style="left:calc((100%/6)*4 + (100%/6)/2); top:calc((100%/6)*3.5); --cc:#ff6813;">4</div><div class="dot" style="left:calc((100%/6)*5 + (100%/6)/2); top:calc((100%/6)*2.5); --cc:#ff6813;">2</div>
+    </div>
+    <div class="note-strip"><span></span><span></span><span style="color:#ff6813;">Eb</span><span style="color:#ff6813;">Bb</span><span style="color:#ff6813;">Eb</span><span style="color:#ff6813;">G</span></div>
+  </div>
+</section><section class="sheet" style="border-color:#ff4b2c; background:#ffe9e5;">
+  <h1 class="title">Bb Major</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#bfbfbf;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      <div class="xo" style="left:calc((100%/6)*0 + (100%/6)/2); color:#ff4b2c;">X</div>
+      
+      <div class="dot" style="left:calc((100%/6)*1 + (100%/6)/2); top:calc((100%/6)*0.5); --cc:#ff4b2c;">1</div><div class="dot" style="left:calc((100%/6)*2 + (100%/6)/2); top:calc((100%/6)*2.5); --cc:#ff4b2c;">3</div><div class="dot" style="left:calc((100%/6)*3 + (100%/6)/2); top:calc((100%/6)*2.5); --cc:#ff4b2c;">4</div><div class="dot" style="left:calc((100%/6)*4 + (100%/6)/2); top:calc((100%/6)*2.5); --cc:#ff4b2c;">2</div><div class="dot" style="left:calc((100%/6)*5 + (100%/6)/2); top:calc((100%/6)*0.5); --cc:#ff4b2c;">1</div>
+    </div>
+    <div class="note-strip"><span></span><span style="color:#ff4b2c;">Bb</span><span style="color:#ff4b2c;">F</span><span style="color:#ff4b2c;">Bb</span><span style="color:#ff4b2c;">D</span><span style="color:#ff4b2c;">F</span></div>
+  </div>
+</section><section class="sheet" style="border-color:#ff2a44; background:#ffe5e8;">
+  <h1 class="title">F Major</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      
+      <div class="barre" style="left:calc((100%/6)*4 + (100%/6)*0.12); width:calc((100%/6)*1 + (100%/6)*0.76); top:calc((100%/6)*0.5); --cc:#ff2a44;">1</div>
+      <div class="dot" style="left:calc((100%/6)*0 + (100%/6)/2); top:calc((100%/6)*0.5); --cc:#ff2a44;">1</div><div class="dot" style="left:calc((100%/6)*1 + (100%/6)/2); top:calc((100%/6)*2.5); --cc:#ff2a44;">3</div><div class="dot" style="left:calc((100%/6)*2 + (100%/6)/2); top:calc((100%/6)*2.5); --cc:#ff2a44;">4</div><div class="dot" style="left:calc((100%/6)*3 + (100%/6)/2); top:calc((100%/6)*1.5); --cc:#ff2a44;">2</div>
+    </div>
+    <div class="note-strip"><span style="color:#ff2a44;">F</span><span style="color:#ff2a44;">C</span><span style="color:#ff2a44;">F</span><span style="color:#ff2a44;">A</span><span style="color:#ff2a44;">C</span><span style="color:#ff2a44;">F</span></div>
+  </div>
+</section><section class="sheet" style="border-color:#ab369e; background:#f4e6f3;">
+  <h1 class="title">A Minor</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#bfbfbf;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      <div class="xo" style="left:calc((100%/6)*0 + (100%/6)/2); color:#ab369e;">X</div><div class="xo" style="left:calc((100%/6)*1 + (100%/6)/2); color:#ab369e;">O</div><div class="xo" style="left:calc((100%/6)*5 + (100%/6)/2); color:#ab369e;">O</div>
+      
+      <div class="dot" style="left:calc((100%/6)*2 + (100%/6)/2); top:calc((100%/6)*1.5); --cc:#ab369e;">2</div><div class="dot" style="left:calc((100%/6)*3 + (100%/6)/2); top:calc((100%/6)*1.5); --cc:#ab369e;">3</div><div class="dot" style="left:calc((100%/6)*4 + (100%/6)/2); top:calc((100%/6)*0.5); --cc:#ab369e;">1</div>
+    </div>
+    <div class="note-strip"><span></span><span style="color:#ab369e;">A</span><span style="color:#ab369e;">E</span><span style="color:#ab369e;">A</span><span style="color:#ab369e;">C</span><span style="color:#ab369e;">E</span></div>
+  </div>
+</section><section class="sheet" style="border-color:#624890; background:#ece9f1;">
+  <h1 class="title">E Minor</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      <div class="xo" style="left:calc((100%/6)*0 + (100%/6)/2); color:#624890;">O</div><div class="xo" style="left:calc((100%/6)*3 + (100%/6)/2); color:#624890;">O</div><div class="xo" style="left:calc((100%/6)*4 + (100%/6)/2); color:#624890;">O</div><div class="xo" style="left:calc((100%/6)*5 + (100%/6)/2); color:#624890;">O</div>
+      
+      <div class="dot" style="left:calc((100%/6)*1 + (100%/6)/2); top:calc((100%/6)*1.5); --cc:#624890;">2</div><div class="dot" style="left:calc((100%/6)*2 + (100%/6)/2); top:calc((100%/6)*1.5); --cc:#624890;">3</div>
+    </div>
+    <div class="note-strip"><span style="color:#624890;">E</span><span style="color:#624890;">B</span><span style="color:#624890;">E</span><span style="color:#624890;">G</span><span style="color:#624890;">B</span><span style="color:#624890;">E</span></div>
+  </div>
+</section><section class="sheet" style="border-color:#3777cf; background:#e7eef9;">
+  <h1 class="title">B Minor</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#bfbfbf;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      <div class="xo" style="left:calc((100%/6)*0 + (100%/6)/2); color:#3777cf;">X</div>
+      
+      <div class="dot" style="left:calc((100%/6)*1 + (100%/6)/2); top:calc((100%/6)*1.5); --cc:#3777cf;">1</div><div class="dot" style="left:calc((100%/6)*2 + (100%/6)/2); top:calc((100%/6)*3.5); --cc:#3777cf;">3</div><div class="dot" style="left:calc((100%/6)*3 + (100%/6)/2); top:calc((100%/6)*3.5); --cc:#3777cf;">4</div><div class="dot" style="left:calc((100%/6)*4 + (100%/6)/2); top:calc((100%/6)*2.5); --cc:#3777cf;">2</div><div class="dot" style="left:calc((100%/6)*5 + (100%/6)/2); top:calc((100%/6)*1.5); --cc:#3777cf;">1</div>
+    </div>
+    <div class="note-strip"><span></span><span style="color:#3777cf;">B</span><span style="color:#3777cf;">F#</span><span style="color:#3777cf;">B</span><span style="color:#3777cf;">D</span><span style="color:#3777cf;">F#</span></div>
+  </div>
+</section><section class="sheet" style="border-color:#08a6cf; background:#e1f4f9;">
+  <h1 class="title">F# Minor</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      
+      <div class="barre" style="left:calc((100%/6)*3 + (100%/6)*0.12); width:calc((100%/6)*2 + (100%/6)*0.76); top:calc((100%/6)*1.5); --cc:#08a6cf;">1</div>
+      <div class="dot" style="left:calc((100%/6)*0 + (100%/6)/2); top:calc((100%/6)*1.5); --cc:#08a6cf;">1</div><div class="dot" style="left:calc((100%/6)*1 + (100%/6)/2); top:calc((100%/6)*3.5); --cc:#08a6cf;">3</div><div class="dot" style="left:calc((100%/6)*2 + (100%/6)/2); top:calc((100%/6)*3.5); --cc:#08a6cf;">4</div>
+    </div>
+    <div class="note-strip"><span style="color:#08a6cf;">F#</span><span style="color:#08a6cf;">C#</span><span style="color:#08a6cf;">F#</span><span style="color:#08a6cf;">A</span><span style="color:#08a6cf;">C#</span><span style="color:#08a6cf;">F#</span></div>
+  </div>
+</section><section class="sheet" style="border-color:#06bebe; background:#e1f7f7;">
+  <h1 class="title">C# Minor</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#bfbfbf;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      <div class="xo" style="left:calc((100%/6)*0 + (100%/6)/2); color:#06bebe;">X</div>
+      
+      <div class="dot" style="left:calc((100%/6)*1 + (100%/6)/2); top:calc((100%/6)*3.5); --cc:#06bebe;">1</div><div class="dot" style="left:calc((100%/6)*2 + (100%/6)/2); top:calc((100%/6)*5.5); --cc:#06bebe;">3</div><div class="dot" style="left:calc((100%/6)*3 + (100%/6)/2); top:calc((100%/6)*5.5); --cc:#06bebe;">4</div><div class="dot" style="left:calc((100%/6)*4 + (100%/6)/2); top:calc((100%/6)*4.5); --cc:#06bebe;">2</div><div class="dot" style="left:calc((100%/6)*5 + (100%/6)/2); top:calc((100%/6)*3.5); --cc:#06bebe;">1</div>
+    </div>
+    <div class="note-strip"><span></span><span style="color:#06bebe;">C#</span><span style="color:#06bebe;">G#</span><span style="color:#06bebe;">C#</span><span style="color:#06bebe;">E</span><span style="color:#06bebe;">G#</span></div>
+  </div>
+</section><section class="sheet" style="border-color:#05b17a; background:#e1f5ef;">
+  <h1 class="title">G# Minor</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      
+      <div class="barre" style="left:calc((100%/6)*3 + (100%/6)*0.12); width:calc((100%/6)*2 + (100%/6)*0.76); top:calc((100%/6)*3.5); --cc:#05b17a;">1</div>
+      <div class="dot" style="left:calc((100%/6)*0 + (100%/6)/2); top:calc((100%/6)*3.5); --cc:#05b17a;">1</div><div class="dot" style="left:calc((100%/6)*1 + (100%/6)/2); top:calc((100%/6)*5.5); --cc:#05b17a;">3</div><div class="dot" style="left:calc((100%/6)*2 + (100%/6)/2); top:calc((100%/6)*5.5); --cc:#05b17a;">4</div>
+    </div>
+    <div class="note-strip"><span style="color:#05b17a;">G#</span><span style="color:#05b17a;">D#</span><span style="color:#05b17a;">G#</span><span style="color:#05b17a;">B</span><span style="color:#05b17a;">D#</span><span style="color:#05b17a;">G#</span></div>
+  </div>
+</section><section class="sheet" style="border-color:#339c35; background:#e6f3e6;">
+  <h1 class="title">D# Minor</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#bfbfbf;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#bfbfbf;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      <div class="xo" style="left:calc((100%/6)*0 + (100%/6)/2); color:#339c35;">X</div><div class="xo" style="left:calc((100%/6)*1 + (100%/6)/2); color:#339c35;">X</div>
+      
+      <div class="dot" style="left:calc((100%/6)*2 + (100%/6)/2); top:calc((100%/6)*0.5); --cc:#339c35;">1</div><div class="dot" style="left:calc((100%/6)*3 + (100%/6)/2); top:calc((100%/6)*2.5); --cc:#339c35;">3</div><div class="dot" style="left:calc((100%/6)*4 + (100%/6)/2); top:calc((100%/6)*3.5); --cc:#339c35;">4</div><div class="dot" style="left:calc((100%/6)*5 + (100%/6)/2); top:calc((100%/6)*1.5); --cc:#339c35;">2</div>
+    </div>
+    <div class="note-strip"><span></span><span></span><span style="color:#339c35;">D#</span><span style="color:#339c35;">A#</span><span style="color:#339c35;">D#</span><span style="color:#339c35;">F#</span></div>
+  </div>
+</section><section class="sheet" style="border-color:#69a50b; background:#edf4e1;">
+  <h1 class="title">Bb Minor</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#bfbfbf;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      <div class="xo" style="left:calc((100%/6)*0 + (100%/6)/2); color:#69a50b;">X</div>
+      
+      <div class="dot" style="left:calc((100%/6)*1 + (100%/6)/2); top:calc((100%/6)*0.5); --cc:#69a50b;">1</div><div class="dot" style="left:calc((100%/6)*2 + (100%/6)/2); top:calc((100%/6)*2.5); --cc:#69a50b;">3</div><div class="dot" style="left:calc((100%/6)*3 + (100%/6)/2); top:calc((100%/6)*2.5); --cc:#69a50b;">4</div><div class="dot" style="left:calc((100%/6)*4 + (100%/6)/2); top:calc((100%/6)*1.5); --cc:#69a50b;">2</div><div class="dot" style="left:calc((100%/6)*5 + (100%/6)/2); top:calc((100%/6)*0.5); --cc:#69a50b;">1</div>
+    </div>
+    <div class="note-strip"><span></span><span style="color:#69a50b;">Bb</span><span style="color:#69a50b;">F</span><span style="color:#69a50b;">Bb</span><span style="color:#69a50b;">Db</span><span style="color:#69a50b;">F</span></div>
+  </div>
+</section><section class="sheet" style="border-color:#d2b207; background:#f9f5e1;">
+  <h1 class="title">F Minor</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      
+      <div class="barre" style="left:calc((100%/6)*3 + (100%/6)*0.12); width:calc((100%/6)*2 + (100%/6)*0.76); top:calc((100%/6)*0.5); --cc:#d2b207;">1</div>
+      <div class="dot" style="left:calc((100%/6)*0 + (100%/6)/2); top:calc((100%/6)*0.5); --cc:#d2b207;">1</div><div class="dot" style="left:calc((100%/6)*1 + (100%/6)/2); top:calc((100%/6)*2.5); --cc:#d2b207;">3</div><div class="dot" style="left:calc((100%/6)*2 + (100%/6)/2); top:calc((100%/6)*2.5); --cc:#d2b207;">4</div>
+    </div>
+    <div class="note-strip"><span style="color:#d2b207;">F</span><span style="color:#d2b207;">C</span><span style="color:#d2b207;">F</span><span style="color:#d2b207;">G#</span><span style="color:#d2b207;">C</span><span style="color:#d2b207;">F</span></div>
+  </div>
+</section><section class="sheet" style="border-color:#d45a16; background:#f9ebe3;">
+  <h1 class="title">C Minor</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#bfbfbf;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      <div class="xo" style="left:calc((100%/6)*0 + (100%/6)/2); color:#d45a16;">X</div>
+      
+      <div class="dot" style="left:calc((100%/6)*1 + (100%/6)/2); top:calc((100%/6)*2.5); --cc:#d45a16;">1</div><div class="dot" style="left:calc((100%/6)*2 + (100%/6)/2); top:calc((100%/6)*4.5); --cc:#d45a16;">3</div><div class="dot" style="left:calc((100%/6)*3 + (100%/6)/2); top:calc((100%/6)*4.5); --cc:#d45a16;">4</div><div class="dot" style="left:calc((100%/6)*4 + (100%/6)/2); top:calc((100%/6)*3.5); --cc:#d45a16;">2</div><div class="dot" style="left:calc((100%/6)*5 + (100%/6)/2); top:calc((100%/6)*2.5); --cc:#d45a16;">1</div>
+    </div>
+    <div class="note-strip"><span></span><span style="color:#d45a16;">C</span><span style="color:#d45a16;">G</span><span style="color:#d45a16;">C</span><span style="color:#d45a16;">D#</span><span style="color:#d45a16;">G</span></div>
+  </div>
+</section><section class="sheet" style="border-color:#d4442a; background:#f9e8e5;">
+  <h1 class="title">G Minor</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      
+      <div class="barre" style="left:calc((100%/6)*3 + (100%/6)*0.12); width:calc((100%/6)*2 + (100%/6)*0.76); top:calc((100%/6)*2.5); --cc:#d4442a;">1</div>
+      <div class="dot" style="left:calc((100%/6)*0 + (100%/6)/2); top:calc((100%/6)*2.5); --cc:#d4442a;">1</div><div class="dot" style="left:calc((100%/6)*1 + (100%/6)/2); top:calc((100%/6)*4.5); --cc:#d4442a;">3</div><div class="dot" style="left:calc((100%/6)*2 + (100%/6)/2); top:calc((100%/6)*4.5); --cc:#d4442a;">4</div>
+    </div>
+    <div class="note-strip"><span style="color:#d4442a;">G</span><span style="color:#d4442a;">D</span><span style="color:#d4442a;">G</span><span style="color:#d4442a;">A#</span><span style="color:#d4442a;">D</span><span style="color:#d4442a;">G</span></div>
+  </div>
+</section><section class="sheet" style="border-color:#d4293f; background:#f9e5e7;">
+  <h1 class="title">D Minor</h1>
+  <div class="fretboard-wrap">
+    <div class="fretboard">
+      <div class="nut"></div>
+      <div class="endline"></div>
+      <div class="fret-line" style="top:calc((100%/6)*1);"></div><div class="fret-line" style="top:calc((100%/6)*2);"></div><div class="fret-line" style="top:calc((100%/6)*3);"></div><div class="fret-line" style="top:calc((100%/6)*4);"></div><div class="fret-line" style="top:calc((100%/6)*5);"></div>
+      <div class="inlay" style="top:calc((100%/6)*2.5);"></div><div class="inlay" style="top:calc((100%/6)*4.5);"></div>
+      <div class="string" style="left:calc((100%/6)*0 + (100%/6)/2); --sw:18px; --sc:#bfbfbf;"></div><div class="string" style="left:calc((100%/6)*1 + (100%/6)/2); --sw:12px; --sc:#bfbfbf;"></div><div class="string" style="left:calc((100%/6)*2 + (100%/6)/2); --sw:8px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*3 + (100%/6)/2); --sw:6px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*4 + (100%/6)/2); --sw:4px; --sc:#111;"></div><div class="string" style="left:calc((100%/6)*5 + (100%/6)/2); --sw:3px; --sc:#111;"></div>
+      <div class="xo" style="left:calc((100%/6)*0 + (100%/6)/2); color:#d4293f;">X</div><div class="xo" style="left:calc((100%/6)*1 + (100%/6)/2); color:#d4293f;">X</div><div class="xo" style="left:calc((100%/6)*2 + (100%/6)/2); color:#d4293f;">O</div>
+      
+      <div class="dot" style="left:calc((100%/6)*3 + (100%/6)/2); top:calc((100%/6)*1.5); --cc:#d4293f;">2</div><div class="dot" style="left:calc((100%/6)*4 + (100%/6)/2); top:calc((100%/6)*2.5); --cc:#d4293f;">3</div><div class="dot" style="left:calc((100%/6)*5 + (100%/6)/2); top:calc((100%/6)*0.5); --cc:#d4293f;">1</div>
+    </div>
+    <div class="note-strip"><span></span><span></span><span style="color:#d4293f;">D</span><span style="color:#d4293f;">A</span><span style="color:#d4293f;">D</span><span style="color:#d4293f;">F</span></div>
+  </div>
+</section></body></html>

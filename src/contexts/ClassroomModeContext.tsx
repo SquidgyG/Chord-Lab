@@ -1,31 +1,34 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
+/* eslint-disable react-refresh/only-export-components */
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 export interface ClassroomModeContextValue {
-  classroomMode: boolean
-  setClassroomMode: (v: boolean) => void
-  toggleClassroomMode: () => void
+  classroomMode: boolean;
+  setClassroomMode: (v: boolean) => void;
+  toggleClassroomMode: () => void;
 }
 
-const ClassroomModeContext = createContext<ClassroomModeContextValue | undefined>(undefined)
+const ClassroomModeContext = createContext<ClassroomModeContextValue | undefined>(undefined);
 
 export function ClassroomModeProvider({ children }: { children: React.ReactNode }) {
   const [classroomMode, setClassroomMode] = useState<boolean>(() => {
     try {
-      const saved = localStorage.getItem('classroomMode')
-      const parsed = saved ? (JSON.parse(saved) as unknown) : false
-      return typeof parsed === 'boolean' ? parsed : false
+      const saved = localStorage.getItem('classroomMode');
+      const parsed = saved ? (JSON.parse(saved) as unknown) : false;
+      return typeof parsed === 'boolean' ? parsed : false;
     } catch {
-      return false
+      // ignore localStorage read errors
+      return false;
     }
-  })
+  });
 
   useEffect(() => {
     try {
-      localStorage.setItem('classroomMode', JSON.stringify(classroomMode))
+      localStorage.setItem('classroomMode', JSON.stringify(classroomMode));
     } catch {
-      /* ignore */
+      // ignore localStorage write errors
+      void 0;
     }
-  }, [classroomMode])
+  }, [classroomMode]);
 
   const value = useMemo(
     () => ({
