@@ -6,7 +6,7 @@ import RhythmExercise from './exercises/RhythmExercise'
 import ChordSwitchingExercise from './exercises/ChordSwitchingExercise'
 import TheoryQuiz from './quizzes/TheoryQuiz'
 import AdvancedTechniqueExercise from './exercises/AdvancedTechniqueExercise'
-import CreatorMode from './CreatorMode'
+// import CreatorMode from './CreatorMode'
 
 const lessonComponents: Record<string, () => React.ReactElement> = {
   '1-e1': () => <NameTheNoteQuiz />,
@@ -27,7 +27,7 @@ const lessonComponents: Record<string, () => React.ReactElement> = {
     />
   ),
   '5-s1': () => <AdvancedTechniqueExercise />,
-  '6-k1': () => <CreatorMode />,
+  // '6-k1': () => <CreatorMode />,
 }
 
 const LearningPathway = () => {
