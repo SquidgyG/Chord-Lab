@@ -11,6 +11,15 @@ export function getNoteParts(note: string): { root: string, octave: number } | n
   return { root: match[1], octave: parseInt(match[2], 10) };
 }
 
+/**
+ * Extracts the note name (e.g., "C#") from a full note string (e.g., "C#4").
+ * Returns the original string if no octave is found.
+ */
+export function getNoteName(note: string): string {
+  const match = /^([A-Ga-g][#b]?)/.exec(note);
+  return match ? match[1] : note;
+}
+
 export function getMidiNumber(note: string): number | null {
   const parts = getNoteParts(note);
   if (!parts) return null;
