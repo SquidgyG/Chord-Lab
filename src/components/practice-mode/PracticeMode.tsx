@@ -9,6 +9,7 @@ import ChallengeMode from './ChallengeMode';
 import Statistics from './Statistics';
 import PracticeMetronomeControls from './PracticeMetronomeControls';
 import InstrumentPanel from './InstrumentPanel';
+import SongPractice from './SongPractice';
 import { useHighestUnlockedLevel } from '../learning-path/LearningPathway';
 
 interface Chord {
@@ -132,6 +133,7 @@ const PracticeMode: FC = () => {
   const [currentChord, setCurrentChord] = useState<Chord | null>(
     availableChords[0] || null
   );
+  const [showSongPractice, setShowSongPractice] = useState(false);
   const { unlockAchievement } = useAchievements();
   const [{ isPlaying, bpm }, { start, stop, setBpm }] = useMetronome(60, 4);
   const {
@@ -255,6 +257,10 @@ const PracticeMode: FC = () => {
     });
   }, [keyCenter, highestUnlockedLevel]);
 
+  if (showSongPractice) {
+    return <SongPractice onClose={() => setShowSongPractice(false)} />;
+  }
+
   return (
     <div className="bg-white dark:bg-gray-800/50 rounded-xl shadow-lg p-6">
       <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Practice Mode</h2>
@@ -331,6 +337,17 @@ const PracticeMode: FC = () => {
             }`}
           >
             {showTips ? 'On' : 'Off'}
+          </button>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Song
+          </label>
+          <button
+            onClick={() => setShowSongPractice(true)}
+            className="px-4 py-2 rounded-lg bg-indigo-500 text-white"
+          >
+            Choose Song
           </button>
         </div>
       </div>
