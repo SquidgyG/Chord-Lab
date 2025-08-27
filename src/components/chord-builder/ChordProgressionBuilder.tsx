@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Chord {
   id: string;
@@ -7,12 +7,21 @@ interface Chord {
 }
 
 const ChordProgressionBuilder = () => {
-  const [chords, setChords] = useState<Chord[]>([
-    { id: '1', name: 'C', key: 'C' },
-    { id: '2', name: 'G', key: 'G' },
-    { id: '3', name: 'Am', key: 'A' },
-    { id: '4', name: 'F', key: 'F' },
-  ]);
+  const [chords, setChords] = useState<Chord[]>(() => {
+    const saved = localStorage.getItem('chordProgression');
+    return saved
+      ? (JSON.parse(saved) as Chord[])
+      : [
+          { id: '1', name: 'C', key: 'C' },
+          { id: '2', name: 'G', key: 'G' },
+          { id: '3', name: 'Am', key: 'A' },
+          { id: '4', name: 'F', key: 'F' },
+        ];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('chordProgression', JSON.stringify(chords));
+  }, [chords]);
   
   const [selectedKey, setSelectedKey] = useState('C');
   
@@ -27,6 +36,13 @@ const ChordProgressionBuilder = () => {
   
   const removeChord = (id: string) => {
     setChords(chords.filter(chord => chord.id !== id));
+  };
+
+  const loadSavedProgression = () => {
+    const saved = localStorage.getItem('chordProgression');
+    if (saved) {
+      setChords(JSON.parse(saved) as Chord[]);
+    }
   };
   
   const commonChords = ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'Am', 'Bm', 'Cm', 'Dm', 'Em', 'Fm', 'Gm'];
@@ -87,12 +103,18 @@ const ChordProgressionBuilder = () => {
         </div>
       </div>
       
-      <div className="mt-6 flex justify-between">
-        <button 
+      <div className="mt-6 flex flex-wrap gap-2 justify-between">
+        <button
           onClick={() => setChords([])}
           className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
         >
           Clear All
+        </button>
+        <button
+          onClick={loadSavedProgression}
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+        >
+          Load Saved Progression
         </button>
         <button
           className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
