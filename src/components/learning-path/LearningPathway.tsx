@@ -3,12 +3,26 @@ import { learningPath } from '../../data/learning-path'
 import NameTheNoteQuiz from './quizzes/NameTheNoteQuiz'
 import RhythmExercise from './exercises/RhythmExercise'
 import ChordSwitchingExercise from './exercises/ChordSwitchingExercise'
+import TheoryQuiz from './quizzes/TheoryQuiz'
 
 const lessonComponents: Record<string, () => React.ReactElement> = {
   '1-e1': () => <NameTheNoteQuiz />,
   '1-s2': () => <RhythmExercise />,
   '2-s1': () => <ChordSwitchingExercise progression={['C', 'F']} />,
   '3-s1': () => <ChordSwitchingExercise progression={['C', 'G', 'Am', 'F']} />,
+  '4-s1': () => <ChordSwitchingExercise progression={['G', 'D', 'Em', 'C']} />,
+  '4-e1': () => (
+    <TheoryQuiz
+      question="Why is Em the 'vi' chord in the key of G major?"
+      options={[
+        'E is the 6th note of the G major scale.',
+        'It sounds good.',
+        'It has the same notes as G major.',
+        'It is the relative minor of G major.',
+      ]}
+      correctAnswer="E is the 6th note of the G major scale."
+    />
+  ),
 }
 
 const LearningPathway = () => {

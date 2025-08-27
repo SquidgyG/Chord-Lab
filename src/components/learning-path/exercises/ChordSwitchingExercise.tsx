@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import useMetronome from '../../../hooks/useMetronome'
 import GuitarDiagram from '../../diagrams/GuitarDiagram'
 
-type ChordName = 'C' | 'F' | 'G' | 'Am'
+type ChordName = 'C' | 'F' | 'G' | 'Am' | 'D' | 'Em'
 type ChordData = {
   name: ChordName
   guitarPositions: { string: number; fret: number }[]
@@ -46,6 +46,23 @@ const chords: Record<ChordName, ChordData> = {
       { string: 4, fret: 2 },
     ],
     guitarFingers: [1, 2, 3],
+  },
+  D: {
+    name: 'D',
+    guitarPositions: [
+      { string: 1, fret: 2 },
+      { string: 2, fret: 3 },
+      { string: 3, fret: 2 },
+    ],
+    guitarFingers: [2, 3, 1],
+  },
+  Em: {
+    name: 'Em',
+    guitarPositions: [
+      { string: 4, fret: 2 },
+      { string: 5, fret: 2 },
+    ],
+    guitarFingers: [2, 3],
   },
 }
 

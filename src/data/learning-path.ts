@@ -153,4 +153,43 @@ export const learningPath: Level[] = [
       },
     ],
   },
+  {
+    id: 4,
+    title: 'Level 4 – Performer',
+    subtitle: 'Mastering',
+    learningIntentions: [
+      'Transpose the I–V–vi–IV progression to the key of G.',
+      'Understand the relationship between chords and scales.',
+    ],
+    lessons: [
+      {
+        id: '4-k1',
+        title: 'Core Knowledge: Transposition',
+        description: 'Learn how to transpose the I–V–vi–IV progression from C major to G major (G–D–Em–C).',
+        completed: false,
+        type: 'knowledge',
+      },
+      {
+        id: '4-s1',
+        title: 'Skill: Transposed Progression',
+        description: 'Play the G–D–Em–C loop for 16 bars with clean changes.',
+        completed: false,
+        type: 'skill',
+      },
+      {
+        id: '4-e1',
+        title: 'Evidence to Level Up',
+        description: 'Perform G–D–Em–C at ♩=90–100 for 16 bars. Explain why Em is vi in G.',
+        completed: false,
+        type: 'evidence',
+      },
+      {
+        id: '4-b1',
+        title: 'Bonus 4.5 – Feel & Flow',
+        description: 'Keyboard: Use inversions for smoother voice-leading. Guitar: Add accents or mutes.',
+        completed: false,
+        type: 'bonus',
+      },
+    ],
+  },
 ];
