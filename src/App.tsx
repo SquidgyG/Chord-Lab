@@ -5,11 +5,11 @@ import ChordProgressionBuilder from './components/chord-builder/ChordProgression
 import PracticeMode from './components/practice-mode/PracticeMode'
 import Metronome from './components/practice-mode/Metronome'
 import LearningPathway from './components/learning-path/LearningPathway'
-import { useClassroomMode } from './contexts/ClassroomModeContext'
+import { useHighContrastMode } from './contexts/HighContrastModeContext'
 import ChordWheel from './components/ChordWheel'
 import { useTheme } from './contexts/ThemeContext'
 import ScrollingPractice from './components/practice-mode/ScrollingPractice'
-import ClassroomMode from './components/classroom/ClassroomMode'
+import ClassroomTools from './components/classroom/ClassroomTools'
 // --- MERGED IMPORTS (from both branches) ---
 import { useUserProfile } from './contexts/UserProfileContext'
 import OnboardingFlow from './components/onboarding/OnboardingFlow'
@@ -18,7 +18,7 @@ import { AchievementToast } from './components/achievements/AchievementToast'
 import { ProfilePage } from './components/profile/ProfilePage'
 
 function App() {
-  const { classroomMode, toggleClassroomMode } = useClassroomMode()
+  const { highContrastMode, toggleHighContrastMode } = useHighContrastMode()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { theme, setTheme } = useTheme()
   // --- MERGED HOOK (from feature/code-improvements) ---
@@ -54,9 +54,7 @@ function App() {
       <NavLink to="/metronome" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
         Metronome
       </NavLink>
-      <NavLink to="/classroom" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
-        Classroom
-      </NavLink>
+      <NavLink to="/classroom-tools" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>Classroom Tools</NavLink>
        <NavLink to="/profile" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
         Profile
       </NavLink>
@@ -68,7 +66,7 @@ function App() {
     <AchievementProvider>
       <div
         className={`min-h-screen bg-white dark:bg-gray-900 ${
-          classroomMode ? 'text-[110%] contrast-125' : ''
+          highContrastMode ? 'text-[110%] contrast-125' : ''
         }`}
       >
         {/* --- MERGED JSX (from feature/code-improvements) --- */}
@@ -84,17 +82,25 @@ function App() {
               <nav className="hidden md:flex gap-2">{navLinks}</nav>
             </div>
             <div className="flex items-center gap-2">
+              <div className="flex items-center">
               <button
-                onClick={toggleClassroomMode}
+                onClick={toggleHighContrastMode}
                 className={`px-3 py-2 rounded-lg border ${
-                  classroomMode
+                  highContrastMode
                     ? 'bg-yellow-100 border-yellow-300 text-yellow-900'
                     : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700'
                 }`}
-                title="Classroom Mode: larger text and higher contrast"
+                title="High Contrast Mode: larger text and higher contrast"
               >
-                {classroomMode ? 'Classroom: On' : 'Classroom: Off'}
+                {highContrastMode ? 'High Contrast: On' : 'High Contrast: Off'}
               </button>
+                <span
+                  className="ml-1 cursor-help text-gray-500 dark:text-gray-400"
+                  title="Increases text size and contrast for easier viewing."
+                >
+                  ℹ️
+                </span>
+              </div>
               <button
                 onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
                 className="px-2 py-1 rounded-lg border bg-white border-gray-300 text-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
@@ -172,7 +178,7 @@ function App() {
             <Route path="/learn" element={<LearningPathway />} />
             <Route path="/wheel" element={<ChordWheel />} />
             <Route path="/metronome" element={<Metronome />} />
-            <Route path="/classroom" element={<ClassroomMode />} />
+            <Route path="/classroom-tools" element={<ClassroomTools />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

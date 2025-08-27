@@ -31,7 +31,7 @@ const chordData: Record<string, ChordDefinition> = {
   // Add other chords as needed
 };
 
-const ClassroomMode: React.FC = () => {
+const ClassroomTools: React.FC = () => {
   const [selectedKey, setSelectedKey] = useState('C')
   const [selectedProgression, setSelectedProgression] = useState('I–V–vi–IV')
   const [instrument, setInstrument] = useState<'guitar' | 'piano'>('guitar')
@@ -50,7 +50,7 @@ const ClassroomMode: React.FC = () => {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-      <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Creator Mode</h3>
+      <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">Classroom Tools</h3>
       <div className="flex flex-wrap gap-4 mb-4 items-end">
         <div>
           <label
@@ -140,4 +140,4 @@ const ClassroomMode: React.FC = () => {
   )
 }
 
-export default ClassroomMode
+export default ClassroomTools
