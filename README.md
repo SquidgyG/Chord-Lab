@@ -86,7 +86,7 @@ Chord Lab uses a progressive learning methodology:
 ## Development Setup
 
 ### Prerequisites
-- Node.js 20.19+ or 22.12+
+- Node.js 20.19–22.x (enforced via `package.json` `engines` field)
 - Git
 
 ### Quick Start
