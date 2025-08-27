@@ -1,5 +1,5 @@
-import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
-import { Achievement, achievements } from '../data/achievements';
+import type React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
+import type { Achievement, achievements } from '../data/achievements';
 
 interface AchievementContextType {
   unlockedAchievements: Set<string>;
