@@ -222,7 +222,7 @@ const PracticeMode: FC = () => {
   }, [keyCenter]);
 
   return (
-    <div className="bg-white dark:bg-gray-800/50 rounded-xl shadow-lg p-6">
+    <div className="w-full bg-white dark:bg-gray-800/50 rounded-xl shadow-lg p-6">
       <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Practice Mode</h2>
       {keyCenter && (
         <div className="mb-4 p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30">

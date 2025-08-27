@@ -76,7 +76,7 @@ function App() {
         {/* --- MERGED JSX (from main branch) --- */}
         <AchievementToast />
         <header className="bg-white dark:bg-gray-900/80 dark:border-b dark:border-gray-700 shadow-sm relative backdrop-blur-lg">
-          <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="w-full mx-auto px-4 md:px-8 py-3 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <span className="font-extrabold text-xl text-gray-900 dark:text-gray-100">
                 Chord Lab
@@ -163,7 +163,7 @@ function App() {
           )}
         </header>
 
-        <main className="max-w-6xl mx-auto px-4 py-6">
+        <main className="w-full mx-auto px-4 md:px-8 py-6">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/create" element={<ChordProgressionBuilder />} />
