@@ -113,6 +113,28 @@
         "title": "Metronome Online",
         "url": "https://www.metronomeonline.com"
       }
+    ],
+    "ableton_lessons": [
+      {
+        "title": "Learning Music (website)",
+        "url": "https://learningmusic.ableton.com/"
+      },
+      {
+        "title": "Beats (lesson)",
+        "url": "https://learningmusic.ableton.com/make-beats/make-beats.html"
+      },
+      {
+        "title": "Notes and Scales (lesson)",
+        "url": "https://learningmusic.ableton.com/notes-and-scales/notes-and-scales.html"
+      },
+      {
+        "title": "Chords (lesson)",
+        "url": "https://learningmusic.ableton.com/chords/chords.html"
+      },
+      {
+        "title": "The Playground (interactive)",
+        "url": "https://learningmusic.ableton.com/the-playground.html"
+      }
     ]
   },
   "songs": {
