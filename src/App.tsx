@@ -16,6 +16,7 @@ import OnboardingFlow from './components/onboarding/OnboardingFlow'
 import { AchievementProvider } from './contexts/AchievementContext'
 import { AchievementToast } from './components/achievements/AchievementToast'
 import { ProfilePage } from './components/profile/ProfilePage'
+import PracticeSummary from './components/practice-mode/PracticeSummary'
 
 function App() {
   const { classroomMode, toggleClassroomMode } = useClassroomMode()
@@ -51,14 +52,17 @@ function App() {
       <NavLink to="/wheel" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
         Chord Wheel
       </NavLink>
-      <NavLink to="/metronome" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
+      <NavLink to="/metronome" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}> 
         Metronome
       </NavLink>
-      <NavLink to="/classroom" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
+      <NavLink to="/classroom" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}> 
         Classroom
       </NavLink>
-       <NavLink to="/profile" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
-        Profile
+      <NavLink to="/progress" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}> 
+        Progress
+      </NavLink>
+      <NavLink to="/profile" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}> 
+       Profile
       </NavLink>
     </>
   )
@@ -173,6 +177,7 @@ function App() {
             <Route path="/wheel" element={<ChordWheel />} />
             <Route path="/metronome" element={<Metronome />} />
             <Route path="/classroom" element={<ClassroomMode />} />
+            <Route path="/progress" element={<PracticeSummary />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
