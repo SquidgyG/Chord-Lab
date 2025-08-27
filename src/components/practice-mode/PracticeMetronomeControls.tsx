@@ -7,6 +7,7 @@ interface PracticeMetronomeControlsProps {
   toggleMetronome: () => void;
   handleStrum: () => void;
   nextChord: () => void;
+  disableStrum?: boolean;
 }
 
 const PracticeMetronomeControls: FC<PracticeMetronomeControlsProps> = ({
@@ -16,6 +17,7 @@ const PracticeMetronomeControls: FC<PracticeMetronomeControlsProps> = ({
   toggleMetronome,
   handleStrum,
   nextChord,
+  disableStrum = false,
 }) => {
   return (
     <div className="flex flex-col items-end gap-2">
@@ -47,7 +49,8 @@ const PracticeMetronomeControls: FC<PracticeMetronomeControlsProps> = ({
         </button>
         <button
           onClick={handleStrum}
-          className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white"
+          disabled={disableStrum}
+          className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
           title="Play a quick strum"
         >
           Strum
