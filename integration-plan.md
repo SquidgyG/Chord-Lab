@@ -1,12 +1,5 @@
 # React Chord App Integration Plan
 
-## Distribution & Packaging Constraint
-- The app must be distributable as a single HTML file students can open directly in a browser (no install, no server).
-- Core functionality must run offline. Optional links to external websites or YouTube are allowed for enrichment, but the app should not depend on internet connectivity to function.
-- Maintain two build targets from the same codebase:
-  - Standard React SPA build for development and web hosting.
-  - Single-file offline build that inlines JS/CSS/assets into one HTML (student-ready).
-
 ## Integration Base Decision
 
 - **Base**: `Ultimate Chord App.html` (rich progression builder, theory tools, song play-along, achievements UX).
