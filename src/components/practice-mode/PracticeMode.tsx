@@ -5,6 +5,9 @@ import GuitarDiagram from '../diagrams/GuitarDiagram'
 import PianoDiagram from '../diagrams/PianoDiagram'
 import useMetronome from '../../hooks/useMetronome'
 import { useAchievements } from '../../contexts/AchievementContext'
+import usePracticeStatistics from '../../hooks/usePracticeStatistics'
+import ChallengeMode from './ChallengeMode'
+import Statistics from './Statistics'
 
 interface Chord {
   name: string
@@ -115,6 +118,20 @@ const PracticeMode: FC = () => {
   const practicedChordsRef = useRef<Set<string>>(new Set())
   const { unlockAchievement } = useAchievements()
   const [{ isPlaying, bpm }, { start, stop, setBpm }] = useMetronome(60, 4)
+  const {
+    totalPracticeTime,
+    chordsPlayed,
+    currentStreak,
+    bestChallengeTime,
+    isChallengeActive,
+    challengeTime,
+    startPracticeSession,
+    stopPracticeSession,
+    incrementChordsPlayed,
+    resetStreak,
+    startChallenge,
+    stopChallenge,
+  } = usePracticeStatistics()
   const [showTips, setShowTips] = useState<boolean>(true)
   const location = useLocation()
   const [keyCenter, setKeyCenter] = useState<MajorKey | null>(null)
@@ -145,6 +162,7 @@ const PracticeMode: FC = () => {
       const practicedChords = practicedChordsRef.current
       if (!practicedChords.has(currentChord.name)) {
         practicedChords.add(currentChord.name)
+        incrementChordsPlayed()
 
         if (practicedChords.size === 1) {
           unlockAchievement('FIRST_CHORD')
@@ -157,14 +175,17 @@ const PracticeMode: FC = () => {
         }
       }
     }
-  }, [currentChord, unlockAchievement])
+  }, [currentChord, unlockAchievement, incrementChordsPlayed])
 
   // Start/Stop metronome
   const playChord = () => {
     if (isPlaying) {
       stop()
+      stopPracticeSession()
+      resetStreak()
     } else {
       start()
+      startPracticeSession()
     }
   }
 
@@ -276,6 +297,7 @@ const PracticeMode: FC = () => {
 
   // Function to go to next chord
   const nextChord = () => {
+    incrementChordsPlayed()
     setCurrentChord(getRandomChord())
   }
 
@@ -450,6 +472,14 @@ const PracticeMode: FC = () => {
             </div>
           </div>
 
+          <ChallengeMode
+            isChallengeActive={isChallengeActive}
+            startChallenge={startChallenge}
+            stopChallenge={stopChallenge}
+            challengeTime={challengeTime}
+            bestChallengeTime={bestChallengeTime}
+          />
+
           <div className="flex justify-center my-6">
             {selectedInstrument === 'guitar' ? (
               <GuitarDiagram
@@ -492,6 +522,12 @@ const PracticeMode: FC = () => {
             ))}
         </div>
       </div>
+      <Statistics
+        totalPracticeTime={totalPracticeTime}
+        chordsPlayed={chordsPlayed}
+        currentStreak={currentStreak}
+        bestChallengeTime={bestChallengeTime}
+      />
     </div>
   )
 }
