@@ -10,6 +10,7 @@ import ChordWheel from './components/ChordWheel'
 import { useTheme } from './contexts/ThemeContext'
 import ScrollingPractice from './components/practice-mode/ScrollingPractice'
 import ClassroomMode from './components/classroom/ClassroomMode'
+import TeacherDashboard from './components/classroom/TeacherDashboard'
 // --- MERGED IMPORTS (from both branches) ---
 import { useUserProfile } from './contexts/UserProfileContext'
 import OnboardingFlow from './components/onboarding/OnboardingFlow'
@@ -173,6 +174,7 @@ function App() {
             <Route path="/wheel" element={<ChordWheel />} />
             <Route path="/metronome" element={<Metronome />} />
             <Route path="/classroom" element={<ClassroomMode />} />
+            <Route path="/classroom/dashboard" element={<TeacherDashboard />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
