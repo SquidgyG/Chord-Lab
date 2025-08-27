@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Soundfont from 'soundfont-player';
 
+// Define an interface for the instrument player
 interface InstrumentPlayer {
   play: (note: string, time?: number, options?: { duration?: number }) => void;
 }
