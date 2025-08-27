@@ -3,6 +3,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import PracticeMode from './PracticeMode'
 import { ThemeProvider } from '../../contexts/ThemeContext'
+import { AchievementProvider } from '../../contexts/AchievementContext'
 
 vi.mock('../../hooks/useMetronome', () => ({
   default: () => [
@@ -16,9 +17,11 @@ describe('PracticeMode', () => {
     return render(
       <MemoryRouter initialEntries={initialEntries}>
         <ThemeProvider>
-          <Routes>
-            <Route path="/practice" element={<PracticeMode />} />
-          </Routes>
+          <AchievementProvider>
+            <Routes>
+              <Route path="/practice" element={<PracticeMode />} />
+            </Routes>
+          </AchievementProvider>
         </ThemeProvider>
       </MemoryRouter>
     );
