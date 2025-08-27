@@ -15,6 +15,7 @@ import { useUserProfile } from './contexts/UserProfileContext'
 import OnboardingFlow from './components/onboarding/OnboardingFlow'
 import { AchievementProvider } from './contexts/AchievementContext'
 import { AchievementToast } from './components/achievements/AchievementToast'
+import HelpResources from './components/HelpResources'
 import { ProfilePage } from './components/profile/ProfilePage'
 
 function App() {
@@ -171,6 +172,7 @@ function App() {
             <Route path="/practice/scrolling" element={<ScrollingPractice />} />
             <Route path="/learn" element={<LearningPathway />} />
             <Route path="/wheel" element={<ChordWheel />} />
+            <Route path="/help" element={<HelpResources />} />
             <Route path="/metronome" element={<Metronome />} />
             <Route path="/classroom" element={<ClassroomMode />} />
             <Route path="/profile" element={<ProfilePage />} />
