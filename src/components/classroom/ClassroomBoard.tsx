@@ -4,23 +4,7 @@ import PianoDiagram from '../diagrams/PianoDiagram'
 import { useProgress } from '../../contexts/ProgressContext'
 import { useClassroomMode } from '../../contexts/ClassroomModeContext'
 import { MAJORS_ORDER, getDiatonicForKey } from '../../utils/theory'
-
-// Shared basic chord data — keep small and readable for classroom demo
-interface Chord {
-  name: string
-  guitarPositions: { string: number; fret: number }[]
-  guitarFingers: number[]
-  pianoNotes: string[]
-}
-
-const chordData: Chord[] = [
-  { name: 'C',  guitarPositions: [ { string: 2, fret: 1 }, { string: 4, fret: 2 }, { string: 5, fret: 3 } ], guitarFingers: [1,2,3], pianoNotes: ['C4','E4','G4'] },
-  { name: 'G',  guitarPositions: [ { string: 1, fret: 3 }, { string: 2, fret: 0 }, { string: 5, fret: 2 }, { string: 6, fret: 3 } ], guitarFingers: [3,0,2,4], pianoNotes: ['G3','B3','D4'] },
-  { name: 'F',  guitarPositions: [ { string: 1, fret: 1 }, { string: 2, fret: 1 }, { string: 3, fret: 2 }, { string: 4, fret: 3 } ], guitarFingers: [1,1,2,3], pianoNotes: ['F3','A3','C4'] },
-  { name: 'Am', guitarPositions: [ { string: 2, fret: 1 }, { string: 3, fret: 2 }, { string: 4, fret: 2 } ], guitarFingers: [1,2,3], pianoNotes: ['A3','C4','E4'] },
-  { name: 'Em', guitarPositions: [ { string: 4, fret: 2 }, { string: 5, fret: 2 } ], guitarFingers: [2,3], pianoNotes: ['E3','G3','B3'] },
-  { name: 'Dm', guitarPositions: [ { string: 1, fret: 1 }, { string: 2, fret: 3 }, { string: 3, fret: 2 } ], guitarFingers: [1,3,2], pianoNotes: ['D4','F4','A4'] },
-]
+import { chordData } from '../../data/basicChords'
 
 const ClassroomBoard = () => {
   const { teacherUnlock } = useProgress()
@@ -86,7 +70,8 @@ const ClassroomBoard = () => {
       <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
         <h2 className={`${classroomMode ? 'text-3xl' : 'text-2xl'} font-bold text-gray-800`}>Classroom Board</h2>
         <div className="flex items-center gap-2">
-          <span className={`px-2 py-1 rounded text-xs font-semibold border ${teacherUnlock ? 'bg-green-100 border-green-300 text-green-900' : 'bg-gray-100 border-gray-300 text-gray-700'}`}>
+          <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs font-semibold border ${teacherUnlock ? 'bg-emerald-50 border-emerald-300 text-emerald-900' : 'bg-gray-100 border-gray-300 text-gray-700'}`}>
+            <span className={`inline-block h-1.5 w-1.5 rounded-full ${teacherUnlock ? 'bg-emerald-600' : 'bg-gray-500'}`} aria-hidden />
             {teacherUnlock ? 'Teacher Unlock: On' : 'Teacher Unlock: Off'}
           </span>
         </div>

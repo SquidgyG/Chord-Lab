@@ -8,6 +8,7 @@ import { useClassroomMode } from './contexts/ClassroomModeContext'
 import { useProgress } from './contexts/ProgressContext'
 import ChordWheel from './components/ChordWheel'
 import ClassroomBoard from './components/classroom/ClassroomBoard'
+import DiagramQA from './components/qa/DiagramQA'
 
 function App() {
   const { classroomMode, toggleClassroomMode } = useClassroomMode()
@@ -95,6 +96,7 @@ function App() {
           <Route path="/classroom" element={<ClassroomBoard />} />
           <Route path="/wheel" element={<ChordWheel />} />
           <Route path="/metronome" element={<Metronome />} />
+          <Route path="/qa/diagrams" element={<DiagramQA />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
