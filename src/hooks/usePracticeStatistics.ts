@@ -10,8 +10,8 @@ const usePracticeStatistics = () => {
 
   const [isChallengeActive, setIsChallengeActive] = useState(false);
   const [challengeTime, setChallengeTime] = useState(0);
-  const challengeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const practiceTimeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const challengeIntervalRef = useRef<ReturnType<typeof window.setInterval> | null>(null);
+  const practiceTimeIntervalRef = useRef<ReturnType<typeof window.setInterval> | null>(null);
 
   useEffect(() => {
     const storedStats = localStorage.getItem('practiceStats');
@@ -46,7 +46,7 @@ const usePracticeStatistics = () => {
     if (practiceTimeIntervalRef.current) {
       clearInterval(practiceTimeIntervalRef.current);
     }
-    practiceTimeIntervalRef.current = setInterval(() => {
+    practiceTimeIntervalRef.current = window.setInterval(() => {
       setTotalPracticeTime(prevTime => prevTime + 1000);
     }, 1000);
   }, []);
@@ -80,7 +80,7 @@ const usePracticeStatistics = () => {
       clearInterval(challengeIntervalRef.current);
     }
     const startTime = Date.now();
-    challengeIntervalRef.current = setInterval(() => {
+    challengeIntervalRef.current = window.setInterval(() => {
       setChallengeTime(Date.now() - startTime);
     }, 10);
     startPracticeSession();
