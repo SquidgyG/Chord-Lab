@@ -405,10 +405,10 @@ const PracticeMode: FC = () => {
           Other Chords to Practice
         </h4>
         <div data-testid="other-chords" className="flex flex-wrap gap-2">
-          {chords
+          {availableChords
             .filter((chord: Chord) => chord.name !== currentChord?.name)
             .map((chord: Chord) => {
-              const locked = chord.level > highestUnlockedLevel;
+              const locked = chord.level > highestUnlockedLevel; // Redundant, but kept for clarity
               return (
                 <button
                   key={chord.name}
