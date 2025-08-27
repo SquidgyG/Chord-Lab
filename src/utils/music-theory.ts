@@ -44,3 +44,22 @@ export function getChordInversion(notes: string[], inversion: number): string[] 
 
   return invertedMidi.map(getNoteFromMidi);
 }
+
+export function getDiatonicChords(key: string): string[] {
+  const keyIndex = noteMap[key];
+  if (keyIndex === undefined) return [];
+
+  const majorScaleIntervals = [0, 2, 4, 5, 7, 9, 11];
+  const chordQualities = ['maj', 'min', 'min', 'maj', 'maj', 'min', 'dim'];
+
+  const chords = majorScaleIntervals.map((interval, i) => {
+    const rootIndex = (keyIndex + interval) % 12;
+    const rootName = noteOrder[rootIndex];
+    const quality = chordQualities[i];
+    if (quality === 'maj') return rootName;
+    if (quality === 'min') return `${rootName}m`;
+    return `${rootName}dim`;
+  });
+
+  return chords;
+}

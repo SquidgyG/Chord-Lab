@@ -1,54 +1,39 @@
 # React Chord App Integration Plan
 
-## Distribution
-- Primary target: React SPA hosted on GitHub Pages.
-- Routing: `HashRouter` for compatibility with Pages base path.
-- Offline single-file build is out of scope going forward.
+## Distribution & Packaging Constraint
+- The app must be distributable as a single HTML file students can open directly in a browser (no install, no server).
+- Core functionality must run offline. Optional links to external websites or YouTube are allowed for enrichment, but the app should not depend on internet connectivity to function.
+- Maintain two build targets from the same codebase:
+  - Standard React SPA build for development and web hosting.
+  - Single-file offline build that inlines JS/CSS/assets into one HTML (student-ready).
 
 ## Integration Base Decision
 
 - **Base**: `Ultimate Chord App.html` (rich progression builder, theory tools, song play-along, achievements UX).
 - **Merge from `ChatGPT Version.html`**: metronome, Web Audio playback (`AudioContext` + `playChord()`), persistence via `localStorage`, and tabbed navigation model.
 - **Merge from other versions (as needed)**: ear training, scale visualizer, melody guide, and UI polish from `Gemini Version.html`, `Canva.html`, and `Enhanced Ultimate Chord App.html`.
-- **Navigation**: SPA uses `HashRouter` and is deployed to GitHub Pages.
+- **Navigation**: SPA uses `HashRouter`; standalone uses hash-based in-app tabs so navigation works offline without a server.
 - **Persistence**: `localStorage` for user profile, learned chords, best challenge time, progressions, and settings.
+- **Single-file constraint**: keep the standalone inlined build as the student-ready artifact.
 
-## Implemented to date
+## Pre-React Quick Wins
 
-- Classroom Board: `src/components/classroom/ClassroomBoard.tsx`
-  - Panel toggles (Chord Grid, Guitar, Piano), responsive layout, key selector + diatonic chips.
-  - Integrates `useProgress()` Teacher Unlock (with "Show Both" control) and `useClassroomMode()` for projector-friendly UI.
-  - Persists board UI state to `localStorage` (panels, key, chord).
-- Chord Wheel: `src/components/ChordWheel.tsx`
-  - Outer majors + inner relative minors, hover highlighting, drag-and-drop to builder drop zone.
-- Chord Progression Builder: `src/components/chord-builder/ChordProgressionBuilder.tsx`
-  - Key selection, quick templates (I–V–vi–IV, ii–V–I), DnD target, localStorage persistence.
-  - Playback via Web Audio hook.
-- Instrument Diagrams: `src/components/diagrams/{GuitarDiagram,PianoDiagram}.tsx` (baseline diagrams wired across app).
-- Audio foundation: `src/hooks/useAudio.ts` (AudioContext init, ADSR, playNote/playChord, guitar string calc).
-- Metronome: `src/components/practice-mode/Metronome.tsx` + `src/hooks/useMetronome.ts`.
-- Practice Mode: `src/components/practice-mode/PracticeMode.tsx` (instrument diagrams, tempo control, current chord selection; uses shared theory utils).
-- Shared theory helpers: `src/utils/theory.ts` (`MAJORS_ORDER`, `getDiatonicForKey`) consumed by Practice Mode and Classroom Board.
-- Global toggles: Header switch-style UI for Classroom Mode and Teacher Unlock with persistence via contexts.
-- Router: `HashRouter` (`src/main.tsx`) so SPA works when served statically (and aligns with Pages base path).
-- Deployment: GitHub Pages workflow configured under `.github/workflows/deploy.yml`.
-
-## Archive notes (HTML versions)
-
-- Kept for historical reference only. React SPA is the sole distribution target now.
+- Re-enable `localStorage` save/load in `Ultimate Chord App.html` for user progress and best challenge time.
+- Add a metronome (BPM, beats/measure, accent, visual tick) to Practice and Play-Along.
+- Enable drag sources on `ChordWheel` segments to complement the existing drop zone.
+- Track current view in `location.hash` to enable simple hash routing in the HTML version.
 
 ## React Port Task List (Checklist)
 
 ### Phase 1: Core
-- [x] Scaffold React app with Tailwind and `HashRouter`.
-- [x] Port `ChordWheel` + progression builder (click + DnD).
-- [x] Instrument diagrams (baseline `GuitarDiagram` and `PianoDiagram`).
-- [x] Implement Web Audio engine and `playChord()` with simple ADSR.
-- [x] Classroom Board baseline with projector-friendly toggle and Teacher Unlock integration.
+- [ ] Scaffold React app with Tailwind and `HashRouter`.
+- [ ] Port `ChordWheel` + progression builder (click + DnD).
+- [ ] Port `EnhancedGuitarDiagram` and `EnhancedPianoDiagram`.
+- [ ] Implement Web Audio engine and `playChord()` with simple ADSR.
 
 ### Phase 2: Practice
-- [x] Metronome with BPM, beats/measure, accents, visual tick.
-- [ ] Practice flow with tempo control and basic stats. (tempo + flow present; basic stats pending)
+- [ ] Metronome with BPM, beats/measure, accents, visual tick.
+- [ ] Practice flow with tempo control and basic stats.
 - [ ] Persist session state via `localStorage`.
 
 ### Phase 3: Learning
@@ -61,10 +46,9 @@
 - [ ] Song Library Play-Along with audio and tempo control.
 - [ ] Challenge mode with best-time persistence.
 
-### Phase 5: Deployment & QA
-- [ ] Confirm GitHub Pages pipeline status on `main`.
-- [ ] App smoke test on Pages URL across Chrome/Edge/Safari.
-- [ ] Accessibility pass (keyboard nav, ARIA, contrast) and fix regressions.
+### Phase 5: Packaging
+- [ ] Single-file inlined build target.
+- [ ] Offline QA checklist and release artifact.
 
 ## Core Features to Implement
 
@@ -73,7 +57,7 @@
 - **State Management**: Use React hooks for state management (useState, useEffect, useContext)
 - **Styling**: Implement Tailwind CSS for consistent styling
 - **Routing**: For SPA, use React Router (prefer HashRouter so routes work without a server). The single-file build may use in-app tab state and hashes for navigation.
-- **Build Target**: SPA hosted on GitHub Pages.
+- **Build Targets**: Provide both SPA and single-file offline builds; ensure feature parity where possible.
 
 ### 2. Essential Components
 
@@ -254,9 +238,9 @@
 2. Add responsive design
 3. Optimize performance
 4. Add final visual polish
-5. Accessibility pass (keyboard nav, ARIA, contrast)
-6. Cross-browser smoke test on GitHub Pages URL (Chrome/Edge/Safari)
-7. Verify GitHub Pages deploy pipeline and document release checklist
+5. Produce the single-file offline build (chord-lab-standalone.html) and complete an offline QA checklist
+6. Package the standalone build for distribution, ensuring all assets are inlined and no external dependencies are required
+7. Perform thorough QA of the standalone build to ensure it meets all requirements and functions as expected
 
 ## Technical Considerations
 
@@ -276,9 +260,12 @@
 - Implement data validation and error handling
 - Consider IndexedDB for more complex data storage
 
-### Hosting considerations
-- Use `HashRouter` to avoid 404s on Pages refresh.
-- Ensure asset paths respect repo base path for GitHub Pages.
+### Single-file Build
+- Inline JS, CSS, and assets into a single HTML for student distribution.
+- Avoid CDNs in the standalone build; use bundled assets or embedded fonts. External links (e.g., help pages, YouTube) are permitted but optional.
+- Avoid dynamic imports in standalone mode; ensure static bundling.
+- Persist state via localStorage; do not require network APIs.
+- Smoke test offline in Chrome/Edge/Safari by opening the file directly.
 
 ### Accessibility
 - Ensure keyboard navigation
@@ -326,6 +313,7 @@ npm install use-sound
 ## Deployment
 
 1. Optimize build for production
-2. Optional: add service worker/PWA if offline caching is desired for SPA
-3. Optional: analytics
-4. Deploy SPA to GitHub Pages (workflow in `.github/workflows/deploy.yml`)
+2. Add service worker for offline support (SPA build)
+3. Implement analytics (if desired) in SPA build only
+4. Deploy SPA to Netlify or Vercel
+5. Generate and distribute chord-lab-standalone.html as the student-ready artifact; verify it opens and runs offline without a server
