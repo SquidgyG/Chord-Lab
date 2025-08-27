@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import useAudio from '../../hooks/useAudio';
+import { getDiatonicChords } from '../../utils/music-theory';
 
 interface Chord {
   id: string;
@@ -22,6 +23,7 @@ const ChordProgressionBuilder = () => {
 
   const [selectedKey, setSelectedKey] = useState('C');
   const [isPlaying, setIsPlaying] = useState(false);
+  const [diatonicOnly, setDiatonicOnly] = useState(true);
 
   const { initAudio, playChord } = useAudio();
 
@@ -36,13 +38,33 @@ const ChordProgressionBuilder = () => {
   const NOTE_SEQUENCE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
   const chordToNotes = (name: string): string[] => {
-    const isMinor = name.endsWith('m');
-    const root = isMinor ? name.slice(0, -1) : name;
+    let quality: 'maj' | 'min' | 'dim' = 'maj';
+    let root = name;
+
+    if (name.endsWith('dim')) {
+      quality = 'dim';
+      root = name.slice(0, -3);
+    } else if (name.endsWith('m')) {
+      quality = 'min';
+      root = name.slice(0, -1);
+    }
+
     const rootIndex = NOTE_SEQUENCE.indexOf(root);
     if (rootIndex === -1) return [];
 
-    const thirdIndex = (rootIndex + (isMinor ? 3 : 4)) % 12;
-    const fifthIndex = (rootIndex + 7) % 12;
+    let thirdIndex: number;
+    let fifthIndex: number;
+
+    if (quality === 'maj') {
+      thirdIndex = (rootIndex + 4) % 12;
+      fifthIndex = (rootIndex + 7) % 12;
+    } else if (quality === 'min') {
+      thirdIndex = (rootIndex + 3) % 12;
+      fifthIndex = (rootIndex + 7) % 12;
+    } else {
+      thirdIndex = (rootIndex + 3) % 12;
+      fifthIndex = (rootIndex + 6) % 12;
+    }
 
     return [
       `${root}4`,
@@ -84,7 +106,13 @@ const ChordProgressionBuilder = () => {
     }
   };
   
-  const commonChords = ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'Am', 'Bm', 'Cm', 'Dm', 'Em', 'Fm', 'Gm'];
+  const allChords = [
+    'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B',
+    'Cm', 'C#m', 'Dm', 'D#m', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'A#m', 'Bm',
+    'Cdim', 'C#dim', 'Ddim', 'D#dim', 'Edim', 'Fdim', 'F#dim', 'Gdim', 'G#dim', 'Adim', 'A#dim', 'Bdim'
+  ];
+
+  const availableChords = diatonicOnly ? getDiatonicChords(selectedKey) : allChords;
   
   return (
     <div className="bg-white rounded-xl shadow-lg p-6">
@@ -129,8 +157,22 @@ const ChordProgressionBuilder = () => {
       
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Add Chords</label>
+        <div className="flex mb-4 gap-2">
+          <button
+            onClick={() => setDiatonicOnly(true)}
+            className={`px-4 py-2 rounded-lg ${diatonicOnly ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-800'}`}
+          >
+            Diatonic Only
+          </button>
+          <button
+            onClick={() => setDiatonicOnly(false)}
+            className={`px-4 py-2 rounded-lg ${!diatonicOnly ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-800'}`}
+          >
+            All Chords
+          </button>
+        </div>
         <div className="grid grid-cols-7 gap-2">
-          {commonChords.map(chord => (
+          {availableChords.map(chord => (
             <button
               key={chord}
               onClick={() => addChord(chord)}
