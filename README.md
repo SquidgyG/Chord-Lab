@@ -1,116 +1,218 @@
 # Chord Lab
 
-Interactive chord learning app for guitar and piano. Two distribution targets:
+An interactive music learning application that teaches piano and guitar chords through progressive lessons, visual guides, and audio feedback. Built for students, teachers, and self-learners who want to master chord playing with proper technique.
 
-- Hosted (recommended): GitHub Pages static site. No installs for students.
-- Offline (optional): Single-file HTML `chord-lab-standalone.html` that opens locally.
+**[Launch App](https://squidgyg.github.io/Chord-Lab/)** | **[Download Offline Version](https://github.com/SquidgyG/Chord-Lab/releases)**
 
-Live Site
+![GitHub Pages](https://img.shields.io/github/deployments/SquidgyG/Chord-Lab/github-pages?label=deployment)
+![License](https://img.shields.io/github/license/SquidgyG/Chord-Lab)
+![React](https://img.shields.io/badge/React-18-blue)
+![Vite](https://img.shields.io/badge/Vite-5-646CFF)
 
-- https://squidgyg.github.io/Chord-Lab/
+## Features
 
-Archive
+### For Students
+- **Interactive Instrument Visualization**: Click piano keys or see guitar chord diagrams with finger positions
+- **Progressive Lesson System**: Start with proper posture and build up to complex chord progressions
+- **Audio Feedback**: Hear each chord and individual notes as you learn
+- **Mobile-Friendly**: Practice on any device - phone, tablet, or desktop
+- **Offline Capable**: Works without internet connection once loaded
+- **No Installation Required**: Runs directly in your web browser
 
-- Legacy HTMLs are preserved in `archive/` for reference only.
+### For Teachers
+- **Structured Curriculum**: Lessons progress logically from basics to advanced techniques
+- **Visual Learning Aids**: Clear finger numbering and chord diagrams
+- **Practice Tracking**: Students can see their progress and completed lessons
+- **Accessibility Features**: Keyboard navigation and screen reader support
 
-Quick start
+## How to Use
 
+1. **Choose Your Instrument**: Select piano or guitar from the main interface
+2. **Start a Lesson**: Begin with "Piano Basics" or "Guitar Essentials" for structured learning
+3. **Practice Individual Chords**: Use the chord library to explore specific chords
+4. **Follow Visual Guides**: Finger numbers and chord diagrams show proper technique
+5. **Listen and Play**: Click notes/strings to hear sounds and practice timing
+
+### Supported Chords
+- **Major chords**: C, F, G, D, A, E, B
+- **Minor chords**: Am, Em, Dm, Bm, F#m, C#m, G#m
+- **Extensions coming soon**: 7th chords, suspended chords, and more
+
+## Browser Compatibility
+
+- **Recommended**: Chrome, Firefox, Safari, Edge (latest versions)
+- **Mobile**: iOS Safari, Android Chrome
+- **Audio Requirements**: Web Audio API support (available in all modern browsers)
+- **Progressive Web App**: Can be installed on mobile devices for offline use
+
+## Screenshots
+
+<!-- Add these screenshots to your repository and link them -->
+*Piano Interface*
+![Piano chord visualization with finger numbers](screenshots/piano-interface.png)
+
+*Guitar Chord Diagrams*
+![Guitar chord diagrams with fret positions](screenshots/guitar-interface.png)
+
+*Lesson System*
+![Progressive lesson interface](screenshots/lessons.png)
+
+*Mobile View*
+![Responsive design on mobile devices](screenshots/mobile-view.png)
+
+## Educational Approach
+
+Chord Lab uses a progressive learning methodology:
+
+1. **Proper Foundation**: Start with correct posture and hand positioning
+2. **Visual Learning**: See exactly where fingers go with clear diagrams
+3. **Audio Reinforcement**: Hear what chords should sound like
+4. **Muscle Memory**: Practice chord transitions and progressions
+5. **Real Application**: Learn chords used in actual songs
+
+## Technical Details
+
+### Architecture
+- **Frontend**: React 18 with hooks and functional components
+- **Build Tool**: Vite for fast development and optimized production builds
+- **Audio**: Web Audio API for real-time sound generation
+- **Styling**: Tailwind CSS for responsive design
+- **Deployment**: GitHub Pages for reliable hosting
+
+### Distribution Targets
+- **Hosted (Recommended)**: GitHub Pages static site - no installation needed for students
+- **Offline**: Single-file HTML (`chord-lab-standalone.html`) that opens directly in browser
+
+## Development Setup
+
+### Prerequisites
+- Node.js 20.19+ or 22.12+
+- Git
+
+### Quick Start
 ```bash
-# Requires Node 20.19+ or 22.12+
+# Clone the repository
+git clone https://github.com/SquidgyG/Chord-Lab.git
+cd Chord-Lab
+
+# Install dependencies
 npm ci
+
+# Start development server
 npm run dev
-# open http://localhost:5173
+# Open http://localhost:5173
 ```
 
-Build & deploy (GitHub Pages)
+### Build Commands
+```bash
+# Production build for GitHub Pages
+npm run build
 
+# Create standalone single-file version
+npm run build:standalone
+# Output: chord-lab-standalone.html
+```
+
+### Project Structure
+```
+src/                 # React application source code
+offline/             # Sources for single-file build
+scripts/             # Build utilities
+  build-standalone.mjs  # Inlines CSS/JS into single HTML
+archive/             # Legacy versions (reference only)
+.github/workflows/   # GitHub Actions for deployment
+```
+
+## Deployment
+
+### GitHub Pages (Automatic)
+The app deploys automatically to GitHub Pages when changes are pushed to the `main` branch via GitHub Actions (`.github/workflows/deploy.yml`).
+
+### Manual Deployment
 ```bash
 npm run build
-# push to main to trigger .github/workflows/deploy.yml
+# Deploy the dist/ folder to your hosting provider
 ```
 
-Offline single-file build (optional)
+## Contributing
 
-```bash
-npm run build:standalone
-# output: chord-lab-standalone.html (open directly)
-```
+We welcome contributions! Here's how you can help:
 
-Repository layout
+### Adding New Chords
+1. Update chord data in the relevant configuration file
+2. Add finger positions for both piano and guitar
+3. Include chord in appropriate lesson progressions
+4. Test audio playback and visual display
 
-- `src/` React app (SPA)
-- `offline/` sources for the single-file build
-- `scripts/build-standalone.mjs` inlines CSS/JS into one HTML
-- `archive/` legacy HTMLs (reference only)
+### Adding New Lessons
+1. Follow the existing lesson structure
+2. Include proper technique tips and common mistakes
+3. Ensure progressive difficulty increase
+4. Add practice exercises and assessments
+
+### Bug Reports
+Please include:
+- Browser and version
+- Device type (desktop/mobile)
+- Steps to reproduce
+- Expected vs actual behavior
+
+### Development Guidelines
+- Use TypeScript for new components
+- Follow existing code style and component patterns
+- Test on multiple devices and browsers
+- Ensure accessibility compliance
+
+## Accessibility
+
+Chord Lab is designed to be inclusive:
+- **Keyboard Navigation**: All interactive elements accessible via keyboard
+- **Screen Reader Support**: Proper ARIA labels and semantic HTML
+- **High Contrast**: Supports system high contrast modes
+- **Reduced Motion**: Respects user's motion preferences
+- **Touch Targets**: Appropriately sized for mobile interaction
+
+## Troubleshooting
+
+### Audio Issues
+- **No sound**: Check browser audio permissions and system volume
+- **Distorted audio**: Try refreshing the page to reset Web Audio context
+- **Mobile audio**: Some mobile browsers require user interaction before audio plays
+
+### Performance Issues
+- **Slow loading**: Check internet connection; try the offline version
+- **Laggy interactions**: Close other browser tabs and applications
+
+### Browser Compatibility
+- **Old browsers**: Upgrade to a modern browser version
+- **iOS Safari**: Requires iOS 14+ for full functionality
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- Web Audio API documentation and examples
+- Music theory resources from various educational institutions
+- Open source community for React and Vite tooling
+- Beta testers and music educators who provided feedback
+
+## Roadmap
+
+### Planned Features
+- [ ] 7th chords and chord extensions
+- [ ] Chord progression generator
+- [ ] MIDI keyboard support
+- [ ] Recording and playback functionality
+- [ ] Custom lesson creation tools
+- [ ] Multi-language support
+
+### Version History
+- **v2.0**: React + Vite rewrite with improved performance
+- **v1.0**: Initial release with basic chord visualization
+- **Legacy**: HTML-only versions preserved in `archive/`
 
 ---
 
-## Vite template notes
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+**Questions or feedback?** Open an issue or start a discussion in this repository.
