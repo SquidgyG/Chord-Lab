@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef, type FC } from 'react';
+import { useUserProfile } from '../../contexts/UserProfileContext';
 import { useLocation } from 'react-router-dom';
 import { getChordTheme } from '../../utils/diagramTheme';
 import useMetronome from '../../hooks/useMetronome';
@@ -114,7 +115,8 @@ function getDiatonicForKey(keyCenter: MajorKey) {
 }
 
 const PracticeMode: FC = () => {
-  const [selectedInstrument, setSelectedInstrument] = useState<'guitar' | 'piano'>('guitar');
+  const { profile } = useUserProfile();
+  const selectedInstrument = profile.instrument;
   const [currentChord, setCurrentChord] = useState<Chord | null>(chords[0]);
   const { unlockAchievement } = useAchievements();
   const [{ isPlaying, bpm }, { start, stop, setBpm }] = useMetronome(60, 4);
@@ -314,8 +316,6 @@ const PracticeMode: FC = () => {
           />
 
           <InstrumentPanel
-            selectedInstrument={selectedInstrument}
-            onInstrumentChange={setSelectedInstrument}
             chord={currentChord}
             playGuitarNote={playGuitarNote}
             playPianoNote={note => playChord([note], 0.5, 'piano')}

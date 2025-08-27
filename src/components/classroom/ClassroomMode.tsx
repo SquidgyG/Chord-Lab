@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react'
+import { useUserProfile } from '../../contexts/UserProfileContext'
 import { getDiatonicChords } from '../../utils/music-theory'
 import GuitarDiagram from '../diagrams/GuitarDiagram'
 import PianoDiagram from '../diagrams/PianoDiagram'
@@ -34,7 +35,8 @@ const chordData: Record<string, ChordDefinition> = {
 const ClassroomMode: React.FC = () => {
   const [selectedKey, setSelectedKey] = useState('C')
   const [selectedProgression, setSelectedProgression] = useState('I–V–vi–IV')
-  const [instrument, setInstrument] = useState<'guitar' | 'piano'>('guitar')
+  const { profile, setProfile } = useUserProfile()
+  const instrument = profile.instrument
   const [displayedChords, setDisplayedChords] = useState<string[]>([])
 
   const generatedChords = useMemo(() => {
@@ -90,8 +92,8 @@ const ClassroomMode: React.FC = () => {
         </div>
         <div>
           <div className="flex space-x-1 bg-gray-200 dark:bg-gray-700 rounded-lg p-1">
-            <button onClick={() => setInstrument('guitar')} className={`px-3 py-1 text-sm rounded-md ${instrument === 'guitar' ? 'bg-white dark:bg-gray-900' : ''}`}>Guitar</button>
-            <button onClick={() => setInstrument('piano')} className={`px-3 py-1 text-sm rounded-md ${instrument === 'piano' ? 'bg-white dark:bg-gray-900' : ''}`}>Piano</button>
+            <button onClick={() => setProfile({ instrument: 'guitar' })} className={`px-3 py-1 text-sm rounded-md ${instrument === 'guitar' ? 'bg-white dark:bg-gray-900' : ''}`}>Guitar</button>
+            <button onClick={() => setProfile({ instrument: 'piano' })} className={`px-3 py-1 text-sm rounded-md ${instrument === 'piano' ? 'bg-white dark:bg-gray-900' : ''}`}>Piano</button>
           </div>
         </div>
         <div>

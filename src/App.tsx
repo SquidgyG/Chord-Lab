@@ -22,7 +22,7 @@ function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { theme, setTheme } = useTheme()
   // --- MERGED HOOK (from feature/code-improvements) ---
-  const { profile } = useUserProfile()
+  const { profile, setProfile } = useUserProfile()
 
   const linkBase = 'px-3 py-2 rounded-lg whitespace-nowrap'
   const linkActive = 'bg-blue-600 text-white'
@@ -84,6 +84,26 @@ function App() {
               <nav className="hidden md:flex gap-2">{navLinks}</nav>
             </div>
             <div className="flex items-center gap-2">
+              <div className="flex space-x-1 bg-gray-200 dark:bg-gray-700 rounded-lg p-1">
+                <button
+                  onClick={() => setProfile({ instrument: 'guitar' })}
+                  className={`px-2 py-1 rounded-md ${
+                    profile.instrument === 'guitar' ? 'bg-white dark:bg-gray-900' : ''
+                  }`}
+                  aria-label="Select guitar"
+                >
+                  🎸
+                </button>
+                <button
+                  onClick={() => setProfile({ instrument: 'piano' })}
+                  className={`px-2 py-1 rounded-md ${
+                    profile.instrument === 'piano' ? 'bg-white dark:bg-gray-900' : ''
+                  }`}
+                  aria-label="Select piano"
+                >
+                  🎹
+                </button>
+              </div>
               <button
                 onClick={toggleClassroomMode}
                 className={`px-3 py-2 rounded-lg border ${

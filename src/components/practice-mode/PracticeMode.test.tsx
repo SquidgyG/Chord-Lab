@@ -1,9 +1,10 @@
-import { render, screen, fireEvent, within } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import PracticeMode from './PracticeMode'
 import { ThemeProvider } from '../../contexts/ThemeContext'
 import { AchievementProvider } from '../../contexts/AchievementContext'
+import { UserProfileProvider } from '../../contexts/UserProfileContext'
 
 vi.mock('../../hooks/useMetronome', () => ({
   default: () => [
@@ -13,14 +14,20 @@ vi.mock('../../hooks/useMetronome', () => ({
 }));
 
 describe('PracticeMode', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   const renderWithProviders = (initialEntries: string[]) => {
     return render(
       <MemoryRouter initialEntries={initialEntries}>
         <ThemeProvider>
           <AchievementProvider>
-            <Routes>
-              <Route path="/practice" element={<PracticeMode />} />
-            </Routes>
+            <UserProfileProvider>
+              <Routes>
+                <Route path="/practice" element={<PracticeMode />} />
+              </Routes>
+            </UserProfileProvider>
           </AchievementProvider>
         </ThemeProvider>
       </MemoryRouter>
@@ -37,13 +44,15 @@ describe('PracticeMode', () => {
     expect(screen.getByTestId('current-chord-name')).toHaveTextContent('G')
   })
 
-  it('should change the instrument when the piano button is clicked', () => {
+  it('uses the instrument from the user profile', () => {
+    localStorage.setItem('userProfile', JSON.stringify({
+      name: 'Tester',
+      instrument: 'piano',
+      confidenceLevel: 'beginner',
+      onboardingComplete: true,
+    }));
     renderWithProviders(['/practice']);
-    const pianoButton = screen.getByText('Piano');
-    fireEvent.click(pianoButton);
-    // This is a proxy for the instrument changing. A better test would check the rendered diagram.
-    // For now, we'll just check that the button is selected.
-    expect(pianoButton).toHaveClass('bg-blue-500');
+    expect(screen.getByRole('img', { name: /chord chart/i })).toBeInTheDocument();
   });
 
   it('should display diatonic chords when a key is provided in the URL', () => {
