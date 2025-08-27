@@ -28,7 +28,7 @@ export function UserProfileProvider({ children }: { children: React.ReactNode })
   const [profile, setProfileState] = useState<UserProfile>(() => {
     try {
       const savedProfile = localStorage.getItem('userProfile');
-      return savedProfile ? JSON.parse(savedProfile) : defaultProfile;
+      return savedProfile ? JSON.parse(savedProfile) as UserProfile : defaultProfile;
     } catch {
       return defaultProfile;
     }

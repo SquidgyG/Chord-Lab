@@ -1,5 +1,7 @@
-import type React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
-import type { Achievement, achievements } from '../data/achievements';
+import { createContext, useState, useContext, useEffect } from 'react';
+import type { ReactNode } from 'react';
+import { achievements } from '../data/achievements';
+import type { Achievement } from '../data/achievements';
 
 interface AchievementContextType {
   unlockedAchievements: Set<string>;
@@ -24,7 +26,7 @@ interface AchievementProviderProps {
 export const AchievementProvider: React.FC<AchievementProviderProps> = ({ children }) => {
   const [unlockedAchievements, setUnlockedAchievements] = useState<Set<string>>(() => {
     const saved = localStorage.getItem('unlockedAchievements');
-    return saved ? new Set(JSON.parse(saved)) : new Set();
+    return saved ? new Set(JSON.parse(saved) as string[]) : new Set();
   });
   const [latestAchievement, setLatestAchievement] = useState<Achievement | null>(null);
 

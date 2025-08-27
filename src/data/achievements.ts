@@ -5,7 +5,7 @@ export interface Achievement {
   icon: string;
 }
 
-export const achievements: { [key: string]: Achievement } = {
+export const achievements: Record<string, Achievement> = {
   FIRST_CHORD: {
     id: 'FIRST_CHORD',
     name: 'First Chord!',
