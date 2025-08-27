@@ -35,7 +35,7 @@ const RhythmExercise: React.FC = () => {
       </div>
       <div className="flex justify-center items-center h-24 bg-gray-100 dark:bg-gray-700 rounded-lg">
         <div className="flex space-x-4">
-          {[...Array(4)].map((_, i) => (
+          {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
               className={`w-8 h-8 rounded-full transition-all duration-100 ${

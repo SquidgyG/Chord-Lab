@@ -34,7 +34,7 @@ const LearningPathway = () => {
   const [currentLevel, setCurrentLevel] = useState(1)
   const [completedLessonIds, setCompletedLessonIds] = useState<Set<string>>(() => {
     const saved = localStorage.getItem('completedLessonIds')
-    return saved ? new Set(JSON.parse(saved)) : new Set()
+    return saved ? new Set(JSON.parse(saved) as string[]) : new Set()
   })
   const { unlockAchievement } = useAchievements()
 

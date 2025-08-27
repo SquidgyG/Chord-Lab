@@ -3,7 +3,7 @@ import useMetronome from '../../../hooks/useMetronome'
 import GuitarDiagram from '../../diagrams/GuitarDiagram'
 
 type ChordName = 'C' | 'F' | 'G' | 'Am' | 'D' | 'Em'
-type ChordData = {
+interface ChordData {
   name: ChordName
   guitarPositions: { string: number; fret: number }[]
   guitarFingers: number[]

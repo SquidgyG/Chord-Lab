@@ -1,5 +1,3 @@
-import React from "react";
-
 const HELP_URL = "https://github.com/SquidgyG/Chord-Lab/blob/main/docs/Student-Help-Video-Basics.md";
 
 export default function HelpButton() {

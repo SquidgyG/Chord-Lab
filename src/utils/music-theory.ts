@@ -1,12 +1,12 @@
 const noteOrder = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-const noteMap: { [key: string]: number } = {
+const noteMap: Record<string, number> = {
   'C': 0, 'C#': 1, 'Db': 1, 'D': 2, 'D#': 3, 'Eb': 3, 'E': 4,
   'F': 5, 'F#': 6, 'Gb': 6, 'G': 7, 'G#': 8, 'Ab': 8, 'A': 9,
   'A#': 10, 'Bb': 10, 'B': 11
 };
 
 export function getNoteParts(note: string): { root: string, octave: number } | null {
-  const match = note.match(/^([A-Ga-g][#b]?)(\d)$/);
+  const match = /^([A-Ga-g][#b]?)(\d)$/.exec(note);
   if (!match) return null;
   return { root: match[1], octave: parseInt(match[2], 10) };
 }
@@ -29,7 +29,7 @@ export function getNoteFromMidi(midi: number): string {
 export function getChordInversion(notes: string[], inversion: number): string[] {
   if (inversion === 0) return notes;
 
-  const sortedNotes = notes.map(getMidiNumber).filter(n => n !== null).sort((a, b) => a! - b!) as number[];
+  const sortedNotes = notes.map(getMidiNumber).filter((n): n is number => n !== null).sort((a, b) => a - b);
   if (sortedNotes.length === 0) return [];
 
   const invertedMidi = [...sortedNotes];
