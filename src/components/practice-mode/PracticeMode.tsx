@@ -284,7 +284,7 @@ const PracticeMode = () => {
               These chords fit well in this key:
             </div>
           </div>
-          <div className="mt-2 flex flex-wrap gap-2">
+          <div data-testid="diatonic-chords" className="mt-2 flex flex-wrap gap-2">
             {diatonicChips.map(({ label, available, color }) => (
               <button
                 key={label}
@@ -373,7 +373,10 @@ const PracticeMode = () => {
       {currentChord && (
         <div className="mb-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">
+            <h3
+              data-testid="current-chord-name"
+              className="text-xl font-bold text-gray-800 dark:text-gray-100"
+            >
               {currentChord.name}
             </h3>
             <div className="flex space-x-2">
@@ -453,7 +456,7 @@ const PracticeMode = () => {
         <h4 className="font-bold text-gray-800 dark:text-gray-100 mb-2">
           Other Chords to Practice
         </h4>
-        <div className="flex flex-wrap gap-2">
+        <div data-testid="other-chords" className="flex flex-wrap gap-2">
           {chords
             .filter(chord => chord.name !== currentChord?.name)
             .map(chord => (

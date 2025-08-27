@@ -56,31 +56,37 @@ function softBg(hex: string, alpha = 0.12): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-function normalizeChord(chordName: string) {
+function normalizeChord(chordName: string): { root: string | null; isMinor: boolean } {
   const name = (chordName ?? '').trim()
   // Extract root (with optional accidental) and detect minor
   const match = /^([A-G](?:#|b)?)(.*)$/i.exec(name)
-  let root = match ? match[1] : 'C'
+  if (!match) return { root: null, isMinor: false }
+
+  let root: string | null = match[1]
   // Uppercase the letter, preserve accidental as-is (so 'Bb' stays 'Bb')
   if (root.length >= 1) {
     const letter = root[0].toUpperCase()
     const accidental = root.length >= 2 && (root[1] === '#' || root[1] === 'b') ? root[1] : ''
     root = `${letter}${accidental}`
   }
-  const rest = match ? match[2].toLowerCase() : ''
+  const rest = match[2].toLowerCase()
   const isMinor = /(^|[^a-z])m(?!aj)/.test(rest) || rest.includes('minor')
   return { root, isMinor }
 }
 
 export function getChordTheme(chordName: string): DiagramTheme {
-  const { root, isMinor } = normalizeChord(chordName);
+  const { root, isMinor } = normalizeChord(chordName)
+  if (!root) {
+    const defaultColor = '#3b8bf9'
+    return { primary: defaultColor, background: softBg(defaultColor) }
+  }
   const primary = isMinor
-    ? (MINOR_COLORS[root] || MAJOR_COLORS[root] || '#3b8bf9')
-    : (MAJOR_COLORS[root] || MINOR_COLORS[root] || '#3b8bf9');
+    ? MINOR_COLORS[root] ?? MAJOR_COLORS[root] ?? '#3b8bf9'
+    : MAJOR_COLORS[root] ?? MINOR_COLORS[root] ?? '#3b8bf9'
   return {
     primary,
     background: softBg(primary),
-  };
+  }
 }
 
 export function getPrimaryColor(chordName: string): string {

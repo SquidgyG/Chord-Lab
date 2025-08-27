@@ -88,8 +88,11 @@ export default function ChordWheel() {
       <div className="flex items-center justify-between gap-4 mb-2">
         <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Chord Wheel</h2>
         <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600 dark:text-gray-400">Key</label>
+          <label htmlFor="key-selector" className="text-sm text-gray-600 dark:text-gray-400">
+            Key
+          </label>
           <select
+            id="key-selector"
             value={activeKey}
             onChange={e => setActiveKey(e.target.value)}
             className="px-2 py-1 border border-gray-300 rounded-md bg-white text-gray-800 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
@@ -128,7 +131,12 @@ export default function ChordWheel() {
               const isHovered = hovered === i
 
               return (
-                <g key={maj} onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)}>
+                <g
+                  key={maj}
+                  data-testid={`sector-${maj}`}
+                  onMouseEnter={() => setHovered(i)}
+                  onMouseLeave={() => setHovered(null)}
+                >
                   {/* Major sector */}
                   <path
                     d={outer}
