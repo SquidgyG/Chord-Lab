@@ -114,6 +114,7 @@ function getDiatonicForKey(keyCenter: MajorKey) {
 }
 
 const PracticeMode: FC = () => {
+  const [beginnerMode, setBeginnerMode] = useState(true);
   const [selectedInstrument, setSelectedInstrument] = useState<'guitar' | 'piano'>('guitar');
   const [currentChord, setCurrentChord] = useState<Chord | null>(chords[0]);
   const { unlockAchievement } = useAchievements();
@@ -223,8 +224,16 @@ const PracticeMode: FC = () => {
 
   return (
     <div className="bg-white dark:bg-gray-800/50 rounded-xl shadow-lg p-6">
-      <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Practice Mode</h2>
-      {keyCenter && (
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Practice Mode</h2>
+        <button
+          onClick={() => setBeginnerMode(!beginnerMode)}
+          className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 dark:text-gray-300"
+        >
+          {beginnerMode ? 'More Options' : 'Beginner Mode'}
+        </button>
+      </div>
+      {!beginnerMode && keyCenter && (
         <div className="mb-4 p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="text-gray-800 dark:text-gray-200 font-semibold">
@@ -270,21 +279,23 @@ const PracticeMode: FC = () => {
         </div>
       )}
 
-      <div className="mb-6 flex flex-wrap gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Tips
-          </label>
-          <button
-            onClick={() => setShowTips(!showTips)}
-            className={`px-4 py-2 rounded-lg ${
-              showTips ? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-gray-700 dark:text-gray-300'
-            }`}
-          >
-            {showTips ? 'On' : 'Off'}
-          </button>
+      {!beginnerMode && (
+        <div className="mb-6 flex flex-wrap gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Tips
+            </label>
+            <button
+              onClick={() => setShowTips(!showTips)}
+              className={`px-4 py-2 rounded-lg ${
+                showTips ? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-gray-700 dark:text-gray-300'
+              }`}
+            >
+              {showTips ? 'On' : 'Off'}
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {currentChord && (
         <div className="mb-6">
@@ -302,16 +313,19 @@ const PracticeMode: FC = () => {
               toggleMetronome={toggleMetronome}
               handleStrum={handleStrum}
               nextChord={nextChord}
+              beginnerMode={beginnerMode}
             />
           </div>
 
-          <ChallengeMode
-            isChallengeActive={isChallengeActive}
-            startChallenge={startChallenge}
-            stopChallenge={stopChallenge}
-            challengeTime={challengeTime}
-            bestChallengeTime={bestChallengeTime}
-          />
+          {!beginnerMode && (
+            <ChallengeMode
+              isChallengeActive={isChallengeActive}
+              startChallenge={startChallenge}
+              stopChallenge={stopChallenge}
+              challengeTime={challengeTime}
+              bestChallengeTime={bestChallengeTime}
+            />
+          )}
 
           <InstrumentPanel
             selectedInstrument={selectedInstrument}
@@ -320,9 +334,10 @@ const PracticeMode: FC = () => {
             playGuitarNote={playGuitarNote}
             playPianoNote={note => playChord([note], 0.5, 'piano')}
             initAudio={initAudio}
+            beginnerMode={beginnerMode}
           />
 
-          {showTips && (
+          {showTips && !beginnerMode && (
             <div className="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-4 rounded">
               <h4 className="font-bold text-blue-800 dark:text-blue-300 mb-2">Practice Tip</h4>
               <p className="text-blue-700 dark:text-blue-400">
@@ -334,30 +349,34 @@ const PracticeMode: FC = () => {
         </div>
       )}
 
-      <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-        <h4 className="font-bold text-gray-800 dark:text-gray-100 mb-2">
-          Other Chords to Practice
-        </h4>
-        <div data-testid="other-chords" className="flex flex-wrap gap-2">
-          {chords
-            .filter((chord: Chord) => chord.name !== currentChord?.name)
-            .map((chord: Chord) => (
-              <button
-                key={chord.name}
-                onClick={() => setCurrentChord(chord)}
-                className="px-3 py-1 bg-gray-100 hover:bg-blue-100 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 rounded-lg transition-colors"
-              >
-                {chord.name}
-              </button>
-            ))}
+      {!beginnerMode && (
+        <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <h4 className="font-bold text-gray-800 dark:text-gray-100 mb-2">
+            Other Chords to Practice
+          </h4>
+          <div data-testid="other-chords" className="flex flex-wrap gap-2">
+            {chords
+              .filter((chord: Chord) => chord.name !== currentChord?.name)
+              .map((chord: Chord) => (
+                <button
+                  key={chord.name}
+                  onClick={() => setCurrentChord(chord)}
+                  className="px-3 py-1 bg-gray-100 hover:bg-blue-100 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 rounded-lg transition-colors"
+                >
+                  {chord.name}
+                </button>
+              ))}
+          </div>
         </div>
-      </div>
-      <Statistics
-        totalPracticeTime={totalPracticeTime}
-        chordsPlayed={chordsPlayed}
-        currentStreak={currentStreak}
-        bestChallengeTime={bestChallengeTime}
-      />
+      )}
+      {!beginnerMode && (
+        <Statistics
+          totalPracticeTime={totalPracticeTime}
+          chordsPlayed={chordsPlayed}
+          currentStreak={currentStreak}
+          bestChallengeTime={bestChallengeTime}
+        />
+      )}
     </div>
   );
 };

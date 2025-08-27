@@ -7,6 +7,7 @@ interface PracticeMetronomeControlsProps {
   toggleMetronome: () => void;
   handleStrum: () => void;
   nextChord: () => void;
+  beginnerMode?: boolean;
 }
 
 const PracticeMetronomeControls: FC<PracticeMetronomeControlsProps> = ({
@@ -16,7 +17,33 @@ const PracticeMetronomeControls: FC<PracticeMetronomeControlsProps> = ({
   toggleMetronome,
   handleStrum,
   nextChord,
+  beginnerMode = false,
 }) => {
+  if (beginnerMode) {
+    return (
+      <div className="flex flex-col items-end gap-2">
+        <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Tempo: {bpm} BPM
+        </div>
+        <div className="flex space-x-2">
+          <button
+            onClick={handleStrum}
+            className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white"
+            title="Play a quick strum"
+          >
+            Strum
+          </button>
+          <button
+            onClick={nextChord}
+            className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
+          >
+            Next Chord
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col items-end gap-2">
       <div>
