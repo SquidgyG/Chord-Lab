@@ -1,0 +1,382 @@
+{
+  "videos": {
+    "guitar_basics": [
+      {
+        "title": "Learn First 3 Chords on Guitar in 3 Minutes",
+        "url": "https://www.youtube.com/watch?v=d52MZJw-hIE"
+      },
+      {
+        "title": "First 7 Chords To Learn on Guitar",
+        "url": "https://www.youtube.com/watch?v=R_qmvyUDvEc"
+      },
+      {
+        "title": "These 7 Chords Will Unlock Music for You",
+        "url": "https://www.youtube.com/watch?v=eX1HZgHMvB8"
+      },
+      {
+        "title": "4 EASIEST Absolute Beginner Guitar Chords",
+        "url": "https://www.youtube.com/watch?v=uravv2hEkFU"
+      }
+    ],
+    "piano_basics": [
+      {
+        "title": "C is to the Left of the Two Black Keys",
+        "url": "https://www.youtube.com/watch?v=aovVKP02noU"
+      },
+      {
+        "title": "C is on the Left of the 2 Black Keys",
+        "url": "https://www.youtube.com/watch?v=ajutZRA7q9A"
+      },
+      {
+        "title": "Memorize the Piano Notes in Under 2 Minutes",
+        "url": "https://www.youtube.com/watch?v=txk5ME2wJVw"
+      },
+      {
+        "title": "How to Play Piano: Day 1",
+        "url": "https://www.youtube.com/watch?v=4SXQ_wlbWog"
+      },
+      {
+        "title": "Memorize Every Major & Minor Chord Forever",
+        "url": "https://www.youtube.com/watch?v=fiphVmkJFgo"
+      },
+      {
+        "title": "How to Read & Play Piano SHEET Music",
+        "url": "https://www.youtube.com/watch?v=OA-DQPGvdiU"
+      },
+      {
+        "title": "Piano Lessons for Kids: START HERE",
+        "url": "https://www.youtube.com/watch?v=wjnkzXmiTgE"
+      }
+    ],
+    "strumming": [
+      {
+        "title": "Beginner Strum Patterns — 6 Essential Strums",
+        "url": "https://www.youtube.com/watch?v=8Wa2CmPc-a8"
+      },
+      {
+        "title": "BEST Guitar Strumming Patterns for BEGINNERS",
+        "url": "https://www.youtube.com/watch?v=TOQMeYj7924"
+      },
+      {
+        "title": "7 Essential Beginner Guitar Strumming Patterns",
+        "url": "https://www.youtube.com/watch?v=fFGvT4hg9Ws"
+      }
+    ],
+    "inversions": [
+      {
+        "title": "Piano Chord Inversions — The Method I Wish I'd Been Taught",
+        "url": "https://www.youtube.com/live/eMGTXXJBJIE"
+      },
+      {
+        "title": "The Best Way To Practice Chord Inversions",
+        "url": "https://www.youtube.com/watch?v=QCeVJOfrh2k"
+      },
+      {
+        "title": "Beginner's Guide to Chord Inversions",
+        "url": "https://www.youtube.com/watch?v=KU4YLMlN5hk"
+      }
+    ],
+    "roman_numerals": [
+      {
+        "title": "Roman Numeral Chord Notation",
+        "url": "https://www.youtube.com/watch?v=PAiSQ7g3LuA"
+      },
+      {
+        "title": "How the Roman Numeral System Works",
+        "url": "https://www.youtube.com/watch?v=M2skX-SNIvA"
+      }
+    ],
+    "circle_of_fifths": [
+      {
+        "title": "Circle Of Fifths EXPLAINED",
+        "url": "https://www.youtube.com/watch?v=Up917v4uGDQ"
+      },
+      {
+        "title": "Circle of 5ths: EASIEST Way",
+        "url": "https://www.youtube.com/watch?v=XNwlybb-j_M"
+      }
+    ],
+    "interactive": [
+      {
+        "title": "Common Chord Progressions (lesson)",
+        "url": "https://www.musictheory.net/lessons/57"
+      },
+      {
+        "title": "Circle Progressions (lesson)",
+        "url": "https://www.musictheory.net/lessons/56"
+      },
+      {
+        "title": "Exercises (site)",
+        "url": "https://www.musictheory.net/exercises"
+      },
+      {
+        "title": "Metronome Online",
+        "url": "https://www.metronomeonline.com"
+      }
+    ]
+  },
+  "songs": {
+    "tutorial": {
+      "guitar": [
+        {
+          "title": "Where Is The Love",
+          "artist": "The Black Eyed Peas",
+          "url": "https://www.youtube.com/watch?v=1aCXbmfnsZQ"
+        },
+        {
+          "title": "Brown Eyed Girl",
+          "artist": "Van Morrison",
+          "url": "https://www.youtube.com/watch?v=BlJNPj9CJBQ"
+        },
+        {
+          "title": "With or Without You",
+          "artist": "U2",
+          "url": "https://www.youtube.com/watch?v=cEzsP2Sp_6s"
+        },
+        {
+          "title": "Stand By Me",
+          "artist": "Ben E. King",
+          "url": "https://www.youtube.com/watch?v=KlHFye6_Icc"
+        },
+        {
+          "title": "Beat It",
+          "artist": "Michael Jackson",
+          "url": "https://www.youtube.com/watch?v=jJfwgrDcH3A"
+        },
+        {
+          "title": "Riptide",
+          "artist": "Vance Joy",
+          "url": "https://www.youtube.com/watch?v=no4u0CTAR_Q"
+        },
+        {
+          "title": "Three Little Birds",
+          "artist": "Bob Marley",
+          "url": "https://www.youtube.com/watch?v=0prhT9PzpcE"
+        },
+        {
+          "title": "Counting Stars",
+          "artist": "OneRepublic",
+          "url": "https://www.youtube.com/watch?v=cYmnbxBZ5-c"
+        }
+      ],
+      "piano": [
+        {
+          "title": "Imagine",
+          "artist": "John Lennon",
+          "url": "https://www.youtube.com/watch?v=5dT1V-2m5rY"
+        },
+        {
+          "title": "Let It Be",
+          "artist": "The Beatles",
+          "url": "https://www.youtube.com/watch?v=9co96nkM5to"
+        },
+        {
+          "title": "Clocks",
+          "artist": "Coldplay",
+          "url": "https://www.youtube.com/watch?v=L1ts9crexyE"
+        },
+        {
+          "title": "A Thousand Years",
+          "artist": "Christina Perri",
+          "url": "https://www.youtube.com/watch?v=a_VDxdlxER8"
+        },
+        {
+          "title": "Don't Stop Believin'",
+          "artist": "Journey",
+          "url": "https://www.youtube.com/watch?v=amRtNe2uVwE"
+        },
+        {
+          "title": "Someone You Loved",
+          "artist": "Lewis Capaldi",
+          "url": "https://www.youtube.com/watch?v=8B9P5aGAgwc"
+        },
+        {
+          "title": "Happy",
+          "artist": "Pharrell Williams",
+          "url": "https://www.youtube.com/watch?v=iN9-LbZa-b0"
+        },
+        {
+          "title": "Memories",
+          "artist": "Maroon 5",
+          "url": "https://www.youtube.com/watch?v=m3hY30rJyKE"
+        }
+      ]
+    },
+    "original": {
+      "guitar": [
+        {
+          "title": "Where Is The Love",
+          "artist": "The Black Eyed Peas",
+          "url": "https://www.youtube.com/watch?v=WpYeekQkAdc"
+        },
+        {
+          "title": "Brown Eyed Girl",
+          "artist": "Van Morrison",
+          "url": "https://www.youtube.com/watch?v=UfmkgQRmmeE"
+        },
+        {
+          "title": "With or Without You",
+          "artist": "U2",
+          "url": "https://www.youtube.com/watch?v=6DeDzsCGbsQ"
+        },
+        {
+          "title": "Stand By Me",
+          "artist": "Ben E. King",
+          "url": "https://www.youtube.com/watch?v=hwZNL7QVJjE"
+        },
+        {
+          "title": "Beat It",
+          "artist": "Michael Jackson",
+          "url": "https://www.youtube.com/watch?v=oRdxUFDoQe0"
+        },
+        {
+          "title": "Riptide",
+          "artist": "Vance Joy",
+          "url": "https://www.youtube.com/watch?v=uJ_1HMAGb4k"
+        },
+        {
+          "title": "Three Little Birds",
+          "artist": "Bob Marley",
+          "url": "https://www.youtube.com/watch?v=HNBCVM4KbUM"
+        },
+        {
+          "title": "Counting Stars",
+          "artist": "OneRepublic",
+          "url": "https://www.youtube.com/watch?v=hT_nvWreIhg"
+        }
+      ],
+      "piano": [
+        {
+          "title": "Imagine",
+          "artist": "John Lennon",
+          "url": "https://www.youtube.com/watch?v=YkgkThdzX-8"
+        },
+        {
+          "title": "Let It Be",
+          "artist": "The Beatles",
+          "url": "https://www.youtube.com/watch?v=CGj85pVzRJs"
+        },
+        {
+          "title": "Clocks",
+          "artist": "Coldplay",
+          "url": "https://www.youtube.com/watch?v=d020hcWA_Wg"
+        },
+        {
+          "title": "A Thousand Years",
+          "artist": "Christina Perri",
+          "url": "https://www.youtube.com/watch?v=rtOvBOTyX00"
+        },
+        {
+          "title": "Don't Stop Believin'",
+          "artist": "Journey",
+          "url": "https://www.youtube.com/watch?v=1k8craCGpgs"
+        },
+        {
+          "title": "Someone You Loved",
+          "artist": "Lewis Capaldi",
+          "url": "https://www.youtube.com/watch?v=zABLecsR5UE"
+        },
+        {
+          "title": "Happy",
+          "artist": "Pharrell Williams",
+          "url": "https://www.youtube.com/watch?v=ZbZSe6N_BXs"
+        },
+        {
+          "title": "Memories",
+          "artist": "Maroon 5",
+          "url": "https://www.youtube.com/watch?v=SlPhMPnQ58k"
+        }
+      ]
+    }
+  },
+  "meta": {
+    "Where Is The Love": {
+      "artist": "The Black Eyed Peas",
+      "key": "F major",
+      "capo": "5 (C-G-Am-F shapes)",
+      "progression": "I-V-vi-IV (F-C-Dm-Bb)"
+    },
+    "Brown Eyed Girl": {
+      "artist": "Van Morrison",
+      "key": "G major",
+      "capo": "none",
+      "progression": "Verse I-IV-I-V (G-C-G-D)"
+    },
+    "With or Without You": {
+      "artist": "U2",
+      "key": "D major",
+      "capo": "none",
+      "progression": "I-V-vi-IV (D-A-Bm-G)"
+    },
+    "Stand By Me": {
+      "artist": "Ben E. King",
+      "key": "A major",
+      "capo": "2 (G-Em-C-D shapes)",
+      "progression": "I-vi-IV-V (A-F#m-D-E)"
+    },
+    "Beat It": {
+      "artist": "Michael Jackson",
+      "key": "E minor",
+      "capo": "none",
+      "progression": "i-VII-VI-VII (Em-D-C-D)"
+    },
+    "Riptide": {
+      "artist": "Vance Joy",
+      "key": "C# major (orig.)",
+      "capo": "1 (common)",
+      "progression": "Shapes: Am-G-C (add F in chorus)"
+    },
+    "Three Little Birds": {
+      "artist": "Bob Marley",
+      "key": "A major",
+      "capo": "none (or 2, G shapes)",
+      "progression": "I-IV-V (A-D-E)"
+    },
+    "Counting Stars": {
+      "artist": "OneRepublic",
+      "key": "C# minor",
+      "capo": "4 (Am-C-G-F)",
+      "progression": "vi-I-V-IV (C#m-E-B-A)"
+    },
+    "Imagine": {
+      "artist": "John Lennon",
+      "key": "C major",
+      "progression": "Verse I-Imaj7-IV; Chorus F-G-C-E7"
+    },
+    "Let It Be": {
+      "artist": "The Beatles",
+      "key": "C major",
+      "progression": "I-V-vi-IV (C-G-Am-F)"
+    },
+    "Clocks": {
+      "artist": "Coldplay",
+      "key": "Eb mixolydian / Db sections",
+      "progression": "Riff I-iv-v (Eb-Bbm-Fm)"
+    },
+    "A Thousand Years": {
+      "artist": "Christina Perri",
+      "key": "Bb major",
+      "progression": "I-V-vi-IV (Bb-F-Gm-Eb)"
+    },
+    "Don't Stop Believin'": {
+      "artist": "Journey",
+      "key": "E major",
+      "progression": "Verse I-V-vi-IV (E-B-C#m-A); Chorus IV-V-I"
+    },
+    "Someone You Loved": {
+      "artist": "Lewis Capaldi",
+      "key": "Db major (orig.)",
+      "progression": "I-V-vi-IV (Db-Ab-Bbm-Gb)"
+    },
+    "Happy": {
+      "artist": "Pharrell Williams",
+      "key": "F minor (Dorian feel)",
+      "progression": "vi-IV-I-V in Ab (Fm-Db-Ab-Eb)"
+    },
+    "Memories": {
+      "artist": "Maroon 5",
+      "key": "B major",
+      "progression": "I-V-vi-iii-IV-I-IV-V"
+    }
+  }
+}
