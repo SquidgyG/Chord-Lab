@@ -1,309 +1,251 @@
-import { useState } from 'react';
 import { getChordTheme } from '../../utils/diagramTheme';
+import React from 'react';
 
+// --- Interfaces ---
 interface FretPosition {
-  string: number;  // 1-6 (low E to high E)
-  fret: number;    // 0-12 (0 = open string)
+  string: number; // 1-6 (low E to high E)
+  fret: number;   // 0-12 (0 = open string)
+  finger?: number; // Optional finger number
 }
 
 interface Barre {
-  fret: number
-  startString: number
-  endString: number
-  finger?: number
+  fret: number;
+  startString: number;
+  endString: number;
+  finger?: number;
 }
 
-interface ChordDiagramProps {
-  chordName: string
-  positions: FretPosition[]
-  fingers?: number[] // 1-4 for fretting fingers
-  noteStrip?: string[] // optional per-string note labels (low E -> high E)
-  barres?: Barre[]
+interface GuitarDiagramProps {
+  chordName: string;
+  positions: FretPosition[];
+  noteStrip?: (string | null)[];
+  barres?: Barre[];
 }
 
-const GuitarDiagram = ({
-  chordName,
-  positions,
-  fingers = [],
-  noteStrip,
-  barres = [],
-}: ChordDiagramProps) => {
-  const [orientation, setOrientation] = useState<'normal' | 'left-handed' | 'player-mirrored'>(
-    'normal'
-  )
-  const theme = getChordTheme(chordName)
+// --- Helper Components ---
+const Sheet = ({ theme, children }: { theme: any; children: React.ReactNode }) => (
+  <section
+    className="sheet"
+    style={{
+      padding: '26px',
+      border: '16px solid',
+      borderColor: theme.primary,
+      backgroundColor: theme.background,
+      borderRadius: '22px',
+      boxShadow: '0 10px 28px rgba(0,0,0,.12)',
+      position: 'relative',
+      overflow: 'hidden',
+      fontFamily: '"Readex Pro", system-ui, sans-serif',
+    }}
+  >
+    {children}
+  </section>
+);
 
-  // Create a 6x5 grid (6 strings, 5 frets)
-  const strings = 6
-  const frets = 5
+const Title = ({ children }: { children: React.ReactNode }) => (
+  <h1
+    style={{
+      textAlign: 'center',
+      fontSize: '42px',
+      fontWeight: 800,
+      margin: '0 0 22px',
+      letterSpacing: '.3px',
+      color: '#111',
+    }}
+  >
+    {children}
+  </h1>
+);
 
-  // Find the minimum fret position to determine starting fret
-  const minFret = positions.length ? Math.min(...positions.map(p => p.fret)) : 1
-  const startFret = minFret > 0 ? minFret : 1
+const FretboardWrap = ({ children }: { children: React.ReactNode }) => (
+  <div
+    className="fretboard-wrap"
+    style={{
+      width: '520px',
+      maxWidth: '100%',
+      margin: '0 auto',
+      background: '#fff',
+      borderRadius: '14px',
+      padding: '72px 28px 22px',
+      boxShadow: '0 16px 40px rgba(0,0,0,.20), 0 8px 18px rgba(0,0,0,.12)',
+      position: 'relative',
+    }}
+  >
+    {children}
+  </div>
+);
 
-  // Check if a string is open (0 fret)
-  const isOpen = (string: number) => {
-    return positions.some(pos => pos.string === string && pos.fret === 0)
+// --- Main Component ---
+const GuitarDiagram = ({ chordName, positions, noteStrip, barres = [] }: GuitarDiagramProps) => {
+  const theme = getChordTheme(chordName);
+
+  const TOTAL_STRINGS = 6;
+  const TOTAL_FRETS = 5; // Number of visible frets
+
+  // Find the minimum and maximum frets to determine the fret window
+  const allFrets = positions.filter(p => p.fret > 0).map(p => p.fret);
+  const minFret = allFrets.length > 0 ? Math.min(...allFrets) : 1;
+  const maxFret = allFrets.length > 0 ? Math.max(...allFrets) : TOTAL_FRETS;
+
+  // Determine the starting fret for the diagram
+  let startFret = 1;
+  if (maxFret > TOTAL_FRETS) {
+    startFret = minFret;
   }
 
-  // Check if a string is muted (not in positions)
-  const isMuted = (string: number) => {
-    return !positions.some(pos => pos.string === string)
-  }
+  const isOpen = (stringNum: number) => positions.some(p => p.string === stringNum && p.fret === 0);
+  const isMuted = (stringNum: number) => !positions.some(p => p.string === stringNum) && !barres.some(b => stringNum >= b.startString && stringNum <= b.endString);
 
-  // Helpers for layout (match printable chart proportions)
-  const colIndexForString = (stringNum: number) => {
-    if (orientation === 'left-handed') return stringNum - 1 // low E at left
-    // normal and player-mirrored: low E at right
-    return strings - stringNum
-  }
-
-  const leftForCol = (col: number) => `calc((100%/${strings})*${col} + (100%/${strings})/2)`
-  const topForFret = (fretNum: number) => `calc((100%/6) * ${fretNum - startFret + 0.5})`
+  // Layout helpers
+  const stringPos = (stringNum: number) => `calc((100% / ${TOTAL_STRINGS - 1}) * ${stringNum - 1})`;
+  const fretPos = (fretNum: number) => `calc((100% / ${TOTAL_FRETS}) * ${fretNum - startFret + 0.5})`;
 
   // String thicknesses (low E to high E)
-  const stringWidths = [18, 12, 8, 6, 4, 3]
+  const stringWidths = [18, 12, 8, 6, 4, 3];
 
   return (
-    <div
-      className="bg-white rounded-xl shadow-lg p-6 max-w-md mx-auto"
-      style={{ border: `4px solid ${theme.primary}`, background: '#fff' }}
-    >
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-extrabold text-gray-900" style={{ letterSpacing: '.3px' }}>
-          {chordName}
-        </h3>
-        <div className="flex space-x-2">
-          <button
-            onClick={() => setOrientation('normal')}
-            className={`px-2 py-1 text-xs rounded ${
-              orientation === 'normal' ? 'bg-blue-500 text-white' : 'bg-gray-200'
-            }`}
-          >
-            Normal
-          </button>
-          <button
-            onClick={() => setOrientation('left-handed')}
-            className={`px-2 py-1 text-xs rounded ${
-              orientation === 'left-handed' ? 'bg-blue-500 text-white' : 'bg-gray-200'
-            }`}
-          >
-            Left
-          </button>
-          <button
-            onClick={() => setOrientation('player-mirrored')}
-            className={`px-2 py-1 text-xs rounded ${
-              orientation === 'player-mirrored' ? 'bg-blue-500 text-white' : 'bg-gray-200'
-            }`}
-          >
-            Mirror
-          </button>
-        </div>
-      </div>
-
-      <div className="relative mx-auto" style={{ width: '280px', height: '360px' }}>
-        {/* Fretboard area */}
-        <div className="absolute inset-0" style={{ borderRadius: '10px', background: '#fff' }}>
-          {/* Nut and end line */}
-          {startFret === 1 && (
-            <div
-              className="absolute left-0 right-0"
-              style={{ top: 0, height: '16px', background: '#000', zIndex: 12 }}
-            />
+    <Sheet theme={theme}>
+      <Title>{chordName}</Title>
+      <FretboardWrap>
+        <div
+          className="fretboard"
+          style={{ position: 'relative', height: '700px' }}
+        >
+          {/* Nut or Fret Number Indicator */}
+          {startFret > 1 ? (
+             <div style={{ position: 'absolute', top: '-20px', left: '-40px', fontSize: '24px', fontWeight: 600, color: '#666' }}>
+               {startFret}fr
+             </div>
+          ) : (
+            <div className="nut" style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '16px', background: '#000', zIndex: 12 }} />
           )}
-          <div
-            className="absolute left-0 right-0"
-            style={{ bottom: 0, height: '6px', background: '#000', zIndex: 11 }}
-          />
 
-          {/* Fret lines (1..5) */}
-          {Array.from({ length: frets }).map((_, i) => (
-            <div
-              key={`fret-${i + 1}`}
-              className="absolute"
-              style={{
-                left: 0,
-                right: 0,
-                height: '2px',
-                background: '#111',
-                top: `calc((100%/6)*${i + 1})`,
-                zIndex: 10,
-              }}
-            />
+          {/* Fret Lines */}
+          {Array.from({ length: TOTAL_FRETS + 1 }).map((_, i) => (
+            <div key={`fret-${i}`} className="fret-line" style={{ position: 'absolute', left: 0, right: 0, height: i === 0 ? '0' : '2px', background: '#111', top: `calc((100% / ${TOTAL_FRETS}) * ${i})`, zIndex: 10 }} />
           ))}
+          <div className="endline" style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '6px', background: '#000', zIndex: 11 }} />
 
-          {/* Inlays at 2.5 and 4.5 */}
-          <div
-            className="absolute"
-            style={{
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: '16px',
-              height: '16px',
-              borderRadius: 999,
-              background: 'rgba(0,0,0,.12)',
-              top: 'calc((100%/6)*2.5)',
-              zIndex: 9,
-            }}
-          />
-          <div
-            className="absolute"
-            style={{
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: '16px',
-              height: '16px',
-              borderRadius: 999,
-              background: 'rgba(0,0,0,.12)',
-              top: 'calc((100%/6)*4.5)',
-              zIndex: 9,
-            }}
-          />
-
-          {/* Strings (columns 0..5) */}
-          {Array.from({ length: strings }).map((_, col) => {
-            const stringNum = orientation === 'left-handed' ? col + 1 : strings - col
-            const widthPx = stringWidths[stringNum - 1]
-            return (
-              <div
-                key={`string-${col}`}
-                className="absolute"
-                style={{
-                  top: 0,
-                  bottom: 0,
-                  width: `${widthPx}px`,
-                  background: '#111',
-                  transform: 'translateX(-50%)',
-                  left: leftForCol(col),
-                  borderRadius: '2px',
-                  zIndex: 8,
-                }}
-              >
-                {/* String label */}
-                <div
-                  className="absolute -top-6 text-xs font-medium text-gray-700"
-                  style={{ left: '50%', transform: 'translateX(-50%)' }}
-                >
-                  {['E', 'A', 'D', 'G', 'B', 'E'][stringNum - 1]}
-                </div>
-
-                {/* XO indicators at top (only if start at nut) */}
-                {startFret === 1 && (
-                  <div
-                    className="absolute font-extrabold"
-                    style={{
-                      color: theme.primary,
-                      top: 0,
-                      transform: 'translate(-50%, -100%)',
-                      left: '50%',
-                      fontSize: '32px',
-                      lineHeight: 1,
-                      zIndex: 15,
-                    }}
-                  >
-                    {isOpen(stringNum) ? 'O' : isMuted(stringNum) ? 'X' : ''}
-                  </div>
-                )}
-              </div>
-            )
+          {/* Inlays */}
+          {[3, 5, 7, 9].map(fret => {
+              const displayFret = fret - startFret + 1;
+              if (displayFret > 0 && displayFret <= TOTAL_FRETS) {
+                  return <div key={`inlay-${fret}`} className="inlay" style={{ position: 'absolute', left: '50%', transform: 'translate(-50%, -50%)', width: '16px', height: '16px', borderRadius: '999px', background: 'rgba(0,0,0,.12)', zIndex: 9, top: `calc((100% / ${TOTAL_FRETS}) * ${displayFret - 0.5})` }} />
+              }
+              return null;
           })}
 
-          {/* Finger dots */}
-          {positions
-            .filter(p => p.fret > 0)
-            .map((pos, idx) => {
-              const col = colIndexForString(pos.string)
-              const finger = fingers[idx]
-              return (
-                <div
-                  key={`dot-${idx}`}
-                  className="absolute grid place-items-center text-white font-extrabold"
-                  style={{
-                    width: '72px',
-                    height: '72px',
-                    borderRadius: 999,
-                    background: theme.primary,
-                    left: leftForCol(col),
-                    top: topForFret(pos.fret),
-                    transform: 'translate(-50%, -50%)',
-                    textShadow: '0 1px 0 rgba(0,0,0,.25)',
-                    zIndex: 20,
-                  }}
-                >
-                  <span style={{ fontSize: '30px' }}>{finger ?? ''}</span>
-                </div>
-              )
-            })}
+          {/* Strings */}
+          {Array.from({ length: TOTAL_STRINGS }).map((_, i) => {
+            const stringNum = i + 1;
+            const muted = isMuted(stringNum);
+            return (
+              <div key={`string-${stringNum}`} className="string" style={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                width: `${stringWidths[i] / 2}px`, // Adjusted for visual balance
+                background: muted ? '#bfbfbf' : '#111',
+                transform: 'translateX(-50%)',
+                left: stringPos(stringNum),
+                zIndex: 8,
+              }} />
+            );
+          })}
+
+          {/* XO Indicators */}
+          {Array.from({ length: TOTAL_STRINGS }).map((_, i) => {
+            const stringNum = i + 1;
+            const indicator = isOpen(stringNum) ? 'O' : isMuted(stringNum) ? 'X' : null;
+            if (!indicator) return null;
+
+            return (
+              <div key={`xo-${stringNum}`} className="xo" style={{
+                position: 'absolute',
+                transform: 'translate(-50%, -100%)',
+                textAlign: 'center',
+                fontWeight: 800,
+                top: 0,
+                paddingBottom: '10px',
+                zIndex: 15,
+                fontSize: '32px',
+                lineHeight: 1,
+                color: theme.primary,
+                left: stringPos(stringNum),
+              }}>
+                {indicator}
+              </div>
+            );
+          })}
 
           {/* Barres */}
-          {barres.map((b, i) => {
-            const startCol = colIndexForString(b.startString)
-            const endCol = colIndexForString(b.endString)
-            const leftExpr = `calc((100%/${strings})*${Math.min(
-              startCol,
-              endCol
-            )} + (100%/${strings})*0.12)`
-            const widthExpr = `calc((100%/${strings})*${Math.abs(
-              endCol - startCol
-            )} + (100%/${strings})*0.76)`
-            return (
-              <div
-                key={`barre-${i}`}
-                className="absolute grid place-items-center text-white font-extrabold"
-                style={{
-                  height: '48px',
-                  borderRadius: 999,
-                  background: theme.primary,
-                  left: leftExpr,
-                  width: widthExpr,
-                  top: topForFret(b.fret),
-                  transform: 'translateY(-50%)',
-                  textShadow: '0 1px 0 rgba(0,0,0,.25)',
-                  zIndex: 19,
-                }}
-              >
-                <span style={{ fontSize: '24px' }}>{b.finger ?? ''}</span>
-              </div>
-            )
-          })}
+          {barres.map((barre, i) => (
+            <div key={`barre-${i}`} className="barre" style={{
+              position: 'absolute',
+              transform: 'translateY(-50%)',
+              height: '48px',
+              borderRadius: '999px',
+              background: theme.primary,
+              color: '#fff',
+              zIndex: 19,
+              display: 'grid',
+              placeItems: 'center',
+              fontWeight: 800,
+              fontSize: '24px',
+              textShadow: '0 1px 0 rgba(0,0,0,.25)',
+              left: stringPos(barre.startString),
+              width: `calc(${stringPos(barre.endString)} - ${stringPos(barre.startString)})`,
+              top: fretPos(barre.fret),
+            }}>
+              {barre.finger}
+            </div>
+          ))}
 
-          {/* Fret numbers */}
-          {Array.from({ length: frets }).map((_, i) => (
-            <div
-              key={`fnum-${i}`}
-              className="absolute text-xs text-gray-500"
-              style={{ top: `calc((100%/6)*${i} + (100%/6)*0.5)`, left: '-22px' }}
-            >
-              {startFret + i}
+          {/* Dots */}
+          {positions.filter(p => p.fret > 0).map((pos, i) => (
+            <div key={`dot-${i}`} className="dot" style={{
+              position: 'absolute',
+              transform: 'translate(-50%, -50%)',
+              width: '72px',
+              height: '72px',
+              borderRadius: '999px',
+              background: theme.primary,
+              color: '#fff',
+              zIndex: 20,
+              display: 'grid',
+              placeItems: 'center',
+              fontWeight: 800,
+              fontSize: '30px',
+              textShadow: '0 1px 0 rgba(0,0,0,.25)',
+              left: stringPos(pos.string),
+              top: fretPos(pos.fret),
+            }}>
+              {pos.finger}
             </div>
           ))}
         </div>
-      </div>
 
-      {/* Optional note strip (low E -> high E) */}
-      {noteStrip?.length === 6 && (
-        <div
-          className="mt-3 grid grid-cols-6 gap-0 font-extrabold"
-          style={{ fontSize: '20px', letterSpacing: '.5px' }}
-        >
-          {noteStrip.map((n, i) => (
-            <span key={`ns-${i}`} className="text-center" style={{ color: theme.primary }}>
-              {n}
-            </span>
-          ))}
-        </div>
-      )}
+        {/* Note Strip */}
+        {noteStrip && (
+          <div className="note-strip" style={{
+            display: 'grid',
+            gridTemplateColumns: `repeat(${TOTAL_STRINGS}, 1fr)`,
+            gap: 0,
+            marginTop: '12px',
+            fontWeight: 800,
+            fontSize: '32px',
+            letterSpacing: '.5px',
+          }}>
+            {noteStrip.map((note, i) => (
+              <span key={`note-${i}`} style={{ textAlign: 'center', minHeight: '1.1em', color: note ? theme.primary : 'transparent' }}>
+                {note || ''}
+              </span>
+            ))}
+          </div>
+        )}
+      </FretboardWrap>
+    </Sheet>
+  );
+};
 
-      <div className="mt-4 text-center">
-        <button
-          className="px-4 py-2 rounded-lg transition-colors text-white"
-          style={{ background: theme.primary }}
-        >
-          Play Chord
-        </button>
-      </div>
-    </div>
-  )
-}
-
-export default GuitarDiagram
+export default GuitarDiagram;
