@@ -9,11 +9,14 @@ import { useClassroomMode } from './contexts/ClassroomModeContext'
 import ChordWheel from './components/ChordWheel'
 import { useTheme } from './contexts/ThemeContext'
 import ScrollingPractice from './components/practice-mode/ScrollingPractice'
+import { useUserProfile } from './contexts/UserProfileContext'
+import OnboardingFlow from './components/onboarding/OnboardingFlow'
 
 function App() {
   const { classroomMode, toggleClassroomMode } = useClassroomMode()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { theme, setTheme } = useTheme()
+  const { profile } = useUserProfile()
 
   const linkBase = 'px-3 py-2 rounded-lg whitespace-nowrap'
   const linkActive = 'bg-blue-600 text-white'
@@ -54,6 +57,7 @@ function App() {
         classroomMode ? 'text-[110%] contrast-125' : ''
       }`}
     >
+      {!profile.onboardingComplete && <OnboardingFlow />}
       <header className="bg-white dark:bg-gray-900/80 dark:border-b dark:border-gray-700 shadow-sm relative backdrop-blur-lg">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
