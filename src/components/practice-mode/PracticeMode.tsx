@@ -9,17 +9,9 @@ import ChallengeMode from './ChallengeMode';
 import Statistics from './Statistics';
 import PracticeMetronomeControls from './PracticeMetronomeControls';
 import InstrumentPanel from './InstrumentPanel';
-import { chords as chordDictionary } from '../../data/chords';
+import { chordList as chords, type Chord } from '../../data/chords';
 import SongPractice from './SongPractice';
 import { useHighestUnlockedLevel } from '../learning-path/LearningPathway';
-
-interface Chord {
-    name: string;
-    guitarPositions: { string: number; fret: number }[];
-    guitarFingers: number[];
-    pianoNotes: string[];
-    level: number;
-}
 
 const MAJORS_ORDER = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 'Bb', 'F'] as const;
 type MajorKey = (typeof MAJORS_ORDER)[number];
@@ -39,15 +31,6 @@ const RELATIVE_MINORS: Record<MajorKey, string> = {
     F: 'Dm',
 };
 
-// Build chord list from dictionary
-const chords: Chord[] = Object.entries(chordDictionary).map(([name, data]) => ({
-    name,
-    guitarPositions: data.guitarPositions,
-    guitarFingers: data.guitarFingers ?? [],
-    pianoNotes: data.pianoNotes,
-    level: data.level || 1, // Ensure level exists
-}));
-
 function getDiatonicForKey(keyCenter: MajorKey) {
     const idx = MAJORS_ORDER.indexOf(keyCenter);
     if (idx === -1) return { majors: [], minors: [] };
@@ -63,7 +46,7 @@ const PracticeMode: FC = () => {
     const [beginnerMode, setBeginnerMode] = useState(false);
     const highestUnlockedLevel = useHighestUnlockedLevel();
     const availableChords = useMemo(
-        () => chords.filter(c => c.level <= highestUnlockedLevel),
+        () => chords.filter(c => (c.level ?? 1) <= highestUnlockedLevel),
         [highestUnlockedLevel]
     );
     const [selectedInstrument, setSelectedInstrument] =
@@ -96,7 +79,7 @@ const PracticeMode: FC = () => {
     const { playChord, playGuitarNote, initAudio, fretToNote, guitarLoaded } = useAudio();
 
     useEffect(() => {
-        if (currentChord && currentChord.level > highestUnlockedLevel) {
+        if (currentChord && (currentChord.level ?? 1) > highestUnlockedLevel) {
             setCurrentChord(availableChords[0] || null);
         }
         if (!currentChord && availableChords.length > 0) {
@@ -182,11 +165,11 @@ const PracticeMode: FC = () => {
         const list: string[] = [...majors, ...minors];
         return list.map((label: string) => {
             const chord = chords.find((c: Chord) => c.name === label);
-            const available = !!chord && chord.level <= highestUnlockedLevel;
+            const available = !!chord && (chord.level ?? 1) <= highestUnlockedLevel;
             return {
                 label,
                 available,
-                locked: !!chord && chord.level > highestUnlockedLevel,
+                locked: !!chord && (chord.level ?? 1) > highestUnlockedLevel,
                 color: getChordTheme(label),
             };
         });
@@ -363,7 +346,7 @@ const PracticeMode: FC = () => {
                         {availableChords
                             .filter((chord: Chord) => chord.name !== currentChord?.name)
                             .map((chord: Chord) => {
-                                const locked = chord.level > highestUnlockedLevel;
+                                const locked = (chord.level ?? 1) > highestUnlockedLevel;
                                 return (
                                     <button
                                         key={chord.name}
