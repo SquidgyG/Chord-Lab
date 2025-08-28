@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import useAudio from '../../../hooks/useAudio';
+import { shuffle } from '../../../utils/shuffle';
 
 interface Song {
   id: number;
@@ -35,12 +36,7 @@ const GenreQuiz: React.FC = () => {
   };
 
   const shuffleSongs = () => {
-    const array = [...songs];
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    setSongs(array);
+    setSongs(shuffle(songs));
     setCurrent(0);
     setRevealed(false);
   };
