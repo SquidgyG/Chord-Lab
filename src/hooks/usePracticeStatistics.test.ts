@@ -53,13 +53,13 @@ test('should load stats from localStorage', () => {
   expect(result.current.bestChallengeTime).toBe(12345);
 });
 
-test('should increment chords played and streak', () => {
+test('should increment unique chords played and streak', () => {
   const { result } = renderHook(() => usePracticeStatistics(), {
     wrapper: AchievementProvider,
   });
 
   act(() => {
-    result.current.incrementChordsPlayed();
+    result.current.incrementUniqueChord();
   });
 
   expect(result.current.chordsPlayed).toBe(1);
@@ -72,7 +72,7 @@ test('should reset streak', () => {
   });
 
   act(() => {
-    result.current.incrementChordsPlayed();
+    result.current.incrementUniqueChord();
   });
 
   expect(result.current.currentStreak).toBe(1);

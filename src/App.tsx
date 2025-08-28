@@ -10,11 +10,13 @@ import ChordWheel from './components/ChordWheel'
 import { useTheme } from './contexts/ThemeContext'
 import ScrollingPractice from './components/practice-mode/ScrollingPractice'
 import ClassroomMode from './components/classroom/ClassroomMode'
+import TeacherDashboard from './components/classroom/TeacherDashboard'
 // --- MERGED IMPORTS (from both branches) ---
 import { useUserProfile } from './contexts/UserProfileContext'
 import OnboardingFlow from './components/onboarding/OnboardingFlow'
 import { AchievementProvider } from './contexts/AchievementContext'
 import { AchievementToast } from './components/achievements/AchievementToast'
+import HelpResources from './components/HelpResources'
 import { ProfilePage } from './components/profile/ProfilePage'
 
 function App() {
@@ -76,7 +78,7 @@ function App() {
         {/* --- MERGED JSX (from main branch) --- */}
         <AchievementToast />
         <header className="bg-white dark:bg-gray-900/80 dark:border-b dark:border-gray-700 shadow-sm relative backdrop-blur-lg">
-          <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="w-full mx-auto px-4 md:px-8 py-3 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <span className="font-extrabold text-xl text-gray-900 dark:text-gray-100">
                 Chord Lab
@@ -163,7 +165,7 @@ function App() {
           )}
         </header>
 
-        <main className="max-w-6xl mx-auto px-4 py-6">
+        <main className="w-full mx-auto px-4 md:px-8 py-6">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/create" element={<ChordProgressionBuilder />} />
@@ -171,8 +173,10 @@ function App() {
             <Route path="/practice/scrolling" element={<ScrollingPractice />} />
             <Route path="/learn" element={<LearningPathway />} />
             <Route path="/wheel" element={<ChordWheel />} />
+            <Route path="/help" element={<HelpResources />} />
             <Route path="/metronome" element={<Metronome />} />
             <Route path="/classroom" element={<ClassroomMode />} />
+            <Route path="/classroom/dashboard" element={<TeacherDashboard />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

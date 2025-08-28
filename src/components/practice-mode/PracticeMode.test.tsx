@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, within } from '@testing-library/react'
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import PracticeMode from './PracticeMode'
 import { ThemeProvider } from '../../contexts/ThemeContext'
@@ -26,6 +26,27 @@ describe('PracticeMode', () => {
       </MemoryRouter>
     );
   };
+
+  const completedLessonIds = [
+    '1-k1',
+    '1-k2',
+    '1-s1',
+    '1-s2',
+    '1-e1',
+    '1-b1',
+    '2-k1',
+    '2-s1',
+    '2-e1',
+    '2-b1',
+  ];
+
+  beforeEach(() => {
+    localStorage.setItem('completedLessonIds', JSON.stringify(completedLessonIds));
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+  });
 
   it('should display the default chord when no URL params are provided', () => {
     renderWithProviders(['/practice'])
