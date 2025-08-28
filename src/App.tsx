@@ -11,6 +11,9 @@ import { useTheme } from './contexts/ThemeContext'
 import ScrollingPractice from './components/practice-mode/ScrollingPractice'
 import ClassroomMode from './components/classroom/ClassroomMode'
 import TeacherDashboard from './components/classroom/TeacherDashboard'
+import TeacherGamesDashboard from './components/classroom/TeacherGamesDashboard'
+import { ScoreboardProvider } from './components/classroom/Scoreboard'
+import ExampleGame from './components/classroom/games/ExampleGame'
 // --- MERGED IMPORTS (from both branches) ---
 import { useUserProfile } from './contexts/UserProfileContext'
 import OnboardingFlow from './components/onboarding/OnboardingFlow'
@@ -177,6 +180,16 @@ function App() {
             <Route path="/metronome" element={<Metronome />} />
             <Route path="/classroom" element={<ClassroomMode />} />
             <Route path="/classroom/dashboard" element={<TeacherDashboard />} />
+            <Route
+              path="/classroom/games/*"
+              element={
+                <ScoreboardProvider>
+                  <TeacherGamesDashboard />
+                </ScoreboardProvider>
+              }
+            >
+              <Route path="example" element={<ExampleGame />} />
+            </Route>
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
