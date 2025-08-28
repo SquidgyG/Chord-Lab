@@ -116,9 +116,9 @@ const useAudio = () => {
         return;
       }
       const now = context?.currentTime ?? 0;
-        notes.forEach(note => {
-          guitarInstrument.current?.play(note, now, { duration });
-        });
+      notes.forEach(note => {
+        guitarInstrument.current?.play(note, now, { duration });
+      });
     }
   }
 
@@ -150,7 +150,7 @@ const useAudio = () => {
       return;
     }
     const note = fretToNote(string, fret);
-      guitarInstrument.current?.play(note, undefined, { duration });
+    guitarInstrument.current?.play(note, undefined, { duration });
   }
 
   // Clean up audio context on unmount

@@ -2,17 +2,17 @@ import type { FC } from 'react';
 import { GUITAR_ICON, PIANO_ICON } from '../../assets/instrumentIcons';
 
 interface InstrumentPanelProps {
-  selectedInstrument: 'guitar' | 'piano';
-  onInstrumentChange: (instrument: 'guitar' | 'piano') => void;
-  beginnerMode?: boolean;
+  selectedInstrument: 'guitar' | 'piano';
+  onInstrumentChange: (instrument: 'guitar' | 'piano') => void;
+  beginnerMode?: boolean;
 }
 
 const InstrumentPanel: FC<InstrumentPanelProps> = ({
-    selectedInstrument,
-    onInstrumentChange,
-    beginnerMode = false,
+    selectedInstrument,
+    onInstrumentChange,
+    beginnerMode = false,
 }) => {
-    return (
+    return (
     <div className="mb-6">
         {!beginnerMode && (
             <div>
@@ -51,7 +51,6 @@ const InstrumentPanel: FC<InstrumentPanelProps> = ({
                 </div>
             </div>
         )}
-        {/* ...rest of your component */}
     </div>
 );
 };
