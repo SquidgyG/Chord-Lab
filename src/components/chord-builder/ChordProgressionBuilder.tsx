@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import useAudio from '../../hooks/useAudio';
+import { chords as chordData } from '../../data/chords';
 import { getDiatonicChords } from '../../utils/music-theory';
 
 interface Chord {
@@ -35,56 +36,11 @@ const ChordProgressionBuilder = () => {
     localStorage.setItem('chordProgression', JSON.stringify(chords));
   }, [chords]);
 
-  const NOTE_SEQUENCE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-
-  const buildChord = (name: string): string[] => {
-    let quality: 'maj' | 'min' | 'dim' = 'maj';
-    let root = name;
-
-    if (name.endsWith('dim')) {
-      quality = 'dim';
-      root = name.slice(0, -3);
-    } else if (name.endsWith('m')) {
-      quality = 'min';
-      root = name.slice(0, -1);
-    }
-
-    const rootIndex = NOTE_SEQUENCE.indexOf(root);
-    if (rootIndex === -1) return [];
-
-    let thirdIndex: number;
-    let fifthIndex: number;
-
-    if (quality === 'maj') {
-      thirdIndex = (rootIndex + 4) % 12;
-      fifthIndex = (rootIndex + 7) % 12;
-    } else if (quality === 'min') {
-      thirdIndex = (rootIndex + 3) % 12;
-      fifthIndex = (rootIndex + 7) % 12;
-    } else {
-      thirdIndex = (rootIndex + 3) % 12;
-      fifthIndex = (rootIndex + 6) % 12;
-    }
-
-    return [
-      `${root}4`,
-      `${NOTE_SEQUENCE[thirdIndex]}4`,
-      `${NOTE_SEQUENCE[fifthIndex]}4`,
-    ];
-  };
-
-  const chordDictionary: Record<string, string[]> = {};
-  ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'Am', 'Bm', 'Cm', 'Dm', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'A#m', 'Bm', 'Cdim', 'Ddim', 'Edim', 'Fdim', 'Gdim', 'Adim', 'Bdim'].forEach(
-    chord => {
-      chordDictionary[chord] = buildChord(chord);
-    }
-  );
-
   const handlePlay = async () => {
     initAudio();
     setIsPlaying(true);
     for (const chord of chords) {
-      const notes = chordDictionary[chord.name] ?? [];
+      const notes = chordData[chord.name]?.pianoNotes ?? [];
       if (notes.length > 0) {
         playChord(notes, 0.8);
         await new Promise(resolve => setTimeout(resolve, 500));

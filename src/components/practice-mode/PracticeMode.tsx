@@ -9,6 +9,7 @@ import ChallengeMode from './ChallengeMode';
 import Statistics from './Statistics';
 import PracticeMetronomeControls from './PracticeMetronomeControls';
 import InstrumentPanel from './InstrumentPanel';
+import { chords as chordDictionary } from '../../data/chords';
 import SongPractice from './SongPractice';
 import { useHighestUnlockedLevel } from '../learning-path/LearningPathway';
 
@@ -38,78 +39,13 @@ const RELATIVE_MINORS: Record<MajorKey, string> = {
   F: 'Dm',
 };
 
-// Sample chord data
-const chords: Chord[] = [
-  // Majors
-  {
-    name: 'C',
-    guitarPositions: [
-      { string: 2, fret: 1 },
-      { string: 4, fret: 2 },
-      { string: 5, fret: 3 },
-    ],
-    guitarFingers: [1, 2, 3],
-    pianoNotes: ['C4', 'E4', 'G4'],
-    level: 2,
-  },
-  {
-    name: 'G',
-    guitarPositions: [
-      { string: 1, fret: 3 },
-      { string: 2, fret: 0 },
-      { string: 5, fret: 2 },
-      { string: 6, fret: 3 },
-    ],
-    guitarFingers: [3, 0, 2, 4],
-    pianoNotes: ['G3', 'B3', 'D4'],
-    level: 3,
-  },
-  {
-    name: 'F',
-    guitarPositions: [
-      { string: 1, fret: 1 },
-      { string: 2, fret: 1 },
-      { string: 3, fret: 2 },
-      { string: 4, fret: 3 },
-    ],
-    guitarFingers: [1, 1, 2, 3],
-    pianoNotes: ['F3', 'A3', 'C4'],
-    level: 2,
-  },
-  // Minors
-  {
-    name: 'Am',
-    guitarPositions: [
-      { string: 2, fret: 1 },
-      { string: 3, fret: 2 },
-      { string: 4, fret: 2 },
-    ],
-    guitarFingers: [1, 2, 3],
-    pianoNotes: ['A3', 'C4', 'E4'],
-    level: 3,
-  },
-  {
-    name: 'Em',
-    guitarPositions: [
-      { string: 4, fret: 2 },
-      { string: 5, fret: 2 },
-    ],
-    guitarFingers: [2, 3],
-    pianoNotes: ['E3', 'G3', 'B3'],
-    level: 4,
-  },
-  {
-    name: 'Dm',
-    guitarPositions: [
-      { string: 1, fret: 1 },
-      { string: 2, fret: 3 },
-      { string: 3, fret: 2 },
-    ],
-    guitarFingers: [1, 3, 2],
-    pianoNotes: ['D4', 'F4', 'A4'],
-    level: 4,
-  },
-];
+// Build chord list from dictionary
+const chords: Chord[] = Object.entries(chordDictionary).map(([name, data]) => ({
+  name,
+  guitarPositions: data.guitarPositions,
+  guitarFingers: data.guitarFingers ?? [],
+  pianoNotes: data.pianoNotes,
+}));
 
 function getDiatonicForKey(keyCenter: MajorKey) {
   const idx = MAJORS_ORDER.indexOf(keyCenter);
@@ -165,7 +101,6 @@ const PracticeMode: FC = () => {
     }
   }, [highestUnlockedLevel, availableChords, currentChord]);
 
-  // Read URL params (?key=, ?chord=) and set initial state
   useEffect(() => {
     const sp = new URLSearchParams(location.search);
     const keyParam = sp.get('key');
@@ -205,7 +140,6 @@ const PracticeMode: FC = () => {
     }
   }, [currentChord, unlockAchievement, incrementChordsPlayed]);
 
-  // Start/Stop metronome
   const toggleMetronome = () => {
     if (isPlaying) {
       stop();
@@ -227,14 +161,12 @@ const PracticeMode: FC = () => {
     }
   };
 
-  // Function to get a random chord
   const getRandomChord = (): Chord | null => {
     if (availableChords.length === 0) return null;
     const randomIndex = Math.floor(Math.random() * availableChords.length);
     return availableChords[randomIndex];
   };
 
-  // Function to go to next chord
   const nextChord = () => {
     incrementChordsPlayed();
     const next = getRandomChord();
@@ -413,7 +345,7 @@ const PracticeMode: FC = () => {
           {availableChords
             .filter((chord: Chord) => chord.name !== currentChord?.name)
             .map((chord: Chord) => {
-              const locked = chord.level > highestUnlockedLevel; // Redundant, but kept for clarity
+              const locked = chord.level > highestUnlockedLevel;
               return (
                 <button
                   key={chord.name}

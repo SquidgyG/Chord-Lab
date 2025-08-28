@@ -3,6 +3,7 @@ import { getDiatonicChords } from '../../utils/music-theory'
 import GuitarDiagram from '../diagrams/GuitarDiagram'
 import PianoDiagram from '../diagrams/PianoDiagram'
 import ClassroomDisplay from '../classroom/ClassroomDisplay'
+import { chords as chordData, type ChordDefinition } from '../../data/chords'
 import { useNavigate } from 'react-router-dom'
 
 const keys = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 'Bb', 'F']
@@ -17,20 +18,7 @@ const numeralMap: Record<string, number> = {
   vii: 6,
 }
 
-interface ChordDefinition {
-  notes: string[];
-  guitarPositions: { string: number; fret: number }[];
-}
-
-const chordData: Record<string, ChordDefinition> = {
-  C: { notes: ['C4', 'E4', 'G4'], guitarPositions: [{ string: 2, fret: 1 }, { string: 4, fret: 2 }, { string: 5, fret: 3 }] },
-  G: { notes: ['G3', 'B3', 'D4'], guitarPositions: [{ string: 1, fret: 3 }, { string: 5, fret: 2 }, { string: 6, fret: 3 }] },
-  Am: { notes: ['A3', 'C4', 'E4'], guitarPositions: [{ string: 2, fret: 1 }, { string: 3, fret: 2 }, { string: 4, fret: 2 }] },
-  F: { notes: ['F3', 'A3', 'C4'], guitarPositions: [{ string: 1, fret: 1 }, { string: 2, fret: 1 }, { string: 3, fret: 2 }, { string: 4, fret: 3 }] },
-  D: { notes: ['D4', 'F#4', 'A4'], guitarPositions: [{ string: 1, fret: 2 }, { string: 2, fret: 3 }, { string: 3, fret: 2 }] },
-  Em: { notes: ['E3', 'G3', 'B3'], guitarPositions: [{ string: 4, fret: 2 }, { string: 5, fret: 2 }] },
-  // Add other chords as needed
-};
+// chordData imported from data/chords
 
 const ClassroomMode: React.FC = () => {
   const [selectedKey, setSelectedKey] = useState('C')
@@ -117,7 +105,7 @@ const ClassroomMode: React.FC = () => {
         <h4 className="font-bold text-gray-700 dark:text-gray-200">Generated Progression:</h4>
         <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-2`}>
           {generatedChords.map((chord, index) => {
-            const data = chordData[chord] ?? { notes: [], guitarPositions: [] };
+            const data = chordData[chord] ?? { pianoNotes: [], guitarPositions: [] };
             return (
               <div
                 key={index}
@@ -126,7 +114,7 @@ const ClassroomMode: React.FC = () => {
                 {instrument === 'guitar' ? (
                   <GuitarDiagram chordName={chord} positions={data.guitarPositions} />
                 ) : (
-                  <PianoDiagram chordName={chord} notes={data.notes} />
+                  <PianoDiagram chordName={chord} notes={data.pianoNotes} />
                 )}
               </div>
             )
