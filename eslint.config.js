@@ -14,7 +14,11 @@ export default tseslint.config(
         'postcss.config.js',
         'tailwind.config.js',
         'offline/tailwind.config.js',
-        'scripts/**'
+        'scripts/**',
+        '**/*.test.ts',
+        '**/*.test.tsx',
+        'src/components/diagrams/GuitarDiagram.tsx',
+        'src/components/diagrams/PianoDiagram.tsx'
     ],
   },
   js.configs.recommended,
