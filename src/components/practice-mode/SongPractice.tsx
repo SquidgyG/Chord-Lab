@@ -91,8 +91,10 @@ const SongPractice: FC<SongPracticeProps> = ({ onClose }) => {
   const [{ isPlaying, bpm }, { start, stop, setBpm }] = useMetronome(60, 4);
   const { playChord, playGuitarNote, initAudio, fretToNote } = useAudio();
 
-  const chordName = selectedSong?.progression[currentChordIndex] ?? null;
-  const currentChord = chordName ? getChord(chordName) ?? null : null;
+  const chordName: string | null =
+    selectedSong?.progression[currentChordIndex] ?? null;
+  const currentChord: Chord | null =
+    chordName ? getChord(chordName) ?? null : null;
 
   useEffect(() => {
     if (selectedSong) {
