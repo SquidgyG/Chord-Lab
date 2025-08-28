@@ -1,18 +1,44 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import useAudio from '../../../hooks/useAudio';
 
 interface QuizQuestion {
   id: number;
   question: string;
   options: string[];
   correctAnswer: string;
+  note: string;
 }
 
 const NameTheNoteQuiz: React.FC = () => {
+  const { initAudio, playNote } = useAudio();
+
+  useEffect(() => {
+    initAudio();
+  }, [initAudio]);
+
   const quizData: QuizQuestion[] = useMemo(
     () => [
-      { id: 1, question: 'What is the name of the 6th string on the guitar (the thickest one)?', options: ['E', 'A', 'D', 'G'], correctAnswer: 'E' },
-      { id: 2, question: 'What is the name of the note to the left of C on the piano?', options: ['B', 'A', 'D', 'F'], correctAnswer: 'B' },
-      { id: 3, question: 'What is finger number 1 on the piano?', options: ['Thumb', 'Index', 'Middle', 'Ring'], correctAnswer: 'Thumb' },
+      {
+        id: 1,
+        question: 'What is the name of the 6th string on the guitar (the thickest one)?',
+        options: ['E', 'A', 'D', 'G'],
+        correctAnswer: 'E',
+        note: 'E3',
+      },
+      {
+        id: 2,
+        question: 'What is the name of the note to the left of C on the piano?',
+        options: ['B', 'A', 'D', 'F'],
+        correctAnswer: 'B',
+        note: 'B3',
+      },
+      {
+        id: 3,
+        question: 'What is finger number 1 on the piano?',
+        options: ['Thumb', 'Index', 'Middle', 'Ring'],
+        correctAnswer: 'Thumb',
+        note: 'C4',
+      },
     ],
     []
   );
@@ -39,6 +65,12 @@ const NameTheNoteQuiz: React.FC = () => {
       <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">
         {currentQuestion.question}
       </h3>
+      <button
+        onClick={() => playNote(currentQuestion.note)}
+        className="mb-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+      >
+        Play Note
+      </button>
       <div className="grid grid-cols-2 gap-4">
         {currentQuestion.options.map((option) => (
           <button

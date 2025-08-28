@@ -30,6 +30,43 @@ const lessonComponents: Record<string, () => React.ReactElement> = {
   '6-k1': () => <ClassroomMode />,
 }
 
+const computeHighestUnlockedLevel = (completed: Set<string>) => {
+  let highest = 1
+  for (const level of learningPath) {
+    const allCompleted = level.lessons.every(lesson => completed.has(lesson.id))
+    if (allCompleted) {
+      highest = Math.min(level.id + 1, learningPath.length)
+    } else {
+      break
+    }
+  }
+  return highest
+}
+
+export const useHighestUnlockedLevel = () => {
+  const [highestUnlockedLevel, setHighestUnlockedLevel] = useState(() => {
+    const saved = localStorage.getItem('completedLessonIds')
+    const completed = saved ? new Set(JSON.parse(saved) as string[]) : new Set<string>()
+    return computeHighestUnlockedLevel(completed)
+  })
+
+  useEffect(() => {
+    const update = () => {
+      const saved = localStorage.getItem('completedLessonIds')
+      const completed = saved ? new Set(JSON.parse(saved) as string[]) : new Set<string>()
+      setHighestUnlockedLevel(computeHighestUnlockedLevel(completed))
+    }
+    window.addEventListener('learningpath-update', update)
+    window.addEventListener('storage', update)
+    return () => {
+      window.removeEventListener('learningpath-update', update)
+      window.removeEventListener('storage', update)
+    }
+  }, [])
+
+  return highestUnlockedLevel
+}
+
 const LearningPathway = () => {
   const [currentLevel, setCurrentLevel] = useState(1)
   const [completedLessonIds, setCompletedLessonIds] = useState<Set<string>>(() => {
@@ -50,6 +87,7 @@ const LearningPathway = () => {
     if (newCompletedLessonIds.size === 1) {
       unlockAchievement('FIRST_LESSON')
     }
+    window.dispatchEvent(new Event('learningpath-update'))
   }
 
   const levelData = learningPath.find(level => level.id === currentLevel)
