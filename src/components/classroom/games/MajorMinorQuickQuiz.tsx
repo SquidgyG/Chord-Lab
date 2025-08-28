@@ -1,30 +1,10 @@
-import { useMemo } from 'react';
+import QuickQuiz from './QuickQuiz';
 
-export interface ChordQualityQuestion {
-  chord: string;
-  quality: 'major' | 'minor';
-}
-
-// Simple list of chord quality questions.
-// In the real application this might be fetched or computed elsewhere.
-const chordQualityQuestions: ChordQualityQuestion[] = [
-  { chord: 'C', quality: 'major' },
-  { chord: 'Am', quality: 'minor' },
-];
-
+// Wrapper component for a quick quiz that asks the user to distinguish
+// between major and minor chords. It supplies the appropriate string literal
+// types to the generic QuickQuiz component so that the options are strongly
+// typed.
 export default function MajorMinorQuickQuiz() {
-  // Memoize the mapped questions so the array reference remains stable
-  // between renders and avoids unnecessary re-renders downstream.
-  const questionItems = useMemo(
-    () => chordQualityQuestions.map(({ chord, quality }) => `${chord} is ${quality}`),
-    [chordQualityQuestions],
-  );
-
-  return (
-    <ul>
-      {questionItems.map((text, idx) => (
-        <li key={idx}>{text}</li>
-      ))}
-    </ul>
-  );
+  return <QuickQuiz<'Major' | 'Minor'> options={['Major', 'Minor']} />;
 }
+
