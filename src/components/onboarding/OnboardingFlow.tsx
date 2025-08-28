@@ -11,11 +11,11 @@ const OnboardingFlow: React.FC = () => {
   const [nameError, setNameError] = useState('')
 
   const handleNext = () => {
-    if (step === 2 && name.trim() === '') {
-      setNameError('Please enter your name.')
-      return
-    }
     if (step === 2) {
+      if (name.trim() === '') {
+        setNameError('Please enter your name.')
+        return
+      }
       setNameError('')
     }
     setStep(prev => prev + 1)
@@ -33,6 +33,14 @@ const OnboardingFlow: React.FC = () => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-8 max-w-md w-full">
+        <div className="flex gap-1 mb-6">
+          {[1, 2, 3, 4, 5].map(s => (
+            <div
+              key={s}
+              className={`h-2 flex-1 rounded ${step >= s ? 'bg-blue-500' : 'bg-gray-200 dark:bg-gray-700'}`}
+            />
+          ))}
+        </div>
         {step === 1 && (
           <div>
             <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">
@@ -56,16 +64,14 @@ const OnboardingFlow: React.FC = () => {
               value={name}
               onChange={e => {
                 setName(e.target.value)
-                if (e.target.value.trim() !== '') {
-                  setNameError('')
-                }
+                if (nameError) setNameError('')
               }}
               className="w-full p-2 border rounded-md"
               placeholder="Enter your name"
               aria-describedby={nameError ? 'name-error' : undefined}
             />
             {nameError && (
-              <p id="name-error" className="text-red-600 mt-2">
+              <p id="name-error" className="text-red-500 text-sm mt-1">
                 {nameError}
               </p>
             )}
@@ -83,20 +89,76 @@ const OnboardingFlow: React.FC = () => {
             <h2 className="text-xl font-bold mb-4">What's your instrument?</h2>
             <div className="flex gap-4">
               <button
+                aria-label="Select guitar"
                 onClick={() => setInstrument('guitar')}
-                className={`w-full p-4 rounded-lg border-2 ${
+                className={`w-full p-4 rounded-lg border-2 flex flex-col items-center ${
                   instrument === 'guitar' ? 'border-blue-500' : ''
                 }`}
               >
-                Guitar
+                <svg
+                  viewBox="0 0 64 64"
+                  className="w-12 h-12 mb-2"
+                  aria-hidden="true"
+                >
+                  <circle
+                    cx="24"
+                    cy="32"
+                    r="12"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <rect x="36" y="28" width="20" height="8" fill="currentColor" />
+                </svg>
+                <span>Guitar</span>
               </button>
               <button
+                aria-label="Select piano"
                 onClick={() => setInstrument('piano')}
-                className={`w-full p-4 rounded-lg border-2 ${
+                className={`w-full p-4 rounded-lg border-2 flex flex-col items-center ${
                   instrument === 'piano' ? 'border-blue-500' : ''
                 }`}
               >
-                Piano
+                <svg
+                  viewBox="0 0 64 64"
+                  className="w-12 h-12 mb-2"
+                  aria-hidden="true"
+                >
+                  <rect
+                    x="8"
+                    y="12"
+                    width="48"
+                    height="40"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <line
+                    x1="20"
+                    y1="12"
+                    x2="20"
+                    y2="52"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <line
+                    x1="32"
+                    y1="12"
+                    x2="32"
+                    y2="52"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <line
+                    x1="44"
+                    y1="12"
+                    x2="44"
+                    y2="52"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                </svg>
+                <span>Piano</span>
               </button>
             </div>
             <button

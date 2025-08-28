@@ -1,4 +1,4 @@
-import { useState, useEffect, type FC } from 'react';
+import { useState, useEffect, type FC, useCallback } from 'react';
 import songs, { type Song } from '../../data/songs';
 import useMetronome from '../../hooks/useMetronome';
 import useAudio from '../../hooks/useAudio';
@@ -10,6 +10,10 @@ import { chordList as chords, type Chord } from '../../data/chords';
 const getChord = (name: string): Chord | null =>
   chords.find(c => c.name === name) ?? null;
 
+const supportedSongs = songs.filter(song =>
+  song.progression.every(ch => getChord(ch) !== null),
+);
+
 interface SongPracticeProps {
   onClose: () => void;
 }
@@ -19,6 +23,7 @@ const SongPractice: FC<SongPracticeProps> = ({ onClose }) => {
   const [currentChordIndex, setCurrentChordIndex] = useState(0);
   const [selectedInstrument, setSelectedInstrument] =
     useState<'guitar' | 'piano'>('guitar');
+  const [message, setMessage] = useState<string | null>(null);
   const [{ isPlaying, bpm }, { start, stop, setBpm }] = useMetronome(60, 4);
   const { playChord, playGuitarNote, initAudio, fretToNote } = useAudio();
 
@@ -41,6 +46,22 @@ const SongPractice: FC<SongPracticeProps> = ({ onClose }) => {
     }
   };
 
+  const nextChord = useCallback(() => {
+    if (!selectedSong) return;
+    setCurrentChordIndex(idx =>
+      (idx + 1) % selectedSong.progression.length,
+    );
+  }, [selectedSong]);
+
+  useEffect(() => {
+    if (chordName && !currentChord) {
+      setMessage(`Unsupported chord: ${chordName}. Skipping.`);
+      nextChord();
+    } else {
+      setMessage(null);
+    }
+  }, [chordName, currentChord, nextChord]);
+
   const handleStrum = () => {
     if (currentChord) {
       const notes =
@@ -49,11 +70,6 @@ const SongPractice: FC<SongPracticeProps> = ({ onClose }) => {
           : currentChord.guitarPositions.map(p => fretToNote(p.string, p.fret));
       playChord(notes, 1, selectedInstrument);
     }
-  };
-
-  const nextChord = () => {
-    if (!selectedSong) return;
-    setCurrentChordIndex((currentChordIndex + 1) % selectedSong.progression.length);
   };
 
   return (
@@ -76,7 +92,7 @@ const SongPractice: FC<SongPracticeProps> = ({ onClose }) => {
             Choose a Song
           </h3>
           <ul className="space-y-2">
-            {songs.map(song => (
+            {supportedSongs.map(song => (
               <li key={song.title}>
                 <button
                   onClick={() => {
@@ -100,6 +116,12 @@ const SongPractice: FC<SongPracticeProps> = ({ onClose }) => {
             {selectedSong.artist} • Key: {selectedSong.key} • Original Tempo:{' '}
             {selectedSong.bpm} BPM
           </p>
+
+          {message && (
+            <div className="mb-4 p-2 bg-yellow-100 text-yellow-800 rounded">
+              {message}
+            </div>
+          )}
 
           <div className="mb-4 flex flex-wrap gap-2">
             {selectedSong.progression.map((chordName, idx) => (
