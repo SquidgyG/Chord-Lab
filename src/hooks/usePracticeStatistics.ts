@@ -2,149 +2,149 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAchievements } from '../contexts/AchievementContext';
 
 const usePracticeStatistics = () => {
-  const { unlockAchievement } = useAchievements();
-  const [totalPracticeTime, setTotalPracticeTime] = useState(0);
-  const [chordsPlayed, setChordsPlayed] = useState(0);
-  const [currentStreak, setCurrentStreak] = useState(0);
-  const [bestChallengeTime, setBestChallengeTime] = useState<number | null>(null);
+  const { unlockAchievement } = useAchievements();
+  const [totalPracticeTime, setTotalPracticeTime] = useState(0);
+  const [chordsPlayed, setChordsPlayed] = useState(0);
+  const [currentStreak, setCurrentStreak] = useState(0);
+  const [bestChallengeTime, setBestChallengeTime] = useState<number | null>(null);
 
-  const [isChallengeActive, setIsChallengeActive] = useState(false);
-  const [challengeTime, setChallengeTime] = useState(0);
-  const challengeIntervalRef = useRef<ReturnType<typeof window.setInterval> | null>(null);
-  const practiceTimeIntervalRef = useRef<ReturnType<typeof window.setInterval> | null>(null);
+  const [isChallengeActive, setIsChallengeActive] = useState(false);
+  const [challengeTime, setChallengeTime] = useState(0);
+  const challengeIntervalRef = useRef<ReturnType<typeof window.setInterval> | null>(null);
+  const practiceTimeIntervalRef = useRef<ReturnType<typeof window.setInterval> | null>(null);
 
-  useEffect(() => {
-    const storedStats = localStorage.getItem('practiceStats');
-    if (storedStats) {
-      const stats = JSON.parse(storedStats) as {
-        totalPracticeTime?: number;
-        chordsPlayed?: number;
-        bestChallengeTime?: number | null;
-      };
-      setTotalPracticeTime(stats.totalPracticeTime ?? 0);
-      setChordsPlayed(stats.chordsPlayed ?? 0);
-      setBestChallengeTime(stats.bestChallengeTime ?? null);
-    }
-  }, []);
+  useEffect(() => {
+    const storedStats = localStorage.getItem('practiceStats');
+    if (storedStats) {
+      const stats = JSON.parse(storedStats) as {
+        totalPracticeTime?: number;
+        chordsPlayed?: number;
+        bestChallengeTime?: number | null;
+      };
+      setTotalPracticeTime(stats.totalPracticeTime ?? 0);
+      setChordsPlayed(stats.chordsPlayed ?? 0);
+      setBestChallengeTime(stats.bestChallengeTime ?? null);
+    }
+  }, []);
 
-  const saveStats = useCallback(() => {
-    const stats = {
-      totalPracticeTime,
-      chordsPlayed,
-      bestChallengeTime,
-    };
-    localStorage.setItem('practiceStats', JSON.stringify(stats));
-  }, [totalPracticeTime, chordsPlayed, bestChallengeTime]);
+  const saveStats = useCallback(() => {
+    const stats = {
+      totalPracticeTime,
+      chordsPlayed,
+      bestChallengeTime,
+    };
+    localStorage.setItem('practiceStats', JSON.stringify(stats));
+  }, [totalPracticeTime, chordsPlayed, bestChallengeTime]);
 
-  useEffect(() => {
-    saveStats();
-  }, [saveStats]);
+  useEffect(() => {
+    saveStats();
+  }, [saveStats]);
 
-  useEffect(() => {
-    if (totalPracticeTime >= 300000) {
-      unlockAchievement('DEDICATED_LEARNER');
-    }
-  }, [totalPracticeTime, unlockAchievement]);
+  useEffect(() => {
+    if (totalPracticeTime >= 300000) {
+      unlockAchievement('DEDICATED_LEARNER');
+    }
+  }, [totalPracticeTime, unlockAchievement]);
 
-  const startPracticeSession = useCallback(() => {
-    if (practiceTimeIntervalRef.current) {
-      clearInterval(practiceTimeIntervalRef.current);
-    }
-    practiceTimeIntervalRef.current = window.setInterval(() => {
-      setTotalPracticeTime(prevTime => prevTime + 1000);
-    }, 1000);
-  }, []);
+  const startPracticeSession = useCallback(() => {
+    if (practiceTimeIntervalRef.current) {
+      clearInterval(practiceTimeIntervalRef.current);
+    }
+    practiceTimeIntervalRef.current = window.setInterval(() => {
+      setTotalPracticeTime(prevTime => prevTime + 1000);
+    }, 1000);
+  }, []);
 
-  const stopPracticeSession = useCallback(() => {
-    if (practiceTimeIntervalRef.current) {
-      clearInterval(practiceTimeIntervalRef.current);
-      practiceTimeIntervalRef.current = null;
-    }
-  }, []);
+  const stopPracticeSession = useCallback(() => {
+    if (practiceTimeIntervalRef.current) {
+      clearInterval(practiceTimeIntervalRef.current);
+      practiceTimeIntervalRef.current = null;
+    }
+  }, []);
 
-  const incrementUniqueChord = useCallback(() => {
-    setChordsPlayed(prev => {
-      const newCount = prev + 1;
-      if (newCount >= 100) {
-        unlockAchievement('CHORD_MASTER');
-      }
-      return newCount;
-    });
-    setCurrentStreak(prev => {
-      const newStreak = prev + 1;
-      if (newStreak >= 50) {
-        unlockAchievement('STREAK_MASTER');
-      }
-      return newStreak;
-    });
-  }, [unlockAchievement]);
+  const incrementUniqueChord = useCallback(() => {
+    setChordsPlayed(prev => {
+      const newCount = prev + 1;
+      if (newCount >= 100) {
+        unlockAchievement('CHORD_MASTER');
+      }
+      return newCount;
+    });
+    setCurrentStreak(prev => {
+      const newStreak = prev + 1;
+      if (newStreak >= 50) {
+        unlockAchievement('STREAK_MASTER');
+      }
+      return newStreak;
+    });
+  }, [unlockAchievement]);
 
-  const resetStreak = useCallback(() => {
-    setCurrentStreak(0);
-  }, []);
+  const resetStreak = useCallback(() => {
+    setCurrentStreak(0);
+  }, []);
 
-  const incrementChordsPlayed = useCallback(() => {
-    setChordsPlayed(prev => {
-      const newCount = prev + 1;
-      if (newCount >= 100) {
-        unlockAchievement('CHORD_MASTER');
-      }
-      return newCount;
-    });
-  }, [unlockAchievement]);
+  const incrementChordsPlayed = useCallback(() => {
+    setChordsPlayed(prev => {
+      const newCount = prev + 1;
+      if (newCount >= 100) {
+        unlockAchievement('CHORD_MASTER');
+      }
+      return newCount;
+    });
+  }, [unlockAchievement]);
 
-  const startChallenge = useCallback(() => {
-    setIsChallengeActive(true);
-    setChallengeTime(0);
-    if (challengeIntervalRef.current) {
-      clearInterval(challengeIntervalRef.current);
-    }
-    const startTime = Date.now();
-    challengeIntervalRef.current = window.setInterval(() => {
-      setChallengeTime(Date.now() - startTime);
-    }, 10);
-    startPracticeSession();
-  }, [startPracticeSession]);
+  const startChallenge = useCallback(() => {
+    setIsChallengeActive(true);
+    setChallengeTime(0);
+    if (challengeIntervalRef.current) {
+      clearInterval(challengeIntervalRef.current);
+    }
+    const startTime = Date.now();
+    challengeIntervalRef.current = window.setInterval(() => {
+      setChallengeTime(Date.now() - startTime);
+    }, 10);
+    startPracticeSession();
+  }, [startPracticeSession]);
 
-  const stopChallenge = useCallback(() => {
-    setIsChallengeActive(false);
-    if (challengeIntervalRef.current) {
-      clearInterval(challengeIntervalRef.current);
-      challengeIntervalRef.current = null;
-    }
-    if (bestChallengeTime === null || challengeTime < bestChallengeTime) {
-      setBestChallengeTime(challengeTime);
-      unlockAchievement('SPEED_DEMON');
-    }
-    stopPracticeSession();
-  }, [bestChallengeTime, challengeTime, stopPracticeSession, unlockAchievement]);
+  const stopChallenge = useCallback(() => {
+    setIsChallengeActive(false);
+    if (challengeIntervalRef.current) {
+      clearInterval(challengeIntervalRef.current);
+      challengeIntervalRef.current = null;
+    }
+    if (bestChallengeTime === null || challengeTime < bestChallengeTime) {
+      setBestChallengeTime(challengeTime);
+      unlockAchievement('SPEED_DEMON');
+    }
+    stopPracticeSession();
+  }, [bestChallengeTime, challengeTime, stopPracticeSession, unlockAchievement]);
 
-  useEffect(() => {
-    return () => {
-      if (challengeIntervalRef.current) {
-        clearInterval(challengeIntervalRef.current);
-      }
-      if (practiceTimeIntervalRef.current) {
-        clearInterval(practiceTimeIntervalRef.current);
-      }
-    };
-  }, []);
+  useEffect(() => {
+    return () => {
+      if (challengeIntervalRef.current) {
+        clearInterval(challengeIntervalRef.current);
+      }
+      if (practiceTimeIntervalRef.current) {
+        clearInterval(practiceTimeIntervalRef.current);
+      }
+    };
+  }, []);
 
-  return {
-    totalPracticeTime,
-    chordsPlayed,
-    currentStreak,
-    bestChallengeTime,
-    isChallengeActive,
-    challengeTime,
-    startPracticeSession,
-    stopPracticeSession,
-    incrementChordsPlayed,
-    incrementUniqueChord,
-    resetStreak,
-    startChallenge,
-    stopChallenge,
-  };
+  return {
+    totalPracticeTime,
+    chordsPlayed,
+    currentStreak,
+    bestChallengeTime,
+    isChallengeActive,
+    challengeTime,
+    startPracticeSession,
+    stopPracticeSession,
+    incrementChordsPlayed,
+    incrementUniqueChord,
+    resetStreak,
+    startChallenge,
+    stopChallenge,
+  };
 };
 
 export default usePracticeStatistics;
