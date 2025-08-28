@@ -8,6 +8,7 @@ const useAudio = () => {
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const guitarInstrument = useRef<any | null>(null);
   const isInitialized = useRef(false);
+  const [guitarLoaded, setGuitarLoaded] = useState(false);
 
   const NOTE_FREQUENCIES: Record<string, number> = {
     'C3': 130.81,
@@ -60,6 +61,7 @@ const useAudio = () => {
         // Load guitar soundfont
         Soundfont.instrument(context, 'acoustic_guitar_steel').then(function (instrument) {
           guitarInstrument.current = instrument;
+          setGuitarLoaded(true);
         });
         return context
       }
@@ -106,12 +108,15 @@ const useAudio = () => {
         playNote(note, duration)
       })
     } else {
-      if (guitarInstrument.current) {
-        const now = audioContext?.currentTime ?? 0;
-        notes.forEach(note => {
-          guitarInstrument.current?.play(note, now, { duration });
-        });
+      const context = audioContext ?? initAudio();
+      if (!guitarLoaded) {
+        console.warn('Guitar sounds not loaded yet');
+        return;
       }
+      const now = context?.currentTime ?? 0;
+      notes.forEach(note => {
+        guitarInstrument.current?.play(note, now, { duration });
+      });
     }
   }
 
@@ -138,11 +143,12 @@ const useAudio = () => {
   const playGuitarNote = (string: number, fret: number, duration = 0.5) => {
     if (string < 1 || string > 6) return
     initAudio();
-
-    if (guitarInstrument.current) {
-      const note = fretToNote(string, fret);
-      guitarInstrument.current.play(note, undefined, { duration });
+    if (!guitarLoaded) {
+      console.warn('Guitar sounds not loaded yet');
+      return;
     }
+    const note = fretToNote(string, fret);
+    guitarInstrument.current?.play(note, undefined, { duration });
   }
 
   // Clean up audio context on unmount
@@ -160,6 +166,7 @@ const useAudio = () => {
     playChord,
     playGuitarNote,
     fretToNote,
+    guitarLoaded,
   };
 };
 
