@@ -134,12 +134,13 @@ const ChordProgressionBuilder = () => {
             All Chords
           </button>
         </div>
-        <div className="grid grid-cols-7 gap-2">
+        <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
           {availableChords.map(chord => (
             <button
               key={chord}
               onClick={() => addChord(chord)}
-              className="py-2 bg-gray-100 hover:bg-blue-100 text-gray-800 font-medium rounded-lg transition-colors"
+              title={`Add ${chord} chord`}
+              className="h-10 min-w-[40px] px-2 bg-gray-100 hover:bg-blue-100 text-gray-800 font-medium rounded-lg transition-colors flex items-center justify-center text-sm sm:text-base"
             >
               {chord}
             </button>
