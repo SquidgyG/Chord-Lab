@@ -58,6 +58,6 @@ export const achievements: Record<string, Achievement> = {
     id: 'DEDICATED_LEARNER',
     name: 'Dedicated Learner',
     description: 'Practice for 5+ minutes.',
-    icon: '🧑‍🎓',
+    icon: '🧑 🎓',
   },
 };

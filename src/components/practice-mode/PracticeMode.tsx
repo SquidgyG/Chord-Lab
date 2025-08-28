@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, type FC } from 'react';
+import { useState, useEffect, useMemo, useRef, type FC, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { getChordTheme } from '../../utils/diagramTheme';
 import useMetronome from '../../hooks/useMetronome';
@@ -9,6 +9,7 @@ import ChallengeMode from './ChallengeMode';
 import Statistics from './Statistics';
 import PracticeMetronomeControls from './PracticeMetronomeControls';
 import { InstrumentPanel } from './InstrumentPanel';
+import ChordDisplay from './ChordDisplay';
 import { chordList as chords, type Chord } from '../../data/chords';
 import SongPractice from './SongPractice';
 import { useHighestUnlockedLevel } from '../learning-path/LearningPathway';
@@ -126,11 +127,23 @@ const PracticeMode: FC = () => {
         }
     }, [currentChord, unlockAchievement, incrementUniqueChord]);
 
-    const getRandomChord = (): Chord | null => {
-        if (availableChords.length === 0) return null;
+    const handleStrum = useCallback(() => {
+        if (currentChord) {
+            const notes =
+                selectedInstrument === 'piano'
+                    ? currentChord.pianoNotes
+                    : currentChord.guitarPositions.map(p => fretToNote(p.string, p.fret));
+            playChord(notes, 1, selectedInstrument);
+        }
+    }, [currentChord, selectedInstrument, fretToNote, playChord]);
+
+    const nextChord = useCallback(() => {
+        incrementChordsPlayed();
+        if (availableChords.length === 0) return;
         const randomIndex = Math.floor(Math.random() * availableChords.length);
-        return availableChords[randomIndex];
-    };
+        const next = availableChords[randomIndex];
+        if (next) setCurrentChord(next);
+    }, [incrementChordsPlayed, availableChords]);
 
     const toggleMetronome = () => {
         if (isPlaying) {
@@ -141,22 +154,6 @@ const PracticeMode: FC = () => {
             start();
             startPracticeSession();
         }
-    };
-
-    const handleStrum = () => {
-        if (currentChord) {
-            const notes =
-                selectedInstrument === 'piano'
-                    ? currentChord.pianoNotes
-                    : currentChord.guitarPositions.map(p => fretToNote(p.string, p.fret));
-            playChord(notes, 1, selectedInstrument);
-        }
-    };
-
-    const nextChord = () => {
-        incrementChordsPlayed();
-        const next = getRandomChord();
-        if (next) setCurrentChord(next);
     };
 
     const diatonicChips = useMemo(() => {
@@ -283,12 +280,7 @@ const PracticeMode: FC = () => {
             {currentChord && (
                 <div className="mb-6">
                     <div className="flex justify-between items-center mb-4">
-                        <h3
-                            data-testid="current-chord-name"
-                            className="text-xl font-bold text-gray-800 dark:text-gray-100"
-                        >
-                            {currentChord.name}
-                        </h3>
+                        <ChordDisplay chord={currentChord} instrument={selectedInstrument} />
                         <PracticeMetronomeControls
                             isPlaying={isPlaying}
                             bpm={bpm}

@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef, type KeyboardEvent } from 'react'
+import { useMemo, useState, useRef, type KeyboardEvent, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getChordTheme } from '../utils/diagramTheme'
 import useAudio from '../hooks/useAudio'
@@ -67,9 +67,12 @@ export default function ChordWheel() {
     })
   }, [step])
 
-  const NOTE_SEQUENCE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+  // Memoize NOTE_SEQUENCE to prevent re-creation on every render
+  const NOTE_SEQUENCE = useMemo(() => [
+    'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'
+  ], []);
 
-  const chordToNotes = (name: string): string[] => {
+  const chordToNotes = useCallback((name: string): string[] => {
     const isMinor = name.endsWith('m')
     const root = isMinor ? name.slice(0, -1) : name
     const rootIndex = NOTE_SEQUENCE.indexOf(root)
@@ -81,9 +84,9 @@ export default function ChordWheel() {
       `${NOTE_SEQUENCE[thirdIndex]}4`,
       `${NOTE_SEQUENCE[fifthIndex]}4`,
     ]
-  }
+  }, [NOTE_SEQUENCE])
 
-  const onSelect = (name: string) => {
+  const onSelect = useCallback((name: string) => {
     setSelected(name)
     initAudio()
     if (!throttleRef.current) {
@@ -96,8 +99,14 @@ export default function ChordWheel() {
         throttleRef.current = false
       }, 300)
     }
-  }
-  const majorKeys = MAJORS_ORDER
+  }, [setSelected, initAudio, playChord, chordToNotes])
+
+  const handleKeyDown = useCallback((chord: string) => (e: KeyboardEvent<SVGGElement>) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      onSelect(chord)
+    }
+  }, [onSelect])
 
   // In a major key: I, IV, V majors; ii, iii, vi minors are commonly diatonic
   const diatonic = useMemo(() => {
@@ -129,7 +138,7 @@ export default function ChordWheel() {
             onChange={e => setActiveKey(e.target.value)}
             className="px-2 py-1 border border-gray-300 rounded-md bg-white text-gray-800 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
           >
-            {majorKeys.map(k => (
+            {MAJORS_ORDER.map(k => (
               <option key={k} value={k}>
                 {k} major
               </option>
@@ -161,13 +170,6 @@ export default function ChordWheel() {
               const isDiaMaj = diatonic.majors.has(maj)
               const isDiaMin = diatonic.minors.has(min)
               const isHovered = hovered === i
-
-              const handleKeyDown = (chord: string) => (e: KeyboardEvent<SVGGElement>) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  onSelect(chord)
-                }
-              }
 
               return (
                 <g key={maj} data-testid={`sector-${maj}`}>
