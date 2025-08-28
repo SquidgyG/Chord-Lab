@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import NameTheNoteQuiz from './NameTheNoteQuiz';
-import { vi } from 'vitest';
+import { vi, test, expect } from 'vitest';
 
 const initAudioMock = vi.fn();
 const playNoteMock = vi.fn();
