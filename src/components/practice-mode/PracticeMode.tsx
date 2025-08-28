@@ -84,7 +84,7 @@ const PracticeMode: FC = () => {
     const location = useLocation();
     const practicedChordsRef = useRef<Set<string>>(new Set());
     const [keyCenter, setKeyCenter] = useState<MajorKey | null>(null);
-    const { playChord, playGuitarNote, initAudio, fretToNote, guitarLoaded } = useAudio();
+    const { playChord, fretToNote, guitarLoaded } = useAudio();
 
     useEffect(() => {
         if (currentChord && (currentChord.level ?? 1) > highestUnlockedLevel) {
@@ -319,15 +319,11 @@ const PracticeMode: FC = () => {
                         />
                     )}
 
-                    <InstrumentPanel
-                        selectedInstrument={selectedInstrument}
-                        onInstrumentChange={setSelectedInstrument}
-                        chord={currentChord}
-                        playGuitarNote={playGuitarNote}
-                        playPianoNote={note => playChord([note], 0.5, 'piano')}
-                        initAudio={initAudio}
-                        beginnerMode={beginnerMode}
-                    />
+                    <InstrumentPanel
+                        selectedInstrument={selectedInstrument}
+                        onInstrumentChange={setSelectedInstrument}
+                        beginnerMode={beginnerMode}
+                    />
 
                     {selectedInstrument === 'guitar' && !guitarLoaded && (
                         <p className="text-gray-500 text-sm mt-2">Loading sounds...</p>
