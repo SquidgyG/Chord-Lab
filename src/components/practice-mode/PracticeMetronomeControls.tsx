@@ -7,6 +7,7 @@ interface PracticeMetronomeControlsProps {
   toggleMetronome: () => void;
   handleStrum: () => void;
   nextChord: () => void;
+  disableStrum?: boolean;
 }
 
 const PracticeMetronomeControls: FC<PracticeMetronomeControlsProps> = ({
@@ -16,7 +17,13 @@ const PracticeMetronomeControls: FC<PracticeMetronomeControlsProps> = ({
   toggleMetronome,
   handleStrum,
   nextChord,
+  disableStrum = false,
 }) => {
+  const presets = [
+    { label: 'Slow', bpm: 70 },
+    { label: 'Medium', bpm: 100 },
+    { label: 'Fast', bpm: 130 },
+  ];
   return (
     <div className="flex flex-col items-end gap-2">
       <div>
@@ -33,6 +40,21 @@ const PracticeMetronomeControls: FC<PracticeMetronomeControlsProps> = ({
           }
           className="w-32"
         />
+        <div className="flex gap-2 mt-2">
+          {presets.map(({ label, bpm: presetBpm }) => (
+            <button
+              key={label}
+              onClick={() => setBpm(presetBpm)}
+              className={`px-2 py-1 rounded transition-colors ${
+                bpm === presetBpm
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
       <div className="flex space-x-2">
         <button
@@ -47,7 +69,8 @@ const PracticeMetronomeControls: FC<PracticeMetronomeControlsProps> = ({
         </button>
         <button
           onClick={handleStrum}
-          className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white"
+          disabled={disableStrum}
+          className="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
           title="Play a quick strum"
         >
           Strum

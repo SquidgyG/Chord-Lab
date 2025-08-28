@@ -3,6 +3,7 @@ import { getDiatonicChords } from '../../utils/music-theory'
 import GuitarDiagram from '../diagrams/GuitarDiagram'
 import PianoDiagram from '../diagrams/PianoDiagram'
 import ClassroomDisplay from '../classroom/ClassroomDisplay'
+import { useNavigate } from 'react-router-dom'
 
 const keys = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 'Bb', 'F']
 const progressions = ['I–V–vi–IV', 'vi–IV–I–V', 'ii–V–I', 'I–vi–IV–V']
@@ -36,6 +37,7 @@ const ClassroomMode: React.FC = () => {
   const [selectedProgression, setSelectedProgression] = useState('I–V–vi–IV')
   const [instrument, setInstrument] = useState<'guitar' | 'piano'>('guitar')
   const [displayedChords, setDisplayedChords] = useState<string[]>([])
+  const navigate = useNavigate()
 
   const generatedChords = useMemo(() => {
     const diatonic = getDiatonicChords(selectedKey)
@@ -100,6 +102,14 @@ const ClassroomMode: React.FC = () => {
             className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
           >
             Add to Display
+          </button>
+        </div>
+        <div>
+          <button
+            onClick={() => navigate('/classroom/dashboard')}
+            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+          >
+            View Progress
           </button>
         </div>
       </div>
