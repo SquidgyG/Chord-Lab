@@ -7,8 +7,12 @@ import ChordSwitchingExercise from './exercises/ChordSwitchingExercise'
 import TheoryQuiz from './quizzes/TheoryQuiz'
 import AdvancedTechniqueExercise from './exercises/AdvancedTechniqueExercise'
 import ClassroomMode from '../classroom/ClassroomMode'
+import PianoBasicsLesson from './lessons/PianoBasicsLesson'
+import GuitarEssentialsLesson from './lessons/GuitarEssentialsLesson'
 
 const lessonComponents: Record<string, () => React.ReactElement> = {
+  '1-pb': () => <PianoBasicsLesson />,
+  '1-ge': () => <GuitarEssentialsLesson />,
   '1-e1': () => <NameTheNoteQuiz />,
   '1-s2': () => <RhythmExercise />,
   '2-s1': () => <ChordSwitchingExercise progression={['C', 'F']} />,

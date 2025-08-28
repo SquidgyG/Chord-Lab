@@ -25,6 +25,22 @@ export const learningPath: Level[] = [
     ],
     lessons: [
       {
+        id: '1-pb',
+        title: 'Piano Basics',
+        description:
+          'Explore the keyboard layout, proper seating posture, and finger numbers 1–5.',
+        completed: false,
+        type: 'knowledge',
+      },
+      {
+        id: '1-ge',
+        title: 'Guitar Essentials',
+        description:
+          'Learn string names E–A–D–G–B–E, tuning, and relaxed fretting technique.',
+        completed: false,
+        type: 'knowledge',
+      },
+      {
         id: '1-k1',
         title: 'Core Knowledge: Keyboard',
         description: 'Finger numbers 1–5 (thumb=1), white-key names A–G, middle C location.',
