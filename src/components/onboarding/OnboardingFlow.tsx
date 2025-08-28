@@ -68,9 +68,12 @@ const OnboardingFlow: React.FC = () => {
               }}
               className="w-full p-2 border rounded-md"
               placeholder="Enter your name"
+              aria-describedby={nameError ? 'name-error' : undefined}
             />
             {nameError && (
-              <p className="text-red-500 text-sm mt-1">{nameError}</p>
+              <p id="name-error" className="text-red-500 text-sm mt-1">
+                {nameError}
+              </p>
             )}
             <button
               onClick={handleNext}

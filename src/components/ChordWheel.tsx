@@ -1,6 +1,7 @@
-import { useMemo, useState, type KeyboardEvent } from 'react'
+import { useMemo, useState, useRef, type KeyboardEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getChordTheme } from '../utils/diagramTheme'
+import useAudio from '../hooks/useAudio'
 
 // Simple, responsive chord wheel with majors on outer ring and relative minors on inner ring
 // Colors pulled from getChordTheme to ensure consistency with diagrams and archived palette
@@ -53,6 +54,8 @@ export default function ChordWheel() {
   const [selected, setSelected] = useState<string>('C')
   const [activeKey, setActiveKey] = useState<string>('C')
   const [hovered, setHovered] = useState<number | null>(null)
+  const { initAudio, playChord } = useAudio()
+  const throttleRef = useRef(false)
   const navigate = useNavigate()
 
   const items = useMemo(() => {
@@ -64,7 +67,36 @@ export default function ChordWheel() {
     })
   }, [step])
 
-  const onSelect = (name: string) => setSelected(name)
+  const NOTE_SEQUENCE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+
+  const chordToNotes = (name: string): string[] => {
+    const isMinor = name.endsWith('m')
+    const root = isMinor ? name.slice(0, -1) : name
+    const rootIndex = NOTE_SEQUENCE.indexOf(root)
+    if (rootIndex === -1) return []
+    const thirdIndex = (rootIndex + (isMinor ? 3 : 4)) % 12
+    const fifthIndex = (rootIndex + 7) % 12
+    return [
+      `${root}4`,
+      `${NOTE_SEQUENCE[thirdIndex]}4`,
+      `${NOTE_SEQUENCE[fifthIndex]}4`,
+    ]
+  }
+
+  const onSelect = (name: string) => {
+    setSelected(name)
+    initAudio()
+    if (!throttleRef.current) {
+      const notes = chordToNotes(name)
+      if (notes.length > 0) {
+        playChord(notes, 0.8)
+      }
+      throttleRef.current = true
+      setTimeout(() => {
+        throttleRef.current = false
+      }, 300)
+    }
+  }
   const majorKeys = MAJORS_ORDER
 
   // In a major key: I, IV, V majors; ii, iii, vi minors are commonly diatonic
@@ -84,7 +116,7 @@ export default function ChordWheel() {
   }, [activeKey])
 
   return (
-    <div className="bg-white dark:bg-gray-800/50 rounded-2xl shadow-lg p-4 max-w-4xl mx-auto">
+    <div className="w-full bg-white dark:bg-gray-800/50 rounded-2xl shadow-lg p-4 md:p-8">
       <div className="flex items-center justify-between gap-4 mb-2">
         <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Chord Wheel</h2>
         <div className="flex items-center gap-2">
@@ -106,7 +138,7 @@ export default function ChordWheel() {
         </div>
       </div>
       <div className="w-full flex justify-center">
-        <svg viewBox={`0 0 ${size} ${size}`} className="w-full max-w-[720px] h-auto">
+        <svg viewBox={`0 0 ${size} ${size}`} className="w-full h-auto">
           <defs>
             <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
               <feGaussianBlur stdDeviation="4" result="blur" />

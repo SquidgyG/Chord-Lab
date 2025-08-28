@@ -16,6 +16,7 @@ interface InstrumentPanelProps {
   playGuitarNote: (string: number, fret: number) => void;
   playPianoNote: (note: string) => void;
   initAudio: () => void;
+  beginnerMode?: boolean;
 }
 
 const InstrumentPanel: FC<InstrumentPanelProps> = ({
@@ -25,36 +26,39 @@ const InstrumentPanel: FC<InstrumentPanelProps> = ({
   playGuitarNote,
   playPianoNote,
   initAudio,
+  beginnerMode = false,
 }) => {
   return (
     <div className="mb-6">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Instrument
-        </label>
-        <div className="flex space-x-2 mb-4">
-          <button
-            onClick={() => onInstrumentChange('guitar')}
-            className={`px-4 py-2 rounded-lg ${
-              selectedInstrument === 'guitar'
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-200 dark:bg-gray-700 dark:text-gray-300'
-            }`}
-          >
-            Guitar
-          </button>
-          <button
-            onClick={() => onInstrumentChange('piano')}
-            className={`px-4 py-2 rounded-lg ${
-              selectedInstrument === 'piano'
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-200 dark:bg-gray-700 dark:text-gray-300'
-            }`}
-          >
-            Piano
-          </button>
+      {!beginnerMode && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Instrument
+          </label>
+          <div className="flex space-x-2 mb-4">
+            <button
+              onClick={() => onInstrumentChange('guitar')}
+              className={`px-4 py-2 rounded-lg ${
+                selectedInstrument === 'guitar'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-200 dark:bg-gray-700 dark:text-gray-300'
+              }`}
+            >
+              Guitar
+            </button>
+            <button
+              onClick={() => onInstrumentChange('piano')}
+              className={`px-4 py-2 rounded-lg ${
+                selectedInstrument === 'piano'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-200 dark:bg-gray-700 dark:text-gray-300'
+              }`}
+            >
+              Piano
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {chord && (
         <div className="flex justify-center my-6" onClick={initAudio}>
