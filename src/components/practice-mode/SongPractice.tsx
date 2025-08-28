@@ -146,7 +146,7 @@ const SongPractice: FC<SongPracticeProps> = ({ onClose }) => {
           </h3>
           <ul className="space-y-2">
             {songs.map(song => (
-              <li key={song.title}>
+              <li key={`${song.title}-${song.artist}`}>
                 <button
                   onClick={() => {
                     setSelectedSong(song);
