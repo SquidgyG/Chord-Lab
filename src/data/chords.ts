@@ -290,14 +290,14 @@ export const chords: Record<string, ChordDefinition> = {
 };
 
 export interface Chord extends ChordDefinition {
-    name: string;
+  name: string;
 }
 
 export const chordList: Chord[] = Object.entries(chords).map(
-    ([name, data]) => ({
-        name,
-        ...data,
-    })
+  ([name, data]) => ({
+    name,
+    ...data,
+  })
 );
 
 export type ChordName = keyof typeof chords;

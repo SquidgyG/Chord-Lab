@@ -13,7 +13,11 @@ const ClassroomDisplay: React.FC<ClassroomDisplayProps> = ({ displayedChords, in
   return (
     <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-2`}>
       {displayedChords.map((chord, index) => {
-        const data = chordData[chord] ?? { pianoNotes: [], guitarPositions: [] }
+        const data = chordData[chord] ?? {
+          pianoNotes: [],
+          guitarPositions: [],
+          guitarFingers: [],
+        }
         return (
           <div
             key={index}

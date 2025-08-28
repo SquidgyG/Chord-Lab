@@ -51,7 +51,6 @@ export const InstrumentPanel: FC<InstrumentPanelProps> = ({
           </div>
         </div>
       )}
-      {/* ...rest of your component */}
     </div>
   );
 };
