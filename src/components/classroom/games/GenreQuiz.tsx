@@ -7,6 +7,11 @@ interface Song {
   genre: string;
 }
 
+interface Score {
+  correct: number;
+  attempted: number;
+}
+
 const GENRES = ['Rock', 'Jazz', 'Classical'];
 
 const GenreQuiz: React.FC = () => {
@@ -23,15 +28,16 @@ const GenreQuiz: React.FC = () => {
 
   const [songs, setSongs] = useState(initialSongs);
   const [current, setCurrent] = useState(0);
-  const [score, setScore] = useState(0);
+  const [score, setScore] = useState<Score>({ correct: 0, attempted: 0 });
   const [revealed, setRevealed] = useState(false);
 
   const handleGuess = (genre: string) => {
     if (revealed) return;
     setRevealed(true);
-    if (songs[current].genre === genre) {
-      setScore((s) => s + 1);
-    }
+    setScore((prev: Score) => ({
+      correct: prev.correct + (songs[current].genre === genre ? 1 : 0),
+      attempted: prev.attempted + 1,
+    }));
   };
 
   const shuffleSongs = () => {
@@ -46,13 +52,15 @@ const GenreQuiz: React.FC = () => {
   };
 
   const resetScore = () => {
-    setScore(0);
+    setScore({ correct: 0, attempted: 0 });
     setRevealed(false);
   };
 
   return (
     <div>
-      <p data-testid="score">Score: {score}</p>
+      <p data-testid="score">
+        Score: {score.correct}/{score.attempted}
+      </p>
       <button onClick={() => playNote(songs[current].note)}>Play Clip</button>
       <div>
         {GENRES.map((g) => (
