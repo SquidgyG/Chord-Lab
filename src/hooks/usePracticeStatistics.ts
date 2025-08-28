@@ -62,7 +62,7 @@ const usePracticeStatistics = () => {
     }
   }, []);
 
-  const incrementChordsPlayed = useCallback(() => {
+  const incrementUniqueChord = useCallback(() => {
     setChordsPlayed(prev => {
       const newCount = prev + 1;
       if (newCount >= 100) {
@@ -70,9 +70,6 @@ const usePracticeStatistics = () => {
       }
       return newCount;
     });
-  }, [unlockAchievement]);
-
-  const incrementUniqueChord = useCallback(() => {
     setCurrentStreak(prev => {
       const newStreak = prev + 1;
       if (newStreak >= 50) {
@@ -85,6 +82,16 @@ const usePracticeStatistics = () => {
   const resetStreak = useCallback(() => {
     setCurrentStreak(0);
   }, []);
+
+  const incrementChordsPlayed = useCallback(() => {
+    setChordsPlayed(prev => {
+      const newCount = prev + 1;
+      if (newCount >= 100) {
+        unlockAchievement('CHORD_MASTER');
+      }
+      return newCount;
+    });
+  }, [unlockAchievement]);
 
   const startChallenge = useCallback(() => {
     setIsChallengeActive(true);

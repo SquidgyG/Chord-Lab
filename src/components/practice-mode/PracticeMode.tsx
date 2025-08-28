@@ -234,8 +234,8 @@ const { playChord, fretToNote, guitarLoaded } = useAudio();
                                         available
                                             ? `Practice ${label}`
                                             : locked
-                                                ? 'Locked: finish previous levels'
-                                                : 'Diagram coming soon'
+                                            ? 'Locked: finish previous levels'
+                                            : 'Diagram coming soon'
                                     }
                                 >
                                     {label}
