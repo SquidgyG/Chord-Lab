@@ -54,6 +54,9 @@ export function getChordInversion(notes: string[], inversion: number): string[] 
   return invertedMidi.map(getNoteFromMidi);
 }
 
+/**
+ * Returns the seven diatonic triads for the given major key.
+ */
 export function getDiatonicChords(key: string): string[] {
   const keyIndex = noteMap[key];
   if (keyIndex === undefined) return [];
