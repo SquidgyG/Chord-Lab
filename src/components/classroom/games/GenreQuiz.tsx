@@ -1,35 +1,17 @@
-import React, { useMemo, useState } from 'react';
-import useAudio from '../../../hooks/useAudio';
-
-interface Song {
-  id: number;
-  note: string;
-  genre: string;
-}
-
-const GENRES = ['Rock', 'Jazz', 'Classical'];
+import React, { useRef, useState } from 'react';
+import { genres, Genre } from '../../../data/genres';
 
 const GenreQuiz: React.FC = () => {
-  const { playNote } = useAudio();
-
-  const initialSongs: Song[] = useMemo(
-    () => [
-      { id: 1, note: 'C4', genre: 'Rock' },
-      { id: 2, note: 'D4', genre: 'Jazz' },
-      { id: 3, note: 'E4', genre: 'Classical' },
-    ],
-    []
-  );
-
-  const [songs, setSongs] = useState(initialSongs);
+  const [songs, setSongs] = useState<Genre[]>(genres);
   const [current, setCurrent] = useState(0);
   const [score, setScore] = useState(0);
   const [revealed, setRevealed] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const handleGuess = (genre: string) => {
     if (revealed) return;
     setRevealed(true);
-    if (songs[current].genre === genre) {
+    if (songs[current].name === genre) {
       setScore((s) => s + 1);
     }
   };
@@ -50,19 +32,30 @@ const GenreQuiz: React.FC = () => {
     setRevealed(false);
   };
 
+  const playClip = () => {
+    audioRef.current?.play();
+  };
+
+  const currentSong = songs[current];
+
   return (
     <div>
       <p data-testid="score">Score: {score}</p>
-      <button onClick={() => playNote(songs[current].note)}>Play Clip</button>
+      <button onClick={playClip}>Play Clip</button>
+      <audio ref={audioRef} data-testid="audio">
+        {currentSong.sources.map((s) => (
+          <source data-testid="audio-source" key={s.type} src={s.src} type={s.type} />
+        ))}
+      </audio>
       <div>
-        {GENRES.map((g) => (
-          <button key={g} onClick={() => handleGuess(g)} disabled={revealed}>
-            {g}
+        {songs.map((g) => (
+          <button key={g.name} onClick={() => handleGuess(g.name)} disabled={revealed}>
+            {g.name}
           </button>
         ))}
       </div>
       <button onClick={() => setRevealed(true)}>Reveal Answer</button>
-      {revealed && <p data-testid="answer">{songs[current].genre}</p>}
+      {revealed && <p data-testid="answer">{currentSong.name}</p>}
       <button onClick={shuffleSongs}>Shuffle</button>
       <button onClick={resetScore}>Reset Score</button>
     </div>
