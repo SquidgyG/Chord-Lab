@@ -82,6 +82,7 @@ const PracticeMode: FC = () => {
     startPracticeSession,
     stopPracticeSession,
     incrementChordsPlayed,
+    incrementUniqueChord,
     resetStreak,
     startChallenge,
     stopChallenge,
@@ -125,7 +126,7 @@ const PracticeMode: FC = () => {
       const practicedChords = practicedChordsRef.current;
       if (!practicedChords.has(currentChord.name)) {
         practicedChords.add(currentChord.name);
-        incrementChordsPlayed();
+        incrementUniqueChord();
 
         if (practicedChords.size === 1) {
           unlockAchievement('FIRST_CHORD');
@@ -138,7 +139,7 @@ const PracticeMode: FC = () => {
         }
       }
     }
-  }, [currentChord, unlockAchievement, incrementChordsPlayed]);
+  }, [currentChord, unlockAchievement, incrementUniqueChord]);
 
   const toggleMetronome = () => {
     if (isPlaying) {
