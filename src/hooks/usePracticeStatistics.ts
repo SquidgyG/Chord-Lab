@@ -62,6 +62,10 @@ const usePracticeStatistics = () => {
     }
   }, []);
 
+  const incrementChordsPlayed = useCallback(() => {
+    setChordsPlayed(prev => prev + 1);
+  }, []);
+
   const incrementUniqueChord = useCallback(() => {
     setChordsPlayed(prev => {
       const newCount = prev + 1;

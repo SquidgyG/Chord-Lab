@@ -1,9 +1,21 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import ChordWheel from './ChordWheel';
 
 import { ThemeProvider } from '../contexts/ThemeContext'
+
+const initAudio = vi.fn()
+const playChord = vi.fn()
+
+vi.mock('../hooks/useAudio', () => ({
+  default: () => ({ initAudio, playChord }),
+}))
+
+beforeEach(() => {
+  initAudio.mockClear()
+  playChord.mockClear()
+})
 
 describe('ChordWheel', () => {
   const renderWithProviders = (ui: React.ReactElement) => {
@@ -48,5 +60,26 @@ describe('ChordWheel', () => {
       const path = sector.querySelector('path:first-of-type')
       expect(path).toHaveAttribute('filter', 'url(#glow)')
     })
+  })
+
+  it('plays chord audio when a sector is selected', () => {
+    renderWithProviders(<ChordWheel />)
+    const sector = screen.getByLabelText('Select C major')
+    fireEvent.click(sector)
+    expect(initAudio).toHaveBeenCalled()
+    expect(playChord).toHaveBeenCalledWith(['C4', 'E4', 'G4'], 0.8)
+  })
+
+  it('throttles rapid repeated clicks to prevent overlapping playback', () => {
+    vi.useFakeTimers()
+    renderWithProviders(<ChordWheel />)
+    const sector = screen.getByLabelText('Select C major')
+    fireEvent.click(sector)
+    fireEvent.click(sector)
+    expect(playChord).toHaveBeenCalledTimes(1)
+    vi.advanceTimersByTime(300)
+    fireEvent.click(sector)
+    expect(playChord).toHaveBeenCalledTimes(2)
+    vi.useRealTimers()
   })
 })
