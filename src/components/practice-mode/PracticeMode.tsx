@@ -8,7 +8,7 @@ import usePracticeStatistics from '../../hooks/usePracticeStatistics';
 import ChallengeMode from './ChallengeMode';
 import Statistics from './Statistics';
 import PracticeMetronomeControls from './PracticeMetronomeControls';
-import InstrumentPanel from './InstrumentPanel';
+import { InstrumentPanel } from './InstrumentPanel';
 import { chordList as chords, type Chord } from '../../data/chords';
 import SongPractice from './SongPractice';
 import { useHighestUnlockedLevel } from '../learning-path/LearningPathway';
@@ -84,7 +84,7 @@ const PracticeMode: FC = () => {
     const location = useLocation();
     const practicedChordsRef = useRef<Set<string>>(new Set());
     const [keyCenter, setKeyCenter] = useState<MajorKey | null>(null);
-    const { playChord, playGuitarNote, initAudio, fretToNote, guitarLoaded } = useAudio();
+    const { playChord, fretToNote, guitarLoaded } = useAudio();
 
     useEffect(() => {
         if (currentChord && (currentChord.level ?? 1) > highestUnlockedLevel) {
@@ -322,10 +322,6 @@ const PracticeMode: FC = () => {
                     <InstrumentPanel
                         selectedInstrument={selectedInstrument}
                         onInstrumentChange={setSelectedInstrument}
-                        chord={currentChord}
-                        playGuitarNote={playGuitarNote}
-                        playPianoNote={note => playChord([note], 0.5, 'piano')}
-                        initAudio={initAudio}
                         beginnerMode={beginnerMode}
                     />
 
