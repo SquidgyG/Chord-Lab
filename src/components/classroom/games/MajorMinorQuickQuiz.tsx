@@ -1,5 +1,3 @@
-import { useMemo } from 'react';
-
 export interface ChordQualityQuestion {
   chord: string;
   quality: 'major' | 'minor';
@@ -12,14 +10,13 @@ const chordQualityQuestions: ChordQualityQuestion[] = [
   { chord: 'Am', quality: 'minor' },
 ];
 
-export default function MajorMinorQuickQuiz() {
-  // Memoize the mapped questions so the array reference remains stable
-  // between renders and avoids unnecessary re-renders downstream.
-  const questionItems = useMemo(
-    () => chordQualityQuestions.map(({ chord, quality }) => `${chord} is ${quality}`),
-    [chordQualityQuestions],
-  );
+// Precompute mapped questions so the array reference remains stable
+// and avoids unnecessary work during component renders.
+const questionItems = chordQualityQuestions.map(
+  ({ chord, quality }) => `${chord} is ${quality}`,
+);
 
+export default function MajorMinorQuickQuiz() {
   return (
     <ul>
       {questionItems.map((text, idx) => (
