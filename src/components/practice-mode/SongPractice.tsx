@@ -3,7 +3,7 @@ import songs, { type Song } from '../../data/songs';
 import useMetronome from '../../hooks/useMetronome';
 import useAudio from '../../hooks/useAudio';
 import PracticeMetronomeControls from './PracticeMetronomeControls';
-import InstrumentPanel from './InstrumentPanel';
+import { InstrumentPanel } from './InstrumentPanel';
 import { chordList as chords, type Chord } from '../../data/chords';
 
 const getChord = (name: string): Chord | null =>
@@ -24,7 +24,7 @@ const SongPractice: FC<SongPracticeProps> = ({ onClose }) => {
         useState<'guitar' | 'piano'>('guitar');
     const [message, setMessage] = useState<string | null>(null);
     const [{ isPlaying, bpm }, { start, stop, setBpm }] = useMetronome(60, 4);
-    const { playChord, playGuitarNote, initAudio, fretToNote } = useAudio();
+    const { playChord, fretToNote } = useAudio();
 
     const chordName: string | null =
         selectedSong?.progression[currentChordIndex] ?? null;
@@ -147,14 +147,10 @@ const SongPractice: FC<SongPracticeProps> = ({ onClose }) => {
                         nextChord={nextChord}
                     />
 
-                    <InstrumentPanel
-                        selectedInstrument={selectedInstrument}
-                        onInstrumentChange={setSelectedInstrument}
-                        chord={currentChord}
-                        playGuitarNote={playGuitarNote}
-                        playPianoNote={note => playChord([note], 0.5, 'piano')}
-                        initAudio={initAudio}
-                    />
+                    <InstrumentPanel
+                        selectedInstrument={selectedInstrument}
+                        onInstrumentChange={setSelectedInstrument}
+                    />
                 </div>
             )}
         </div>

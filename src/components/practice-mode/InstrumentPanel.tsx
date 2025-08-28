@@ -1,35 +1,18 @@
 import type { FC } from 'react';
-import GuitarDiagram from '../diagrams/GuitarDiagram';
-import PianoDiagram from '../diagrams/PianoDiagram';
 import { GUITAR_ICON, PIANO_ICON } from '../../assets/instrumentIcons';
 
-interface PracticeChord {
-  name: string;
-  guitarPositions: { string: number; fret: number }[];
-  guitarFingers?: number[];
-  pianoNotes: string[];
-}
-
 interface InstrumentPanelProps {
-  selectedInstrument: 'guitar' | 'piano';
-  onInstrumentChange: (instrument: 'guitar' | 'piano') => void;
-  chord: PracticeChord | null;
-  playGuitarNote: (string: number, fret: number) => void;
-  playPianoNote: (note: string) => void;
-  initAudio: () => void;
-  beginnerMode?: boolean;
+  selectedInstrument: 'guitar' | 'piano';
+  onInstrumentChange: (instrument: 'guitar' | 'piano') => void;
+  beginnerMode?: boolean;
 }
 
-const InstrumentPanel: FC<InstrumentPanelProps> = ({
-    selectedInstrument,
-    onInstrumentChange,
-    chord,
-    playGuitarNote,
-    playPianoNote,
-    initAudio,
-    beginnerMode = false,
+export const InstrumentPanel: FC<InstrumentPanelProps> = ({
+    selectedInstrument,
+    onInstrumentChange,
+    beginnerMode = false,
 }) => {
-    return (
+    return (
     <div className="mb-6">
         {!beginnerMode && (
             <div>
