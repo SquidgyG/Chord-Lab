@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 export interface QuickQuizProps {
-  /** Source URL for the audio clip to play */
-  clipSrc?: string;
+  /** Question data which may include an audio clip to play */
+  question?: { audio?: string };
 }
 
 /**
@@ -12,16 +12,15 @@ export interface QuickQuizProps {
  * clip is loaded. The audio element is cleaned up when the component
  * unmounts.
  */
-export default function QuickQuiz({ clipSrc }: QuickQuizProps) {
+export default function QuickQuiz({ question }: QuickQuizProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  useEffect(() => {
+  const playAudio = useCallback(() => {
+    const clipSrc = question?.audio;
     if (!clipSrc) return;
 
     // Lazily create the audio element if needed
-    if (!audioRef.current) {
-      audioRef.current = new Audio();
-    }
+    audioRef.current ??= new Audio();
 
     const audio = audioRef.current;
 
@@ -31,7 +30,11 @@ export default function QuickQuiz({ clipSrc }: QuickQuizProps) {
     audio.src = clipSrc;
 
     void audio.play();
-  }, [clipSrc]);
+  }, [question?.audio]);
+
+  useEffect(() => {
+    playAudio();
+  }, [playAudio]);
 
   useEffect(() => {
     // Cleanup the audio element when the component unmounts
