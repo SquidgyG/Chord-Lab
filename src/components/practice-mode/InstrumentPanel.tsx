@@ -71,3 +71,4 @@ const InstrumentPanel: FC<InstrumentPanelProps> = ({
         {/* ...rest of your component */}
     </div>
 );
+}
