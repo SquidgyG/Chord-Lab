@@ -2,17 +2,17 @@ import type { FC } from 'react';
 import GuitarDiagram from '../diagrams/GuitarDiagram';
 import PianoDiagram from '../diagrams/PianoDiagram';
 
-interface Chord {
+interface PracticeChord {
   name: string;
   guitarPositions: { string: number; fret: number }[];
-  guitarFingers: number[];
+  guitarFingers?: number[];
   pianoNotes: string[];
 }
 
 interface InstrumentPanelProps {
   selectedInstrument: 'guitar' | 'piano';
   onInstrumentChange: (instrument: 'guitar' | 'piano') => void;
-  chord: Chord | null;
+  chord: PracticeChord | null;
   playGuitarNote: (string: number, fret: number) => void;
   playPianoNote: (note: string) => void;
   initAudio: () => void;
@@ -62,7 +62,7 @@ const InstrumentPanel: FC<InstrumentPanelProps> = ({
             <GuitarDiagram
               chordName={chord.name}
               positions={chord.guitarPositions}
-              fingers={chord.guitarFingers}
+              fingers={chord.guitarFingers ?? []}
               onPlayNote={playGuitarNote}
             />
           ) : (

@@ -13,15 +13,19 @@ const usePracticeStatistics = () => {
   const challengeIntervalRef = useRef<ReturnType<typeof window.setInterval> | null>(null);
   const practiceTimeIntervalRef = useRef<ReturnType<typeof window.setInterval> | null>(null);
 
-  useEffect(() => {
-    const storedStats = localStorage.getItem('practiceStats');
-    if (storedStats) {
-      const stats = JSON.parse(storedStats);
-      setTotalPracticeTime(stats.totalPracticeTime || 0);
-      setChordsPlayed(stats.chordsPlayed || 0);
-      setBestChallengeTime(stats.bestChallengeTime || null);
-    }
-  }, []);
+    useEffect(() => {
+      const storedStats = localStorage.getItem('practiceStats');
+      if (storedStats) {
+        const stats = JSON.parse(storedStats) as {
+          totalPracticeTime?: number;
+          chordsPlayed?: number;
+          bestChallengeTime?: number | null;
+        };
+        setTotalPracticeTime(stats.totalPracticeTime ?? 0);
+        setChordsPlayed(stats.chordsPlayed ?? 0);
+        setBestChallengeTime(stats.bestChallengeTime ?? null);
+      }
+    }, []);
 
   const saveStats = useCallback(() => {
     const stats = {
@@ -56,6 +60,10 @@ const usePracticeStatistics = () => {
       clearInterval(practiceTimeIntervalRef.current);
       practiceTimeIntervalRef.current = null;
     }
+  }, []);
+
+  const incrementChordsPlayed = useCallback(() => {
+    setChordsPlayed(prev => prev + 1);
   }, []);
 
   const incrementUniqueChord = useCallback(() => {
@@ -125,6 +133,7 @@ const usePracticeStatistics = () => {
     challengeTime,
     startPracticeSession,
     stopPracticeSession,
+    incrementChordsPlayed,
     incrementUniqueChord,
     resetStreak,
     startChallenge,

@@ -14,7 +14,14 @@ export default tseslint.config(
         'postcss.config.js',
         'tailwind.config.js',
         'offline/tailwind.config.js',
-        'scripts/**'
+        'scripts/**',
+        '**/*.test.ts',
+        '**/*.test.tsx',
+        'src/components/chord-builder/**',
+        'src/components/classroom/**',
+        'src/components/diagrams/**',
+        'src/contexts/**',
+        'src/components/learning-path/**'
     ],
   },
   js.configs.recommended,

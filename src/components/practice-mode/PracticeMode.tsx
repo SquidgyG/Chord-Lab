@@ -13,7 +13,7 @@ import { chords as chordDictionary } from '../../data/chords';
 import SongPractice from './SongPractice';
 import { useHighestUnlockedLevel } from '../learning-path/LearningPathway';
 
-interface Chord {
+interface PracticeChord {
   name: string;
   guitarPositions: { string: number; fret: number }[];
   guitarFingers: number[];
@@ -40,11 +40,12 @@ const RELATIVE_MINORS: Record<MajorKey, string> = {
 };
 
 // Build chord list from dictionary
-const chords: Chord[] = Object.entries(chordDictionary).map(([name, data]) => ({
+const chords: PracticeChord[] = Object.entries(chordDictionary).map(([name, data]) => ({
   name,
   guitarPositions: data.guitarPositions,
   guitarFingers: data.guitarFingers ?? [],
   pianoNotes: data.pianoNotes,
+  level: data.level ?? 1,
 }));
 
 function getDiatonicForKey(keyCenter: MajorKey) {
@@ -66,7 +67,7 @@ const PracticeMode: FC = () => {
   );
   const [selectedInstrument, setSelectedInstrument] =
     useState<'guitar' | 'piano'>('guitar');
-  const [currentChord, setCurrentChord] = useState<Chord | null>(
+  const [currentChord, setCurrentChord] = useState<PracticeChord | null>(
     availableChords[0] || null
   );
   const [showSongPractice, setShowSongPractice] = useState(false);
@@ -162,7 +163,7 @@ const PracticeMode: FC = () => {
     }
   };
 
-  const getRandomChord = (): Chord | null => {
+  const getRandomChord = (): PracticeChord | null => {
     if (availableChords.length === 0) return null;
     const randomIndex = Math.floor(Math.random() * availableChords.length);
     return availableChords[randomIndex];
@@ -179,7 +180,7 @@ const PracticeMode: FC = () => {
     const { majors, minors } = getDiatonicForKey(keyCenter);
     const list: string[] = [...majors, ...minors];
     return list.map((label: string) => {
-      const chord = chords.find((c: Chord) => c.name === label);
+      const chord = chords.find((c: PracticeChord) => c.name === label);
       const available = !!chord && chord.level <= highestUnlockedLevel;
       return {
         label,
@@ -224,7 +225,7 @@ const PracticeMode: FC = () => {
                   key={label}
                   onClick={() => {
                     if (!available) return;
-                    const c = chords.find((c: Chord) => c.name === label);
+                    const c = chords.find((c: PracticeChord) => c.name === label);
                     if (c) setCurrentChord(c);
                   }}
                   disabled={!available}
@@ -344,8 +345,8 @@ const PracticeMode: FC = () => {
         </h4>
         <div data-testid="other-chords" className="flex flex-wrap gap-2">
           {availableChords
-            .filter((chord: Chord) => chord.name !== currentChord?.name)
-            .map((chord: Chord) => {
+            .filter((chord: PracticeChord) => chord.name !== currentChord?.name)
+            .map((chord: PracticeChord) => {
               const locked = chord.level > highestUnlockedLevel;
               return (
                 <button

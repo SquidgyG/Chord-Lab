@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import useMetronome from '../../../hooks/useMetronome'
 import GuitarDiagram from '../../diagrams/GuitarDiagram'
-import { chords } from '../../../data/chords'
+import { chords, type ChordName } from '../../../data/chords'
 
 interface ChordSwitchingExerciseProps {
-  progression: string[]
+  progression: ChordName[]
 }
 
 const ChordSwitchingExercise: React.FC<ChordSwitchingExerciseProps> = ({ progression }) => {
@@ -52,7 +52,7 @@ const ChordSwitchingExercise: React.FC<ChordSwitchingExerciseProps> = ({ progres
         </button>
       </div>
       <div className={`grid grid-cols-${progression.length} gap-4`}>
-        {progression.map(chordName => (
+          {progression.map(chordName => (
           <div
             key={chordName}
             className={`p-4 rounded-lg ${
@@ -61,8 +61,8 @@ const ChordSwitchingExercise: React.FC<ChordSwitchingExerciseProps> = ({ progres
           >
             <GuitarDiagram
               chordName={chordName}
-              positions={chords[chordName as keyof typeof chords].guitarPositions}
-              fingers={chords[chordName as keyof typeof chords].guitarFingers}
+                positions={chords[chordName].guitarPositions}
+                fingers={chords[chordName].guitarFingers ?? []}
             />
           </div>
         ))}
