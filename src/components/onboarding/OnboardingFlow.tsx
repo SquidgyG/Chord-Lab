@@ -8,11 +8,15 @@ const OnboardingFlow: React.FC = () => {
   const [name, setName] = useState('')
   const [instrument, setInstrument] = useState<'guitar' | 'piano'>('guitar')
   const [confidence, setConfidence] = useState<'beginner' | 'intermediate' | 'advanced'>('beginner')
+  const [nameError, setNameError] = useState('')
 
   const handleNext = () => {
     if (step === 2 && name.trim() === '') {
-      alert('Please enter your name.')
+      setNameError('Please enter your name.')
       return
+    }
+    if (step === 2) {
+      setNameError('')
     }
     setStep(prev => prev + 1)
   }
@@ -50,10 +54,21 @@ const OnboardingFlow: React.FC = () => {
             <input
               type="text"
               value={name}
-              onChange={e => setName(e.target.value)}
+              onChange={e => {
+                setName(e.target.value)
+                if (e.target.value.trim() !== '') {
+                  setNameError('')
+                }
+              }}
               className="w-full p-2 border rounded-md"
               placeholder="Enter your name"
+              aria-describedby={nameError ? 'name-error' : undefined}
             />
+            {nameError && (
+              <p id="name-error" className="text-red-600 mt-2">
+                {nameError}
+              </p>
+            )}
             <button
               onClick={handleNext}
               className="w-full mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
