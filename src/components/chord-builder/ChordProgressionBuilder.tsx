@@ -162,7 +162,7 @@ const ChordProgressionBuilder = () => {
           Load Saved Progression
         </button>
         <button
-          onClick={handlePlay}
+          onClick={() => void handlePlay()}
           disabled={isPlaying}
           className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >

@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import Soundfont from 'soundfont-player';
+import Soundfont, { type Player } from 'soundfont-player';
 
 // Guitar string base notes (standard tuning)
 const GUITAR_STRING_NOTES = ['E2', 'A2', 'D3', 'G3', 'B3', 'E4'];
 
 const useAudio = () => {
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
-  const guitarInstrument = useRef<any | null>(null);
+  const guitarInstrument = useRef<Player | null>(null);
   const isInitialized = useRef(false);
   const [guitarLoaded, setGuitarLoaded] = useState(false);
 
@@ -59,10 +59,12 @@ const useAudio = () => {
         setAudioContext(context)
         isInitialized.current = true;
         // Load guitar soundfont
-        Soundfont.instrument(context, 'acoustic_guitar_steel').then(function (instrument) {
-          guitarInstrument.current = instrument;
-          setGuitarLoaded(true);
-        });
+        void Soundfont.instrument(context, 'acoustic_guitar_steel')
+          .then(instrument => {
+            guitarInstrument.current = instrument;
+            setGuitarLoaded(true);
+          })
+          .catch(console.error);
         return context
       }
     }

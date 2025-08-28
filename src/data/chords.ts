@@ -6,7 +6,8 @@ export interface FretPosition {
 export interface ChordDefinition {
   pianoNotes: string[];
   guitarPositions: FretPosition[];
-  guitarFingers?: number[];
+  guitarFingers: number[];
+  level?: number;
 }
 
 export const chords: Record<string, ChordDefinition> = {
@@ -263,5 +264,16 @@ export const chords: Record<string, ChordDefinition> = {
     guitarFingers: [1, 3, 4, 1, 1, 1],
   },
 };
+
+export interface Chord extends ChordDefinition {
+  name: string;
+}
+
+export const chordList: Chord[] = Object.entries(chords).map(
+  ([name, data]) => ({
+    name,
+    ...data,
+  })
+);
 
 export type ChordName = keyof typeof chords;
