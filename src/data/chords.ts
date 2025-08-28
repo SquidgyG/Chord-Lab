@@ -7,6 +7,7 @@ export interface ChordDefinition {
   pianoNotes: string[];
   guitarPositions: FretPosition[];
   guitarFingers?: number[];
+  level?: number;
 }
 
 export const chords: Record<string, ChordDefinition> = {

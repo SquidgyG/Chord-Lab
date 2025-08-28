@@ -45,6 +45,7 @@ const chords: Chord[] = Object.entries(chordDictionary).map(([name, data]) => ({
   guitarPositions: data.guitarPositions,
   guitarFingers: data.guitarFingers ?? [],
   pianoNotes: data.pianoNotes,
+  level: data.level ?? 1,
 }));
 
 function getDiatonicForKey(keyCenter: MajorKey) {
