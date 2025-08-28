@@ -20,7 +20,7 @@ describe('GenreQuiz', () => {
     render(<GenreQuiz />);
     const rockButton = screen.getByRole('button', { name: /Rock/i });
     fireEvent.click(rockButton);
-    expect(screen.getByTestId('score')).toHaveTextContent('1');
+    expect(screen.getByTestId('score')).toHaveTextContent('1/1');
   });
 
   it('shuffles songs', () => {
@@ -48,9 +48,9 @@ describe('GenreQuiz', () => {
     render(<GenreQuiz />);
     const rockButton = screen.getByRole('button', { name: /Rock/i });
     fireEvent.click(rockButton);
-    expect(screen.getByTestId('score')).toHaveTextContent('1');
+    expect(screen.getByTestId('score')).toHaveTextContent('1/1');
     const resetButton = screen.getByRole('button', { name: /Reset Score/i });
     fireEvent.click(resetButton);
-    expect(screen.getByTestId('score')).toHaveTextContent('0');
+    expect(screen.getByTestId('score')).toHaveTextContent('0/0');
   });
 });
