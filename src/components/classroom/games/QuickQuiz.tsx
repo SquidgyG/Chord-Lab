@@ -13,15 +13,17 @@ export interface QuickQuizProps {
  * unmounts.
  */
 export default function QuickQuiz({ question }: QuickQuizProps) {
+  // Lazily create a persistent audio element using useRef
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const playAudio = useCallback(() => {
     const clipSrc = question?.audio;
     if (!clipSrc) return;
 
-    // Lazily create the audio element if needed
-    audioRef.current ??= new Audio();
-
+    // Initialize the audio element if it doesn't exist
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+    }
     const audio = audioRef.current;
 
     // Pause and reset any previous playback before loading a new source
@@ -38,12 +40,12 @@ export default function QuickQuiz({ question }: QuickQuizProps) {
 
   useEffect(() => {
     // Cleanup the audio element when the component unmounts
+    const audio = audioRef.current;
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.src = '';
-        audioRef.current.load();
-        audioRef.current = null;
+      if (audio) {
+        audio.pause();
+        audio.src = '';
+        audio.load();
       }
     };
   }, []);
