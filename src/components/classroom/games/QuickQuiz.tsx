@@ -1,8 +1,17 @@
 import { useEffect, useRef } from 'react';
 
-export interface QuickQuizProps {
+export interface QuickQuizQuestion<T extends string> {
+  /** Source URL for the audio clip to play */
+  clipSrc: string;
+  /** Correct answer for the clip */
+  answer: T;
+}
+
+export interface QuickQuizProps<T extends string> {
   /** Source URL for the audio clip to play */
   clipSrc?: string;
+  /** Possible answer options */
+  options: T[];
 }
 
 /**
@@ -12,16 +21,17 @@ export interface QuickQuizProps {
  * clip is loaded. The audio element is cleaned up when the component
  * unmounts.
  */
-export default function QuickQuiz({ clipSrc }: QuickQuizProps) {
+export default function QuickQuiz<T extends string>({
+  clipSrc,
+  options,
+}: QuickQuizProps<T>) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (!clipSrc) return;
 
     // Lazily create the audio element if needed
-    if (!audioRef.current) {
-      audioRef.current = new Audio();
-    }
+    audioRef.current ??= new Audio();
 
     const audio = audioRef.current;
 
@@ -45,5 +55,19 @@ export default function QuickQuiz({ clipSrc }: QuickQuizProps) {
     };
   }, []);
 
-  return <div />;
+  return (
+    <div>
+      {options.map((option) => (
+        <button key={option}>{option}</button>
+      ))}
+    </div>
+  );
+}
+
+export function MajorMinorQuickQuiz(
+  props: Omit<QuickQuizProps<'Major' | 'Minor'>, 'options'>,
+) {
+  return (
+    <QuickQuiz<'Major' | 'Minor'> {...props} options={["Major", "Minor"]} />
+  );
 }
