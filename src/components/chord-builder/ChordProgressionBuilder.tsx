@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import useAudio from '../../hooks/useAudio';
 import { chords as chordData } from '../../data/chords';
 import { getDiatonicChords } from '../../utils/music-theory';
@@ -36,7 +36,7 @@ const ChordProgressionBuilder = () => {
     localStorage.setItem('chordProgression', JSON.stringify(chords));
   }, [chords]);
 
-  const handlePlay = async () => {
+  const handlePlay = useCallback(async () => {
     initAudio();
     setIsPlaying(true);
     for (const chord of chords) {
@@ -47,36 +47,38 @@ const ChordProgressionBuilder = () => {
       }
     }
     setIsPlaying(false);
-  };
-  
-  const addChord = (chordName: string) => {
+  }, [chords, initAudio, playChord]);
+
+  const addChord = useCallback((chordName: string) => {
     const newChord = {
       id: Date.now().toString(),
       name: chordName,
       key: selectedKey
     };
-    setChords([...chords, newChord]);
-  };
-  
-  const removeChord = (id: string) => {
-    setChords(chords.filter(chord => chord.id !== id));
-  };
+    setChords(prev => [...prev, newChord]);
+  }, [selectedKey]);
 
-  const loadSavedProgression = () => {
+  const removeChord = useCallback((id: string) => {
+    setChords(prev => prev.filter(chord => chord.id !== id));
+  }, []);
+
+  const loadSavedProgression = useCallback(() => {
     const saved = localStorage.getItem('chordProgression');
     if (saved) {
       setChords(JSON.parse(saved) as Chord[]);
     }
-  };
-  
-  const allChords = [
+  }, []);
+
+  const allChords = useMemo(() => [
     'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B',
     'Cm', 'C#m', 'Dm', 'D#m', 'Em', 'Fm', 'F#m', 'Gm', 'G#m', 'Am', 'A#m', 'Bm',
     'Cdim', 'C#dim', 'Ddim', 'D#dim', 'Edim', 'Fdim', 'F#dim', 'Gdim', 'G#dim', 'Adim', 'A#dim', 'Bdim'
-  ];
+  ], []);
 
-  const availableChords = diatonicOnly ? getDiatonicChords(selectedKey) : allChords;
-  
+  const availableChords = useMemo(() => 
+    diatonicOnly ? getDiatonicChords(selectedKey) : allChords
+  , [diatonicOnly, selectedKey, allChords]);
+
   return (
     <div className="bg-white rounded-xl shadow-lg p-6">
       <h2 className="text-2xl font-bold text-gray-800 mb-4">Chord Progression Builder</h2>
