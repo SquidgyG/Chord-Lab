@@ -1,8 +1,22 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+export interface QuickQuizQuestion {
+  audio?: string;
+}
 
 export interface QuickQuizProps {
-  /** Question data which may include an audio clip to play */
-  question?: { audio?: string };
+  /**
+   * Full list of questions for the quiz. The array will be shuffled once on
+   * component mount so that question order remains stable for the duration of
+   * the session.
+   */
+  questions: QuickQuizQuestion[];
+
+  /**
+   * Index of the question to play. Defaults to the first question in the
+   * shuffled list.
+   */
+  currentIndex?: number;
 }
 
 /**
@@ -12,7 +26,21 @@ export interface QuickQuizProps {
  * clip is loaded. The audio element is cleaned up when the component
  * unmounts.
  */
-export default function QuickQuiz({ question }: QuickQuizProps) {
+export default function QuickQuiz({ questions, currentIndex = 0 }: QuickQuizProps) {
+  // Shuffle questions once when the component mounts. Using useState with an
+  // initializer guarantees the shuffle runs only on the first render for this
+  // session.
+  const [shuffledQuestions] = useState(() => {
+    const array = [...questions];
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  });
+
+  const question = shuffledQuestions[currentIndex];
+
   // Lazily create a persistent audio element using useRef
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -21,9 +49,7 @@ export default function QuickQuiz({ question }: QuickQuizProps) {
     if (!clipSrc) return;
 
     // Initialize the audio element if it doesn't exist
-    if (!audioRef.current) {
-      audioRef.current = new Audio();
-    }
+    audioRef.current ??= new Audio();
     const audio = audioRef.current;
 
     // Pause and reset any previous playback before loading a new source
