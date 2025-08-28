@@ -16,10 +16,14 @@ const usePracticeStatistics = () => {
   useEffect(() => {
     const storedStats = localStorage.getItem('practiceStats');
     if (storedStats) {
-      const stats = JSON.parse(storedStats);
-      setTotalPracticeTime(stats.totalPracticeTime || 0);
-      setChordsPlayed(stats.chordsPlayed || 0);
-      setBestChallengeTime(stats.bestChallengeTime || null);
+      const stats = JSON.parse(storedStats) as {
+        totalPracticeTime?: number;
+        chordsPlayed?: number;
+        bestChallengeTime?: number | null;
+      };
+      setTotalPracticeTime(stats.totalPracticeTime ?? 0);
+      setChordsPlayed(stats.chordsPlayed ?? 0);
+      setBestChallengeTime(stats.bestChallengeTime ?? null);
     }
   }, []);
 
@@ -82,6 +86,16 @@ const usePracticeStatistics = () => {
   const resetStreak = useCallback(() => {
     setCurrentStreak(0);
   }, []);
+
+  const incrementChordsPlayed = useCallback(() => {
+    setChordsPlayed(prev => {
+      const newCount = prev + 1;
+      if (newCount >= 100) {
+        unlockAchievement('CHORD_MASTER');
+      }
+      return newCount;
+    });
+  }, [unlockAchievement]);
 
   const startChallenge = useCallback(() => {
     setIsChallengeActive(true);
