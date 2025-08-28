@@ -25,7 +25,7 @@ const SongPractice: FC<SongPracticeProps> = ({ onClose }) => {
         useState<'guitar' | 'piano'>('guitar');
     const [message, setMessage] = useState<string | null>(null);
     const [{ isPlaying, bpm }, { start, stop, setBpm }] = useMetronome(60, 4);
-    const { playChord, playGuitarNote, initAudio, fretToNote } = useAudio();
+    const { playChord, fretToNote } = useAudio();
 
     const chordName: string | null =
         selectedSong?.progression[currentChordIndex] ?? null;
@@ -148,15 +148,11 @@ const SongPractice: FC<SongPracticeProps> = ({ onClose }) => {
                         nextChord={nextChord}
                     />
 
-                    <InstrumentPanel
-                        selectedInstrument={selectedInstrument}
-                        onInstrumentChange={setSelectedInstrument}
-                        chord={currentChord}
-                        playGuitarNote={playGuitarNote}
-                        playPianoNote={note => playChord([note], 0.5, 'piano')}
-                        initAudio={initAudio}
-                    />
-                </div>
+                    <InstrumentPanel
+                        selectedInstrument={selectedInstrument}
+                        onInstrumentChange={setSelectedInstrument}
+                    />
+                </div>
             )}
         </div>
     );

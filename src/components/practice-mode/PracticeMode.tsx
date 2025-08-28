@@ -76,7 +76,7 @@ const PracticeMode: FC = () => {
     const location = useLocation();
     const practicedChordsRef = useRef<Set<string>>(new Set());
     const [keyCenter, setKeyCenter] = useState<MajorKey | null>(null);
-const { playChord, fretToNote, guitarLoaded } = useAudio();
+    const { playChord, fretToNote, guitarLoaded } = useAudio();
 
     useEffect(() => {
         if (currentChord && (currentChord.level ?? 1) > highestUnlockedLevel) {

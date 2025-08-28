@@ -7,7 +7,7 @@ interface InstrumentPanelProps {
   beginnerMode?: boolean;
 }
 
-export const InstrumentPanel: FC<InstrumentPanelProps> = ({
+const InstrumentPanel: FC<InstrumentPanelProps> = ({
     selectedInstrument,
     onInstrumentChange,
     beginnerMode = false,
@@ -51,7 +51,8 @@ export const InstrumentPanel: FC<InstrumentPanelProps> = ({
                 </div>
             </div>
         )}
-        {/* ...rest of your component */}
     </div>
 );
-}
+};
+
+export default InstrumentPanel;
