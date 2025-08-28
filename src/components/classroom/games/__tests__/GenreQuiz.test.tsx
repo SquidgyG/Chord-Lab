@@ -1,19 +1,11 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import GenreQuiz from '../GenreQuiz';
 import { vi } from 'vitest';
-
-const playNoteMock = vi.fn();
-
-vi.mock('../../../../hooks/useAudio', () => ({
-  __esModule: true,
-  default: () => ({
-    playNote: playNoteMock,
-  }),
-}));
+import genreClips from '../../../../data/genres';
 
 describe('GenreQuiz', () => {
   beforeEach(() => {
-    playNoteMock.mockClear();
+    vi.restoreAllMocks();
   });
 
   it('allows guessing and updates score', () => {
@@ -24,17 +16,28 @@ describe('GenreQuiz', () => {
   });
 
   it('shuffles songs', () => {
-    vi.spyOn(Math, 'random').mockReturnValueOnce(0).mockReturnValueOnce(0);
+    vi.spyOn(Math, 'random').mockReturnValue(0);
+    const playSpy = vi.fn();
+    Object.defineProperty(global.HTMLMediaElement.prototype, 'play', {
+      configurable: true,
+      value: playSpy,
+    });
+
     render(<GenreQuiz />);
     const playButton = screen.getByRole('button', { name: /Play Clip/i });
     fireEvent.click(playButton);
-    expect(playNoteMock).toHaveBeenLastCalledWith('C4');
+    expect(playSpy).toHaveBeenCalledTimes(1);
+    expect(screen.getByTestId('audio-source')).toHaveAttribute(
+      'src',
+      genreClips[0].sources[0].src,
+    );
 
     const shuffleButton = screen.getByRole('button', { name: /Shuffle/i });
     fireEvent.click(shuffleButton);
-    playNoteMock.mockClear();
+    const newSource = screen.getByTestId('audio-source');
+    expect(newSource).toHaveAttribute('src', genreClips[1].sources[0].src);
     fireEvent.click(playButton);
-    expect(playNoteMock).toHaveBeenLastCalledWith('D4');
+    expect(playSpy).toHaveBeenCalledTimes(2);
   });
 
   it('reveals the answer when requested', () => {

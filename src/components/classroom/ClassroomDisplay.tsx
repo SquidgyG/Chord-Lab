@@ -1,19 +1,23 @@
 import React from 'react'
 import GuitarDiagram from '../diagrams/GuitarDiagram'
 import PianoDiagram from '../diagrams/PianoDiagram'
-import type { ChordDefinition } from '../../data/chords'
+
+interface ChordDefinition {
+  notes: string[];
+  guitarPositions: { string: number; fret: number }[];
+}
 
 interface ClassroomDisplayProps {
-  displayedChords: string[]
-  instrument: 'guitar' | 'piano'
-  chordData: Record<string, ChordDefinition>
+  displayedChords: string[];
+  instrument: 'guitar' | 'piano';
+  chordData: Record<string, ChordDefinition>;
 }
 
 const ClassroomDisplay: React.FC<ClassroomDisplayProps> = ({ displayedChords, instrument, chordData }) => {
   return (
     <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-2`}>
       {displayedChords.map((chord, index) => {
-        const data = chordData[chord] ?? { pianoNotes: [], guitarPositions: [] }
+        const data = chordData[chord] ?? { notes: [], guitarPositions: [] }
         return (
           <div
             key={index}
@@ -22,7 +26,7 @@ const ClassroomDisplay: React.FC<ClassroomDisplayProps> = ({ displayedChords, in
             {instrument === 'guitar' ? (
               <GuitarDiagram chordName={chord} positions={data.guitarPositions} />
             ) : (
-              <PianoDiagram chordName={chord} notes={data.pianoNotes} />
+              <PianoDiagram chordName={chord} notes={data.notes} />
             )}
           </div>
         )

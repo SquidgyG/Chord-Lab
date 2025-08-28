@@ -1,30 +1,21 @@
-import React, { useMemo, useState } from 'react';
-import useAudio from '../../../hooks/useAudio';
-
-interface Song {
-  id: number;
-  note: string;
-  genre: string;
-}
+import React, { useMemo, useRef, useState } from 'react';
+import genreClips, { GenreClip } from '../../../data/genres';
 
 const GENRES = ['Rock', 'Jazz', 'Classical'];
 
 const GenreQuiz: React.FC = () => {
-  const { playNote } = useAudio();
+  const audioRef = useRef<HTMLAudioElement>(null);
 
-  const initialSongs: Song[] = useMemo(
-    () => [
-      { id: 1, note: 'C4', genre: 'Rock' },
-      { id: 2, note: 'D4', genre: 'Jazz' },
-      { id: 3, note: 'E4', genre: 'Classical' },
-    ],
-    []
-  );
+  const initialSongs: GenreClip[] = useMemo(() => genreClips, []);
 
   const [songs, setSongs] = useState(initialSongs);
   const [current, setCurrent] = useState(0);
   const [score, setScore] = useState(0);
   const [revealed, setRevealed] = useState(false);
+
+  const playClip = () => {
+    void audioRef.current?.play();
+  };
 
   const handleGuess = (genre: string) => {
     if (revealed) return;
@@ -52,8 +43,18 @@ const GenreQuiz: React.FC = () => {
 
   return (
     <div>
+      <audio ref={audioRef} key={songs[current].genre}>
+        {songs[current].sources.map((s, idx) => (
+          <source
+            key={s.type}
+            data-testid={idx === 0 ? 'audio-source' : undefined}
+            src={s.src}
+            type={s.type}
+          />
+        ))}
+      </audio>
       <p data-testid="score">Score: {score}</p>
-      <button onClick={() => playNote(songs[current].note)}>Play Clip</button>
+      <button onClick={playClip}>Play Clip</button>
       <div>
         {GENRES.map((g) => (
           <button key={g} onClick={() => handleGuess(g)} disabled={revealed}>
