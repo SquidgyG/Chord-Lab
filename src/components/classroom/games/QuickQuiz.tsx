@@ -13,15 +13,11 @@ export interface QuickQuizProps {
  * unmounts.
  */
 export default function QuickQuiz({ clipSrc }: QuickQuizProps) {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  // Keep a persistent audio element for the current clip
+  const audioRef = useRef<HTMLAudioElement>(new Audio());
 
   useEffect(() => {
     if (!clipSrc) return;
-
-    // Lazily create the audio element if needed
-    if (!audioRef.current) {
-      audioRef.current = new Audio();
-    }
 
     const audio = audioRef.current;
 
@@ -35,13 +31,11 @@ export default function QuickQuiz({ clipSrc }: QuickQuizProps) {
 
   useEffect(() => {
     // Cleanup the audio element when the component unmounts
+    const audio = audioRef.current;
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.src = '';
-        audioRef.current.load();
-        audioRef.current = null;
-      }
+      audio.pause();
+      audio.src = '';
+      audio.load();
     };
   }, []);
 
