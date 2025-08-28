@@ -4,6 +4,7 @@ import useMetronome from '../../hooks/useMetronome';
 import useAudio from '../../hooks/useAudio';
 import PracticeMetronomeControls from './PracticeMetronomeControls';
 import InstrumentPanel from './InstrumentPanel';
+
 import { chordList as chords, type Chord } from '../../data/chords';
 
 const getChord = (name: string): Chord | null =>
