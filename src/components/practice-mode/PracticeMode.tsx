@@ -316,7 +316,12 @@ const PracticeMode: FC = () => {
           <InstrumentPanel
             selectedInstrument={selectedInstrument}
             onInstrumentChange={setSelectedInstrument}
-            chord={currentChord}
+            chord={
+              currentChord && {
+                ...currentChord,
+                guitarFingers: currentChord.guitarFingers ?? [],
+              }
+            }
             playGuitarNote={playGuitarNote}
             playPianoNote={note => playChord([note], 0.5, 'piano')}
             initAudio={initAudio}

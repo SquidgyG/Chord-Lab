@@ -146,7 +146,7 @@ const SongPractice: FC<SongPracticeProps> = ({ onClose }) => {
           </h3>
           <ul className="space-y-2">
             {songs.map(song => (
-              <li key={song.title}>
+              <li key={`${song.title}-${song.artist}`}>
                 <button
                   onClick={() => {
                     setSelectedSong(song);
@@ -198,7 +198,12 @@ const SongPractice: FC<SongPracticeProps> = ({ onClose }) => {
           <InstrumentPanel
             selectedInstrument={selectedInstrument}
             onInstrumentChange={setSelectedInstrument}
-            chord={currentChord}
+            chord={
+              currentChord && {
+                ...currentChord,
+                guitarFingers: currentChord.guitarFingers ?? [],
+              }
+            }
             playGuitarNote={playGuitarNote}
             playPianoNote={note => playChord([note], 0.5, 'piano')}
             initAudio={initAudio}
