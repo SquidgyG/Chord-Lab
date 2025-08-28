@@ -1,9 +1,9 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import GenreQuiz from '../GenreQuiz';
 import { vi } from 'vitest';
+import GenreQuiz from '../GenreQuiz';
 
+// Mock the audio hook so no sound is played during tests
 const playNoteMock = vi.fn();
-
 vi.mock('../../../../hooks/useAudio', () => ({
   __esModule: true,
   default: () => ({
@@ -14,43 +14,49 @@ vi.mock('../../../../hooks/useAudio', () => ({
 describe('GenreQuiz', () => {
   beforeEach(() => {
     playNoteMock.mockClear();
+    vi.restoreAllMocks();
   });
 
-  it('allows guessing and updates score', () => {
+  it('plays a clip and records a correct guess', () => {
     render(<GenreQuiz />);
-    const rockButton = screen.getByRole('button', { name: /Rock/i });
-    fireEvent.click(rockButton);
+    // play the first clip
+    fireEvent.click(screen.getByRole('button', { name: /play clip/i }));
+    expect(playNoteMock).toHaveBeenCalledWith('C4');
+
+    // guess the correct genre
+    fireEvent.click(screen.getByRole('button', { name: /rock/i }));
     expect(screen.getByTestId('score')).toHaveTextContent('1');
   });
 
-  it('shuffles songs', () => {
-    vi.spyOn(Math, 'random').mockReturnValueOnce(0).mockReturnValueOnce(0);
+  it('does not increment score on incorrect guess', () => {
     render(<GenreQuiz />);
-    const playButton = screen.getByRole('button', { name: /Play Clip/i });
-    fireEvent.click(playButton);
-    expect(playNoteMock).toHaveBeenLastCalledWith('C4');
-
-    const shuffleButton = screen.getByRole('button', { name: /Shuffle/i });
-    fireEvent.click(shuffleButton);
-    playNoteMock.mockClear();
-    fireEvent.click(playButton);
-    expect(playNoteMock).toHaveBeenLastCalledWith('D4');
+    fireEvent.click(screen.getByRole('button', { name: /jazz/i }));
+    expect(screen.getByTestId('score')).toHaveTextContent('0');
   });
 
-  it('reveals the answer when requested', () => {
+  it('shuffles songs and plays a new clip', () => {
+    // make shuffle deterministic
+    vi.spyOn(Math, 'random').mockReturnValueOnce(0).mockReturnValueOnce(0);
     render(<GenreQuiz />);
-    const revealButton = screen.getByRole('button', { name: /Reveal Answer/i });
-    fireEvent.click(revealButton);
+
+    fireEvent.click(screen.getByRole('button', { name: /shuffle/i }));
+    fireEvent.click(screen.getByRole('button', { name: /play clip/i }));
+    expect(playNoteMock).toHaveBeenCalledWith('D4');
+  });
+
+  it('reveals the current answer when requested', () => {
+    render(<GenreQuiz />);
+    fireEvent.click(screen.getByRole('button', { name: /reveal answer/i }));
     expect(screen.getByTestId('answer')).toHaveTextContent('Rock');
   });
 
-  it('resets score', () => {
+  it('resets the score back to zero', () => {
     render(<GenreQuiz />);
-    const rockButton = screen.getByRole('button', { name: /Rock/i });
-    fireEvent.click(rockButton);
+    fireEvent.click(screen.getByRole('button', { name: /rock/i }));
     expect(screen.getByTestId('score')).toHaveTextContent('1');
-    const resetButton = screen.getByRole('button', { name: /Reset Score/i });
-    fireEvent.click(resetButton);
+
+    fireEvent.click(screen.getByRole('button', { name: /reset score/i }));
     expect(screen.getByTestId('score')).toHaveTextContent('0');
   });
 });
+
