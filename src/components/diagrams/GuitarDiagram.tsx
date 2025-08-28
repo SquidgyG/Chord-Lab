@@ -63,8 +63,8 @@ const FretboardWrap = ({ children }: { children: React.ReactNode }) => (
   <div
     className="fretboard-wrap"
     style={{
-      width: '520px',
-      maxWidth: '100%',
+      width: '100%',
+      maxWidth: '700px',
       margin: '0 auto',
       background: '#fff',
       borderRadius: '14px',

@@ -84,7 +84,7 @@ export default function ChordWheel() {
   }, [activeKey])
 
   return (
-    <div className="bg-white dark:bg-gray-800/50 rounded-2xl shadow-lg p-4 max-w-4xl mx-auto">
+    <div className="w-full bg-white dark:bg-gray-800/50 rounded-2xl shadow-lg p-4 md:p-8">
       <div className="flex items-center justify-between gap-4 mb-2">
         <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Chord Wheel</h2>
         <div className="flex items-center gap-2">
@@ -106,7 +106,7 @@ export default function ChordWheel() {
         </div>
       </div>
       <div className="w-full flex justify-center">
-        <svg viewBox={`0 0 ${size} ${size}`} className="w-full max-w-[720px] h-auto">
+        <svg viewBox={`0 0 ${size} ${size}`} className="w-full h-auto">
           <defs>
             <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
               <feGaussianBlur stdDeviation="4" result="blur" />
