@@ -16,7 +16,9 @@ const TeacherDashboard: React.FC = () => {
 
   useEffect(() => {
     const stored = localStorage.getItem('studentPracticeStats');
-    const data: Record<string, StudentStats> = stored ? JSON.parse(stored) : {};
+    const data: Record<string, StudentStats> = stored
+      ? (JSON.parse(stored) as Record<string, StudentStats>)
+      : {};
 
     data[profile.name] = {
       name: profile.name,

@@ -3,7 +3,7 @@ import { getDiatonicChords } from '../../utils/music-theory'
 import GuitarDiagram from '../diagrams/GuitarDiagram'
 import PianoDiagram from '../diagrams/PianoDiagram'
 import ClassroomDisplay from '../classroom/ClassroomDisplay'
-import { chords as chordData, type ChordDefinition } from '../../data/chords'
+import { chords as chordData } from '../../data/chords'
 import { useNavigate } from 'react-router-dom'
 
 const keys = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 'Bb', 'F']
@@ -93,12 +93,12 @@ const ClassroomMode: React.FC = () => {
           </button>
         </div>
         <div>
-          <button
-            onClick={() => navigate('/classroom/dashboard')}
-            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
-          >
-            View Progress
-          </button>
+            <button
+              onClick={() => { void navigate('/classroom/dashboard'); }}
+              className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+            >
+              View Progress
+            </button>
         </div>
       </div>
       <div className="mt-6">
