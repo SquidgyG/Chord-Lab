@@ -1,18 +1,18 @@
 import React from 'react';
 import './PianoChordDiagram.css';
 
-type PianoChordDiagramProps = {
+interface PianoChordDiagramProps {
   notes: string[];
   chordName?: string;
   color?: string; // Hex color code
-};
+}
 
-const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({ 
-  notes, 
-  chordName, 
+const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
+  notes,
+  chordName,
   color = '#cc39bc' // Default color
 }) => {
-  const activeNotes = notes || [];
+  const activeNotes = (notes ?? []).map(n => n.replace(/\d/g, ''));
   
   const keys = [
     { type: 'white', note: 'C' },
@@ -127,7 +127,7 @@ const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
                   top: isBlack ? 'calc(62% - 43px)' : 'calc(100% - 18px - 43px)',
                 }}
               >
-                {note.replace(/\d/, '')}
+                {note}
               </div>
             );
           })}
