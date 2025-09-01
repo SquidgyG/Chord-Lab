@@ -1,5 +1,7 @@
 import React from 'react';
 import type { Chord } from '../../data/chords';
+import GuitarChordDiagram from './GuitarChordDiagram';
+import PianoChordDiagram from './PianoChordDiagram';
 
 interface ChordDisplayProps {
   chord: Chord | null;
@@ -16,19 +18,13 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ chord, instrument }) => {
       <div className="text-5xl font-bold text-gray-800" data-testid="current-chord-name">
         {chord.name}
       </div>
+      
       {instrument === 'guitar' && chord.guitarPositions && (
-        <div className="flex flex-wrap justify-center gap-2">
-          {chord.guitarPositions.map((pos, idx) => (
-            <div key={idx} className="text-lg text-gray-700">
-              {pos.string}弦{pos.fret}品
-            </div>
-          ))}
-        </div>
+        <GuitarChordDiagram positions={chord.guitarPositions} />
       )}
+      
       {instrument === 'piano' && chord.pianoNotes && (
-        <div className="text-lg text-gray-700">
-          {chord.pianoNotes.join(', ')}
-        </div>
+        <PianoChordDiagram notes={chord.pianoNotes} />
       )}
     </div>
   );

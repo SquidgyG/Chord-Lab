@@ -21,6 +21,7 @@ import { AchievementProvider } from './contexts/AchievementContext'
 import { AchievementToast } from './components/achievements/AchievementToast'
 import HelpResources from './components/HelpResources'
 import { ProfilePage } from './components/profile/ProfilePage'
+import ChordProgressionAnalysis from './components/theory-analysis/ChordProgressionAnalysis'
 
 function App() {
   const { classroomMode, toggleClassroomMode } = useClassroomMode()
@@ -70,6 +71,9 @@ function App() {
       </NavLink>
       <NavLink to="/profile" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
         Profile
+      </NavLink>
+      <NavLink to="/theory" className={({ isActive }) => `${linkBase} ${isActive ? linkActive : linkIdle}`}>
+        Theory
       </NavLink>
     </>
   )
@@ -231,6 +235,7 @@ function App() {
               <Route path="example" element={<ExampleGame />} />
             </Route>
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/theory" element={<ChordProgressionAnalysis />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

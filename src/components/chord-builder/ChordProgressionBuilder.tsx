@@ -2,27 +2,10 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import useAudio from '../../hooks/useAudio';
 import { chords as chordData } from '../../data/chords';
 import { getDiatonicChords } from '../../utils/music-theory';
-
-interface Chord {
-  id: string;
-  name: string;
-  key: string;
-}
+import { useChordBuilder } from '../../contexts/ChordBuilderContext';
 
 const ChordProgressionBuilder = () => {
-  const [chords, setChords] = useState<Chord[]>(() => {
-    const saved = localStorage.getItem('chordProgression');
-    return saved
-      ? (JSON.parse(saved) as Chord[])
-      : [
-          { id: '1', name: 'C', key: 'C' },
-          { id: '2', name: 'G', key: 'G' },
-          { id: '3', name: 'Am', key: 'A' },
-          { id: '4', name: 'F', key: 'F' },
-        ];
-  });
-
-  const [selectedKey, setSelectedKey] = useState('C');
+  const { chords, setChords, selectedKey, setSelectedKey } = useChordBuilder();
   const [isPlaying, setIsPlaying] = useState(false);
   const [diatonicOnly, setDiatonicOnly] = useState(true);
 
@@ -31,10 +14,6 @@ const ChordProgressionBuilder = () => {
   useEffect(() => {
     initAudio();
   }, [initAudio]);
-
-  useEffect(() => {
-    localStorage.setItem('chordProgression', JSON.stringify(chords));
-  }, [chords]);
 
   const handlePlay = useCallback(async () => {
     initAudio();
@@ -56,18 +35,11 @@ const ChordProgressionBuilder = () => {
       key: selectedKey
     };
     setChords(prev => [...prev, newChord]);
-  }, [selectedKey]);
+  }, [selectedKey, setChords]);
 
   const removeChord = useCallback((id: string) => {
     setChords(prev => prev.filter(chord => chord.id !== id));
-  }, []);
-
-  const loadSavedProgression = useCallback(() => {
-    const saved = localStorage.getItem('chordProgression');
-    if (saved) {
-      setChords(JSON.parse(saved) as Chord[]);
-    }
-  }, []);
+  }, [setChords]);
 
   const allChords = useMemo(() => [
     'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B',
@@ -156,12 +128,6 @@ const ChordProgressionBuilder = () => {
           className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
         >
           Clear All
-        </button>
-        <button
-          onClick={loadSavedProgression}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-        >
-          Load Saved Progression
         </button>
         <button
           onClick={() => void handlePlay()}
