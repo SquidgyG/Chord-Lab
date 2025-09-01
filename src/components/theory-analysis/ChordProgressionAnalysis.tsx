@@ -1,4 +1,3 @@
-import React from 'react';
 import { useChordBuilder } from '../../contexts/ChordBuilderContext';
 import { parseChord } from '../../utils/chordParser';
 

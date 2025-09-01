@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, ReactNode, Dispatch, SetStateAction } from 'react';
+import { createContext, useContext, useState } from 'react'
+import type { ReactNode, Dispatch, SetStateAction } from 'react'
 
 interface Chord {
   id: string;

@@ -10,8 +10,8 @@ const usePracticeStatistics = () => {
 
   const [isChallengeActive, setIsChallengeActive] = useState(false);
   const [challengeTime, setChallengeTime] = useState(0);
-  const challengeIntervalRef = useRef<ReturnType<typeof window.setInterval> | null>(null);
-  const practiceTimeIntervalRef = useRef<ReturnType<typeof window.setInterval> | null>(null);
+  const challengeIntervalRef = useRef<number | null>(null);
+  const practiceTimeIntervalRef = useRef<number | null>(null);
 
   useEffect(() => {
     const storedStats = localStorage.getItem('practiceStats');

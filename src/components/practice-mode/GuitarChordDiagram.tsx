@@ -1,8 +1,8 @@
 import React from 'react';
-import type { GuitarPosition } from '../../data/chords';
+import type { FretPosition } from '../../data/chords';
 
 interface GuitarChordDiagramProps {
-  positions: GuitarPosition[];
+  positions: FretPosition[];
 }
 
 const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({ positions }) => {
@@ -41,7 +41,7 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({ positions }) =>
 
         {/* Draw positions */}
         {positions.map((pos, index) => {
-          const stringIndex = strings.indexOf(parseInt(pos.string));
+          const stringIndex = strings.indexOf(pos.string);
           if (stringIndex === -1) return null;
           
           const fretIndex = frets.indexOf(pos.fret);
