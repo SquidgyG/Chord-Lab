@@ -1,49 +1,22 @@
 import React, { useMemo } from 'react';
 import './GuitarChordDiagram.css';
 
-export interface GuitarPosition {
-  string: number;
+interface FingerPosition {
   fret: number;
-  finger: number;
-  isRoot?: boolean;
+  string: number;
+  finger?: number;
 }
 
 interface GuitarChordDiagramProps {
-  positions: GuitarPosition[];
-  color?: string;
-<<<<<<< HEAD
+  positions: FingerPosition[];
+  chordName: string;
+  rootNoteColor?: string;
   noteLabels?: string[];
 }
 
-const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({ positions, color = '#000', noteLabels = [] }) => {
-=======
-}
-
-const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions, color = '#000' }) => {
->>>>>>> origin/main
-  // Calculate barre chords
-  const barreChords = useMemo(() => {
-    const barres: Record<number, { fret: number; startString: number; endString: number }> = {};
-    positions.forEach(pos => {
-      if (pos.finger === 1 && pos.fret > 0) {
-        if (!barres[pos.fret]) {
-          barres[pos.fret] = { fret: pos.fret, startString: pos.string, endString: pos.string };
-        } else {
-          if (pos.string < barres[pos.fret].startString) barres[pos.fret].startString = pos.string;
-          if (pos.string > barres[pos.fret].endString) barres[pos.fret].endString = pos.string;
-        }
-      }
-    });
-    return Object.values(barres).filter(barre => barre.endString - barre.startString >= 1);
-  }, [positions]);
-
-  // Calculate open and muted strings
-<<<<<<< HEAD
-  const openStrings = useMemo(() => {
-=======
-  const openStrings = useMemo((): string[] => {
->>>>>>> origin/main
-    const strings = Array<string>(6).fill('');
+const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({ positions, chordName, rootNoteColor = '#ff6b6b', noteLabels = [] }) => {
+  const openStrings = useMemo<string[]>(() => {
+    const strings: string[] = Array(6).fill('') as string[];
     positions.forEach(pos => {
       if (pos.fret === 0) {
         strings[6 - pos.string] = 'O';
@@ -52,15 +25,11 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions, color = 
     return strings;
   }, [positions]);
 
-<<<<<<< HEAD
-  const mutedStrings = useMemo(() => {
-=======
-  const mutedStrings = useMemo((): string[] => {
->>>>>>> origin/main
-    const strings = Array<string>(6).fill('');
+  const mutedStrings = useMemo<string[]>(() => {
+    const strings: string[] = Array(6).fill('') as string[];
     const hasFret = positions.some(p => p.fret > 0);
     if (!hasFret) return strings;
-
+    
     for (let i = 0; i < 6; i++) {
       if (!positions.some(p => p.string === 6 - i && p.fret > 0)) {
         strings[i] = 'X';
@@ -69,275 +38,88 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions, color = 
     return strings;
   }, [positions]);
 
+  // Find the highest fret to determine diagram offset
+  const highestFret = Math.max(...positions.map(p => p.fret), 1);
+  const startFret = highestFret > 4 ? highestFret - 3 : 1;
+
+  // Check if there's a barre chord
+  const barreChords = useMemo(() => {
+    const frets: Record<number, number[]> = {};
+    
+    positions.forEach(pos => {
+      if (pos.fret > 0) {
+        if (!frets[pos.fret]) frets[pos.fret] = [];
+        frets[pos.fret].push(pos.string);
+      }
+    });
+
+    return Object.entries(frets)
+      .filter(([fret, strings]) => strings.length >= 2)
+      .map(([fret, strings]) => ({
+        fret: parseInt(fret),
+        minString: Math.min(...strings),
+        maxString: Math.max(...strings)
+      }));
+  }, [positions]);
+
   return (
-    <div className="guitar-chord-diagram" role="img" aria-label="Guitar chord diagram">
+    <div className="guitar-chord-diagram">
+      <div className="chord-name">{chordName}</div>
       <div className="fretboard">
-        <div className="nut" />
-        <div className="endline" />
-
-        {[1, 2, 3, 4, 5].map(fret => (
-          <div
-            key={fret}
-            className="fret-line"
-            style={{ top: `calc((100%/6)*${fret})` }}
-          />
-        ))}
-
-        {[2.5, 4.5].map((fret, idx) => (
-          <div
-            key={`inlay-${idx}`}
-            className="inlay"
-            style={{ top: `calc((100%/6)*${fret})` }}
-          />
-        ))}
-
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div
-            key={i}
-<<<<<<< HEAD
-            className="string"
-            style={{
-              left: `calc((100%/6)*${i} + (100%/12))`,
-              '--sw': `${[18, 12, 8, 6, 4, 3][i]}px`,
-              '--sc': ['#bfbfbf', '#111', '#111', '#111', '#111', '#111'][i],
-            } as React.CSSProperties}
-          />
-        ))}
-
-        {barreChords.map((barre, idx) => (
-          <div
-            key={idx}
-            className="barre"
-            style={{
-              top: `calc((100%/6)*${barre.fret - 0.5})`,
-              left: `calc((100%/6)*${6 - barre.endString})`,
-              width: `calc((100%/6)*${barre.endString - barre.startString + 1})`,
-              '--cc': color,
-            } as React.CSSProperties}
-          >
-            {1}
-          </div>
-        ))}
-
-        {positions
-          .filter(p => p.fret > 0)
-          .map((pos, idx) => (
-            <div
-              key={idx}
-              className={`dot ${pos.isRoot ? 'root' : ''}`}
-              style={{
-                top: `calc((100%/6)*${pos.fret - 0.5})`,
-                left: `calc((100%/6)*${6 - pos.string} + (100%/12))`,
-                '--cc': color,
-              } as React.CSSProperties}
-            >
-              {pos.finger}
-            </div>
+        <div className="open-strings">
+          {openStrings.map((marker, i) => (
+            <div key={`open-${i}`} className="open-string">{marker}</div>
           ))}
-
-=======
-            className="string-line"
-            style={{ left: `${(i + 0.5) * (100 / 6)}%` }}
-          />
-        ))}
+        </div>
+        <div className="muted-strings">
+          {mutedStrings.map((marker, i) => (
+            <div key={`mute-${i}`} className="muted-string">{marker}</div>
+          ))}
+        </div>
         
-        {/* Barre chords */}
-        {barreChords.map((barre, idx) => {
-          const segment = 100 / 6;
-          const left = (6 - barre.endString + 0.5) * segment;
-          const width = (barre.endString - barre.startString) * segment;
+        {[...Array(5)].map((_, fretIndex) => {
+          const fret = startFret + fretIndex;
           return (
-            <div
-              key={idx}
-              className="barre"
-              style={{
-                top: `${(barre.fret - 0.5) * 20}%`,
-                left: `${left}%`,
-                width: `${width}%`,
-                '--cc': color,
-              } as React.CSSProperties}
-            >
-              1
+            <div key={`fret-${fret}`} className="fret">
+              {[...Array(6)].map((_, stringIndex) => {
+                const string = 6 - stringIndex;
+                const position = positions.find(p => p.string === string && p.fret === fret);
+                const isRoot = position && position.fret > 0 && chordName.startsWith(chordName.split(' ')[0]);
+                
+                // Check if this position is part of a barre chord
+                const barre = barreChords.find(b => b.fret === fret && string >= b.minString && string <= b.maxString);
+
+                return (
+                  <div key={`string-${string}`} className="string">
+                    {position && position.fret > 0 && (
+                      <div 
+                        className={`finger-position ${isRoot ? 'root' : ''}`}
+                        style={isRoot ? { backgroundColor: rootNoteColor } : {}}
+                      >
+                        {position.finger}
+                      </div>
+                    )}
+                    {barre && string === barre.minString && (
+                      <div 
+                        className="barre" 
+                        style={{
+                          height: `${(barre.maxString - barre.minString) * 20}px`,
+                          backgroundColor: rootNoteColor
+                        }}
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           );
         })}
-        
-        {/* Positions */}
-        {positions
-          .filter(p =>
-            p.fret > 0 &&
-            !barreChords.some(
-              barre =>
-                p.finger === 1 &&
-                p.fret === barre.fret &&
-                p.string >= barre.startString &&
-                p.string <= barre.endString
-            )
-          )
-          .map((pos, idx) => {
-            const segment = 100 / 6;
-            return (
-              <div
-                key={idx}
-                className="dot"
-                style={{
-                  top: `${(pos.fret - 0.5) * 20}%`,
-                  left: `${(6 - pos.string + 0.5) * segment}%`,
-                  '--cc': color,
-                } as React.CSSProperties}
-              >
-                {pos.finger}
-              </div>
-            );
-          })}
-        
-        {/* Open and muted strings */}
->>>>>>> origin/main
-        {openStrings.map((open, i) => (
-          open && (
-            <div
-              key={`open-${i}`}
-<<<<<<< HEAD
-              className="xo"
-              style={{
-                left: `calc((100%/6)*${i} + (100%/12))`,
-                color,
-              }}
-=======
-<<<<<<< HEAD
-              className="xo"
-              style={{
-                left: `${i * 20}%`,
-                top: '0',
-                color: 'var(--chord-color)',
-              }}
-=======
-              className="string-indicator open-symbol"
-              style={{ left: `${(i + 0.5) * (100 / 6)}%`, top: '-15%' }}
->>>>>>> origin/main
->>>>>>> origin/main
-            >
-              {open}
-            </div>
-          )
-        ))}
-        {mutedStrings.map((muted, i) => (
-          muted && (
-            <div
-              key={`muted-${i}`}
-<<<<<<< HEAD
-              className="xo"
-              style={{
-                left: `calc((100%/6)*${i} + (100%/12))`,
-                color,
-              }}
-=======
-<<<<<<< HEAD
-              className="xo"
-              style={{
-                left: `${i * 20}%`,
-                top: '0',
-                color: 'var(--chord-color)',
-              }}
-=======
-              className="string-indicator mute-symbol"
-              style={{ left: `${(i + 0.5) * (100 / 6)}%`, top: '-15%' }}
->>>>>>> origin/main
->>>>>>> origin/main
-            >
-              {muted}
-            </div>
-          )
-        ))}
       </div>
-<<<<<<< HEAD
-      {noteLabels.length > 0 && (
-        <div className="note-strip">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <span key={i} style={{ color }}>
-              {noteLabels[i] || ''}
-            </span>
-          ))}
+      {startFret > 1 && (
+        <div className="fret-number">
+          {startFret}fr
         </div>
       )}
-=======
-      <style>
-        {`
-          .guitar-chord-diagram {
-            margin: 0 auto;
-            display: block;
-            background-color: #f8fafc;
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-          }
-          .fretboard {
-            position: relative;
-            width: 360px;
-            height: 360px;
-            background-color: #fff;
-            border: 1px solid #ddd;
-          }
-          .nut {
-            position: absolute;
-            width: 100%;
-            height: 5px;
-            background-color: #000;
-            top: 0;
-          }
-          .fret-line {
-            position: absolute;
-            width: 100%;
-            height: 0;
-            border-bottom: 3px solid #000;
-          }
-          .string-line {
-            position: absolute;
-            top: 0;
-            height: 100%;
-            width: 0;
-            border-left: 2px solid #666;
-            transform: translateX(-50%);
-          }
-          .xo {
-            position: absolute;
-            font-size: 32px;
-            font-weight: bold;
-            transform: translate(-50%, -100%);
-          }
-          .barre {
-            position: absolute;
-            transform: translateY(-50%);
-            height: 48px;
-            border-radius: 999px;
-            background: var(--cc);
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: 800;
-            font-size: 24px;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
-          }
-          .dot {
-            position: absolute;
-            transform: translate(-50%, -50%);
-            width: 72px;
-            height: 72px;
-            border-radius: 999px;
-            background: var(--cc);
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: 800;
-            font-size: 30px;
-            text-shadow: 0 1px 0 rgba(0,0,0,0.25);
-            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
-          }
-        `}
-      </style>
->>>>>>> origin/main
     </div>
   );
 };
