@@ -25,7 +25,7 @@ const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
     { type: 'white', note: 'G' },
     { type: 'black', note: 'G#' },
     { type: 'white', note: 'A' },
-    { type: 'black', note: 'A#' },
+    { type: 'black', note: 'A#', noteSharp: 'Bb' },
     { type: 'white', note: 'B' },
   ];
 
@@ -79,7 +79,7 @@ const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
                   style={{
                     left: getBlackKeyLeft(index),
                   }}
-                  aria-label={key.note}
+                  aria-label={key.noteSharp || key.note}
                 />
               );
             }
