@@ -7,7 +7,6 @@
 - **Merge from other versions (as needed)**: ear training, scale visualizer, melody guide, and UI polish from `Gemini Version.html`, `Canva.html`, and `Enhanced Ultimate Chord App.html`.
 - **Navigation**: SPA uses `HashRouter`; standalone uses hash-based in-app tabs so navigation works offline without a server.
 - **Persistence**: `localStorage` for user profile, learned chords, best challenge time, progressions, and settings.
-- **Single-file constraint**: keep the standalone inlined build as the student-ready artifact.
 
 ## Pre-React Quick Wins
 
@@ -50,7 +49,6 @@
 - **State Management**: Use React hooks for state management (useState, useEffect, useContext)
 - **Styling**: Implement Tailwind CSS for consistent styling
 - **Routing**: For SPA, use React Router (prefer HashRouter so routes work without a server). The single-file build may use in-app tab state and hashes for navigation.
-- **Build Targets**: Provide both SPA and single-file offline builds; ensure feature parity where possible.
 
 ### 2. Essential Components
 
@@ -231,7 +229,6 @@
 2. Add responsive design
 3. Optimize performance
 4. Add final visual polish
-5. Produce the single-file offline build (chord-lab-standalone.html) and complete an offline QA checklist
 6. Package the standalone build for distribution, ensuring all assets are inlined and no external dependencies are required
 7. Perform thorough QA of the standalone build to ensure it meets all requirements and functions as expected
 
@@ -253,12 +250,6 @@
 - Implement data validation and error handling
 - Consider IndexedDB for more complex data storage
 
-### Single-file Build
-- Inline JS, CSS, and assets into a single HTML for student distribution.
-- Avoid CDNs in the standalone build; use bundled assets or embedded fonts. External links (e.g., help pages, YouTube) are permitted but optional.
-- Avoid dynamic imports in standalone mode; ensure static bundling.
-- Persist state via localStorage; do not require network APIs.
-- Smoke test offline in Chrome/Edge/Safari by opening the file directly.
 
 ### Accessibility
 - Ensure keyboard navigation
@@ -309,4 +300,3 @@ npm install use-sound
 2. Add service worker for offline support (SPA build)
 3. Implement analytics (if desired) in SPA build only
 4. Deploy SPA to Netlify or Vercel
-5. Generate and distribute chord-lab-standalone.html as the student-ready artifact; verify it opens and runs offline without a server

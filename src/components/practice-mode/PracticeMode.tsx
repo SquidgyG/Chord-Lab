@@ -1,5 +1,5 @@
-import type { FC } from 'react';
-import { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { FC } from 'react';
 import { useLocation } from 'react-router-dom';
 import { getChordTheme } from '../../utils/diagramTheme';
 import useMetronome from '../../hooks/useMetronome';

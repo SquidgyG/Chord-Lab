@@ -42,7 +42,7 @@ Object.defineProperty(window, 'matchMedia', {
 });
 
 // Mock Web Audio API
-global.AudioContext = vi.fn(() => ({
+const mockAudioContext = {
   baseLatency: 0,
   outputLatency: 0,
   currentTime: 0,
@@ -57,7 +57,17 @@ global.AudioContext = vi.fn(() => ({
   createMediaStreamSource: vi.fn(),
   getOutputTimestamp: vi.fn(),
   audioWorklet: { addModule: vi.fn() },
-  destination: { channelCount: 2 },
+  destination: {
+    channelCount: 2,
+    maxChannelCount: 2,
+    channelCountMode: 'explicit',
+    channelInterpretation: 'speakers',
+    context: {} as any,
+    numberOfInputs: 1,
+    numberOfOutputs: 0,
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+  },
   resume: vi.fn(),
   suspend: vi.fn(),
   close: vi.fn(),
@@ -76,15 +86,20 @@ global.AudioContext = vi.fn(() => ({
   createDynamicsCompressor: vi.fn(),
   createGain: vi.fn(),
   createIIRFilter: vi.fn(),
-  createOscillator: vi.fn(),
   createPanner: vi.fn(),
   createPeriodicWave: vi.fn(),
   createStereoPanner: vi.fn(),
   createWaveShaper: vi.fn(),
   decodeAudioData: vi.fn(),
-  listener: { positionX: { value: 0 }, positionY: { value: 0 }, positionZ: { value: 0 } },
+  listener: {
+    positionX: { value: 0 } as AudioParam,
+    positionY: { value: 0 } as AudioParam,
+    positionZ: { value: 0 } as AudioParam,
+  },
   onstatechange: null,
   addEventListener: vi.fn(),
   removeEventListener: vi.fn(),
   dispatchEvent: vi.fn(),
-}));
+} as unknown as AudioContext;
+
+global.AudioContext = vi.fn(() => mockAudioContext);

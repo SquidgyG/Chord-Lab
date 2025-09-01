@@ -2,7 +2,7 @@
 
 An interactive music learning application that teaches piano and guitar chords through progressive lessons, visual guides, and audio feedback. Built for students, teachers, and self-learners who want to master chord playing with proper technique.
 
-**[Launch App](https://squidgyg.github.io/Chord-Lab/)** | **[Download Offline Version](https://github.com/SquidgyG/Chord-Lab/releases)**
+**[Launch App](https://squidgyg.github.io/Chord-Lab/)** |
 
 ![GitHub Pages](https://img.shields.io/github/deployments/SquidgyG/Chord-Lab/github-pages?label=deployment)
 ![License](https://img.shields.io/github/license/SquidgyG/Chord-Lab)
@@ -16,7 +16,6 @@ An interactive music learning application that teaches piano and guitar chords t
 - **Progressive Lesson System**: Start with proper posture and build up to complex chord progressions
 - **Audio Feedback**: Hear each chord and individual notes as you learn
 - **Mobile-Friendly**: Practice on any device - phone, tablet, or desktop
-- **Offline Capable**: Works without internet connection once loaded
 - **No Installation Required**: Runs directly in your web browser
 
 ### For Teachers
@@ -81,7 +80,6 @@ Chord Lab uses a progressive learning methodology:
 
 ### Distribution Targets
 - **Hosted (Recommended)**: GitHub Pages static site - no installation needed for students
-- **Offline**: Single-file HTML (`chord-lab-standalone.html`) that opens directly in browser
 
 ## Development Setup
 
@@ -118,7 +116,6 @@ npm run build:standalone
 src/                 # React application source code
 offline/             # Sources for single-file build
 scripts/             # Build utilities
-  build-standalone.mjs  # Inlines CSS/JS into single HTML
 archive/             # Legacy versions (reference only)
 .github/workflows/   # GitHub Actions for deployment
 ```
