@@ -1,5 +1,6 @@
 import React from 'react';
 import './PianoChordDiagram.css';
+import { getChordTheme } from '../../utils/diagramTheme';
 
 type PianoChordDiagramProps = {
   notes: string[];
@@ -7,11 +8,12 @@ type PianoChordDiagramProps = {
   color?: string; // Hex color code
 };
 
-const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({ 
-  notes, 
-  chordName, 
-  color = '#cc39bc' // Default color
+const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
+  notes,
+  chordName,
+  color
 }) => {
+  color = color ?? getChordTheme(chordName ?? '').primary;
   const activeNotes = notes || [];
   
   const keys = [
