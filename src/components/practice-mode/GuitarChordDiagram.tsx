@@ -7,14 +7,38 @@ interface FingerPosition {
   finger?: number;
 }
 
-interface GuitarChordDiagramProps {
-  positions: FingerPosition[];
-  chordName: string;
-  rootNoteColor?: string;
-  noteLabels?: string[];
+interface GuitarPositionProps {
+  positions: GuitarPosition[];
+  color?: string;
 }
 
-const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({ positions, chordName, rootNoteColor = '#ff6b6b', noteLabels = [] }) => {
+interface Barre {
+  fret: number;
+  startString: number;
+  endString: number;
+}
+
+const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({
+  positions,
+  color = '#ff6b6b',
+}) => {
+  // Calculate barre chords
+  const barreChords = useMemo<Barre[]>(() => {
+    const barres: Record<number, Barre> = {};
+    positions.forEach(pos => {
+      if (pos.finger === 1 && pos.fret > 0) {
+        if (!barres[pos.fret]) {
+          barres[pos.fret] = { fret: pos.fret, startString: pos.string, endString: pos.string };
+        } else {
+          if (pos.string < barres[pos.fret].startString) barres[pos.fret].startString = pos.string;
+          if (pos.string > barres[pos.fret].endString) barres[pos.fret].endString = pos.string;
+        }
+      }
+    });
+    return Object.values(barres).filter(barre => barre.endString - barre.startString >= 1);
+  }, [positions]);
+
+  // Calculate open and muted strings
   const openStrings = useMemo<string[]>(() => {
     const strings: string[] = Array(6).fill('') as string[];
     positions.forEach(pos => {
@@ -115,11 +139,70 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({ positions, chor
           );
         })}
       </div>
-      {startFret > 1 && (
-        <div className="fret-number">
-          {startFret}fr
-        </div>
-      )}
+      <style>
+        {`
+          .guitar-chord-diagram {
+            margin: 0 auto;
+            display: block;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+          }
+          .fretboard {
+            position: relative;
+            width: 120px;
+            height: 160px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+          }
+          .nut {
+            position: absolute;
+            width: 100%;
+            height: 5px;
+            background-color: #000;
+            top: 0;
+          }
+          .fret-line {
+            position: absolute;
+            width: 100%;
+            height: 0;
+            border-bottom: 3px solid #000;
+          }
+          .string-line {
+            position: absolute;
+            height: 100%;
+            width: 0;
+            border-top: 1px solid #666;
+          }
+          .string-indicator {
+            position: absolute;
+            width: 20px;
+            text-align: center;
+          }
+          .open-symbol, .mute-symbol {
+            font-size: 18px;
+            font-weight: bold;
+          }
+          .barre {
+            position: absolute;
+            background-color: #000;
+            border-radius: 5px;
+          }
+          .fret-position {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 3px solid #000;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+          }
+          .root {
+            background-color: ${color};
+          }
+        `}
+      </style>
     </div>
   );
 };
