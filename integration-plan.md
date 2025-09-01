@@ -5,9 +5,8 @@
 - **Base**: `Ultimate Chord App.html` (rich progression builder, theory tools, song play-along, achievements UX).
 - **Merge from `ChatGPT Version.html`**: metronome, Web Audio playback (`AudioContext` + `playChord()`), persistence via `localStorage`, and tabbed navigation model.
 - **Merge from other versions (as needed)**: ear training, scale visualizer, melody guide, and UI polish from `Gemini Version.html`, `Canva.html`, and `Enhanced Ultimate Chord App.html`.
-- **Navigation**: SPA uses `HashRouter`; standalone uses hash-based in-app tabs so navigation works offline without a server.
+- **Navigation**: SPA uses `HashRouter`.
 - **Persistence**: `localStorage` for user profile, learned chords, best challenge time, progressions, and settings.
-- **Single-file constraint**: keep the standalone inlined build as the student-ready artifact.
 
 ## Pre-React Quick Wins
 
@@ -39,9 +38,11 @@
 - [ ] Song Library Play-Along with audio and tempo control.
 - [ ] Challenge mode with best-time persistence.
 
-### Phase 5: Packaging
-- [ ] Single-file inlined build target.
-- [ ] Offline QA checklist and release artifact.
+### Phase 5: Polish & Optimization (Week 5)
+1. Implement dark mode
+2. Add responsive design
+3. Optimize performance
+4. Add final visual polish
 
 ## Core Features to Implement
 
@@ -49,8 +50,8 @@
 - **Component Architecture**: Create a modular component structure based on Ultimate Chord App.html
 - **State Management**: Use React hooks for state management (useState, useEffect, useContext)
 - **Styling**: Implement Tailwind CSS for consistent styling
-- **Routing**: For SPA, use React Router (prefer HashRouter so routes work without a server). The single-file build may use in-app tab state and hashes for navigation.
-- **Build Targets**: Provide both SPA and single-file offline builds; ensure feature parity where possible.
+- **Routing**: For SPA, use React Router (prefer HashRouter so routes work without a server).
+- **Build Targets**: Provide SPA build.
 
 ### 2. Essential Components
 
@@ -231,9 +232,6 @@
 2. Add responsive design
 3. Optimize performance
 4. Add final visual polish
-5. Produce the single-file offline build (chord-lab-standalone.html) and complete an offline QA checklist
-6. Package the standalone build for distribution, ensuring all assets are inlined and no external dependencies are required
-7. Perform thorough QA of the standalone build to ensure it meets all requirements and functions as expected
 
 ## Technical Considerations
 
@@ -253,18 +251,12 @@
 - Implement data validation and error handling
 - Consider IndexedDB for more complex data storage
 
-### Single-file Build
-- Inline JS, CSS, and assets into a single HTML for student distribution.
-- Avoid CDNs in the standalone build; use bundled assets or embedded fonts. External links (e.g., help pages, YouTube) are permitted but optional.
-- Avoid dynamic imports in standalone mode; ensure static bundling.
-- Persist state via localStorage; do not require network APIs.
-- Smoke test offline in Chrome/Edge/Safari by opening the file directly.
+## Deployment
 
-### Accessibility
-- Ensure keyboard navigation
-- Add ARIA labels for interactive elements
-- Implement proper focus management
-- Ensure color contrast for readability
+1. Optimize build for production
+2. Add service worker for offline support (SPA build)
+3. Implement analytics (if desired) in SPA build only
+4. Deploy SPA to Netlify or Vercel
 
 ## File Structure
 
@@ -302,11 +294,3 @@ npm install use-sound
 3. Integration tests for core workflows
 4. Audio system testing
 5. Cross-browser compatibility testing
-
-## Deployment
-
-1. Optimize build for production
-2. Add service worker for offline support (SPA build)
-3. Implement analytics (if desired) in SPA build only
-4. Deploy SPA to Netlify or Vercel
-5. Generate and distribute chord-lab-standalone.html as the student-ready artifact; verify it opens and runs offline without a server

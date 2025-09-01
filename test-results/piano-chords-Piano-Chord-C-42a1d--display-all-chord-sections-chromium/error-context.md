@@ -1,0 +1,149 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - heading "C Major" [level=1] [ref=e3]
+    - img "C Major chord chart (root position, range F4-B5)" [ref=e5]:
+      - generic [ref=e25]: C
+      - generic [ref=e26]: E
+      - generic [ref=e27]: G
+  - generic [ref=e28]:
+    - heading "G Major" [level=1] [ref=e29]
+    - img "G Major chord chart (root position, range F4-B5)" [ref=e31]:
+      - generic [ref=e51]: G
+      - generic [ref=e52]: B
+      - generic [ref=e53]: D
+  - generic [ref=e54]:
+    - heading "D Major" [level=1] [ref=e55]
+    - img "D Major chord chart (root position, range F4-B5)" [ref=e57]:
+      - generic [ref=e77]: D
+      - generic [ref=e78]: F#
+      - generic [ref=e79]: A
+  - generic [ref=e80]:
+    - heading "A Major" [level=1] [ref=e81]
+    - img "A Major chord chart (root position, range F4-B5)" [ref=e83]:
+      - generic [ref=e103]: A
+      - generic [ref=e104]: C#
+      - generic [ref=e105]: E
+  - generic [ref=e106]:
+    - heading "E Major" [level=1] [ref=e107]
+    - img "E Major chord chart (root position, range F4-B5)" [ref=e109]:
+      - generic [ref=e129]: E
+      - generic [ref=e130]: G#
+      - generic [ref=e131]: B
+  - generic [ref=e132]:
+    - heading "B Major" [level=1] [ref=e133]
+    - img "B Major chord chart (root position, range F4-B5)" [ref=e135]:
+      - generic [ref=e155]: B
+      - generic [ref=e156]: D#
+      - generic [ref=e157]: F#
+  - generic [ref=e158]:
+    - heading "F# Major" [level=1] [ref=e159]
+    - img "F# Major chord chart (root position, range F4-B5)" [ref=e161]:
+      - generic [ref=e181]: F#
+      - generic [ref=e182]: A#
+      - generic [ref=e183]: C#
+  - generic [ref=e184]:
+    - heading "Db Major" [level=1] [ref=e185]
+    - img "Db Major chord chart (root position, range F4-B5)" [ref=e187]:
+      - generic [ref=e207]: Db
+      - generic [ref=e208]: F
+      - generic [ref=e209]: Ab
+  - generic [ref=e210]:
+    - heading "Ab Major" [level=1] [ref=e211]
+    - img "Ab Major chord chart (root position, range F4-B5)" [ref=e213]:
+      - generic [ref=e233]: Ab
+      - generic [ref=e234]: C
+      - generic [ref=e235]: Eb
+  - generic [ref=e236]:
+    - heading "Eb Major" [level=1] [ref=e237]
+    - img "Eb Major chord chart (root position, range F4-B5)" [ref=e239]:
+      - generic [ref=e259]: Eb
+      - generic [ref=e260]: G
+      - generic [ref=e261]: Bb
+  - generic [ref=e262]:
+    - heading "Bb Major" [level=1] [ref=e263]
+    - img "Bb Major chord chart (root position, range F4-B5)" [ref=e265]:
+      - generic [ref=e285]: Bb
+      - generic [ref=e286]: D
+      - generic [ref=e287]: F
+  - generic [ref=e288]:
+    - heading "F Major" [level=1] [ref=e289]
+    - img "F Major chord chart (root position, range F4-B5)" [ref=e291]:
+      - generic [ref=e311]: F
+      - generic [ref=e312]: A
+      - generic [ref=e313]: C
+  - generic [ref=e314]:
+    - heading "A Minor" [level=1] [ref=e315]
+    - img "A Minor chord chart (root position, range F4-B5)" [ref=e317]:
+      - generic [ref=e337]: A
+      - generic [ref=e338]: C
+      - generic [ref=e339]: E
+  - generic [ref=e340]:
+    - heading "E Minor" [level=1] [ref=e341]
+    - img "E Minor chord chart (root position, range F4-B5)" [ref=e343]:
+      - generic [ref=e363]: E
+      - generic [ref=e364]: G
+      - generic [ref=e365]: B
+  - generic [ref=e366]:
+    - heading "B Minor" [level=1] [ref=e367]
+    - img "B Minor chord chart (root position, range F4-B5)" [ref=e369]:
+      - generic [ref=e389]: B
+      - generic [ref=e390]: D
+      - generic [ref=e391]: F#
+  - generic [ref=e392]:
+    - heading "F# Minor" [level=1] [ref=e393]
+    - img "F# Minor chord chart (root position, range F4-B5)" [ref=e395]:
+      - generic [ref=e415]: F#
+      - generic [ref=e416]: A
+      - generic [ref=e417]: C#
+  - generic [ref=e418]:
+    - heading "C# Minor" [level=1] [ref=e419]
+    - img "C# Minor chord chart (root position, range F4-B5)" [ref=e421]:
+      - generic [ref=e441]: C#
+      - generic [ref=e442]: E
+      - generic [ref=e443]: G#
+  - generic [ref=e444]:
+    - heading "G# Minor" [level=1] [ref=e445]
+    - img "G# Minor chord chart (root position, range F4-B5)" [ref=e447]:
+      - generic [ref=e467]: G#
+      - generic [ref=e468]: B
+      - generic [ref=e469]: D#
+  - generic [ref=e470]:
+    - heading "D# Minor" [level=1] [ref=e471]
+    - img "D# Minor chord chart (root position, range F4-B5)" [ref=e473]:
+      - generic [ref=e493]: D#
+      - generic [ref=e494]: F#
+      - generic [ref=e495]: A#
+  - generic [ref=e496]:
+    - heading "Bb Minor" [level=1] [ref=e497]
+    - img "Bb Minor chord chart (root position, range F4-B5)" [ref=e499]:
+      - generic [ref=e519]: Bb
+      - generic [ref=e520]: Db
+      - generic [ref=e521]: F
+  - generic [ref=e522]:
+    - heading "F Minor" [level=1] [ref=e523]
+    - img "F Minor chord chart (root position, range F4-B5)" [ref=e525]:
+      - generic [ref=e545]: F
+      - generic [ref=e546]: G#
+      - generic [ref=e547]: C
+  - generic [ref=e548]:
+    - heading "C Minor" [level=1] [ref=e549]
+    - img "C Minor chord chart (root position, range F4-B5)" [ref=e551]:
+      - generic [ref=e571]: C
+      - generic [ref=e572]: D#
+      - generic [ref=e573]: G
+  - generic [ref=e574]:
+    - heading "G Minor" [level=1] [ref=e575]
+    - img "G Minor chord chart (root position, range F4-B5)" [ref=e577]:
+      - generic [ref=e597]: G
+      - generic [ref=e598]: A#
+      - generic [ref=e599]: D
+  - generic [ref=e600]:
+    - heading "D Minor" [level=1] [ref=e601]
+    - img "D Minor chord chart (root position, range F4-B5)" [ref=e603]:
+      - generic [ref=e623]: D
+      - generic [ref=e624]: F
+      - generic [ref=e625]: A
+```

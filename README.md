@@ -2,9 +2,7 @@
 
 An interactive music learning application that teaches piano and guitar chords through progressive lessons, visual guides, and audio feedback. Built for students, teachers, and self-learners who want to master chord playing with proper technique.
 
-**[Launch App](https://squidgyg.github.io/Chord-Lab/)** | **[Download Offline Version](https://github.com/SquidgyG/Chord-Lab/releases)**
-
-![GitHub Pages](https://img.shields.io/github/deployments/SquidgyG/Chord-Lab/github-pages?label=deployment)
+**[Launch App](https://squidgyg.github.io/Chord-Lab/)** | ![GitHub Pages](https://img.shields.io/github/deployments/SquidgyG/Chord-Lab/github-pages?label=deployment)
 ![License](https://img.shields.io/github/license/SquidgyG/Chord-Lab)
 ![React](https://img.shields.io/badge/React-18-blue)
 ![Vite](https://img.shields.io/badge/Vite-5-646CFF)
@@ -16,7 +14,6 @@ An interactive music learning application that teaches piano and guitar chords t
 - **Progressive Lesson System**: Start with proper posture and build up to complex chord progressions
 - **Audio Feedback**: Hear each chord and individual notes as you learn
 - **Mobile-Friendly**: Practice on any device - phone, tablet, or desktop
-- **Offline Capable**: Works without internet connection once loaded
 - **No Installation Required**: Runs directly in your web browser
 
 ### For Teachers
@@ -43,7 +40,6 @@ An interactive music learning application that teaches piano and guitar chords t
 - **Recommended**: Chrome, Firefox, Safari, Edge (latest versions)
 - **Mobile**: iOS Safari, Android Chrome
 - **Audio Requirements**: Web Audio API support (available in all modern browsers)
-- **Progressive Web App**: Can be installed on mobile devices for offline use
 
 ## Screenshots
 
@@ -81,7 +77,6 @@ Chord Lab uses a progressive learning methodology:
 
 ### Distribution Targets
 - **Hosted (Recommended)**: GitHub Pages static site - no installation needed for students
-- **Offline**: Single-file HTML (`chord-lab-standalone.html`) that opens directly in browser
 
 ## Development Setup
 
@@ -107,18 +102,11 @@ npm run dev
 ```bash
 # Production build for GitHub Pages
 npm run build
-
-# Create standalone single-file version
-npm run build:standalone
-# Output: chord-lab-standalone.html
 ```
 
 ### Project Structure
 ```
 src/                 # React application source code
-offline/             # Sources for single-file build
-scripts/             # Build utilities
-  build-standalone.mjs  # Inlines CSS/JS into single HTML
 archive/             # Legacy versions (reference only)
 .github/workflows/   # GitHub Actions for deployment
 ```
@@ -180,8 +168,7 @@ Chord Lab is designed to be inclusive:
 - **Mobile audio**: Some mobile browsers require user interaction before audio plays
 
 ### Performance Issues
-- **Slow loading**: Check internet connection; try the offline version
-- **Laggy interactions**: Close other browser tabs and applications
+- **Slow loading**: Check internet connection; try closing other browser tabs and applications
 
 ### Browser Compatibility
 - **Old browsers**: Upgrade to a modern browser version
