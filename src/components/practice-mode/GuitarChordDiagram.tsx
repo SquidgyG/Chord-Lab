@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import './GuitarChordDiagram.css';
 
 export interface GuitarPosition {
@@ -12,97 +12,124 @@ interface GuitarPositionProps {
   positions: GuitarPosition[];
 }
 
-const getOpenStrings = (positions: GuitarPosition[]): string[] => {
-  const openStrings = Array(6).fill('');
-  positions.forEach(pos => {
-    if (pos.fret === 0) {
-      openStrings[6 - pos.string] = 'O';
-    }
-  });
-  return openStrings;
-};
-
 const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
-  const strings = ['6', '5', '4', '3', '2', '1'];
-  const frets = [0, 1, 2, 3, 4];
-  const stringWidth = 20;
-  const fretHeight = 20;
-  const dotRadius = 9;
+  // Calculate barre chords
+  const barreChords = useMemo(() => {
+    const barres: Record<number, { fret: number; startString: number; endString: number }> = {};
+    positions.forEach(pos => {
+      if (pos.finger === 1 && pos.fret > 0) {
+        if (!barres[pos.fret]) {
+          barres[pos.fret] = { fret: pos.fret, startString: pos.string, endString: pos.string };
+        } else {
+          if (pos.string < barres[pos.fret].startString) barres[pos.fret].startString = pos.string;
+          if (pos.string > barres[pos.fret].endString) barres[pos.fret].endString = pos.string;
+        }
+      }
+    });
+    return Object.values(barres).filter(barre => barre.endString - barre.startString >= 1);
+  }, [positions]);
+
+  // Calculate open and muted strings
+  const openStrings = useMemo(() => {
+    const strings = Array(6).fill('');
+    positions.forEach(pos => {
+      if (pos.fret === 0) {
+        strings[6 - pos.string] = 'O';
+      }
+    });
+    return strings;
+  }, [positions]);
+
+  const mutedStrings = useMemo(() => {
+    const strings = Array(6).fill('');
+    const hasFret = positions.some(p => p.fret > 0);
+    if (!hasFret) return strings;
+    
+    for (let i = 0; i < 6; i++) {
+      if (!positions.some(p => p.string === 6 - i && p.fret > 0)) {
+        strings[i] = 'X';
+      }
+    }
+    return strings;
+  }, [positions]);
 
   return (
-    <div className="guitar-chord-diagram">
+    <div className="guitar-chord-diagram" role="img" aria-label="Guitar chord diagram">
       <div className="fretboard">
-        {[...Array(5)].map((_, fretIndex) => (
+        {/* Nut */}
+        <div className="nut" style={{ top: '0%' }} />
+        
+        {/* Frets */}
+        {[1, 2, 3, 4].map(fret => (
           <div 
-            key={`fret-${fretIndex}`} 
+            key={fret}
             className="fret-line" 
+            style={{ top: `${fret * 20}%` }}
+          />
+        ))}
+        
+        {/* Strings */}
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div 
+            key={i}
+            className="string-line" 
+            style={{ left: `${i * 20}%` }}
+          />
+        ))}
+        
+        {/* Barre chords */}
+        {barreChords.map((barre, idx) => (
+          <div
+            key={idx}
+            className="barre"
             style={{
-              top: `${fretHeight * (fretIndex + 1)}px`,
-              borderBottom: fretIndex === 0 ? '5px solid #000' : '3px solid #000', // Thicker nut and frets
+              top: `${(barre.fret - 0.5) * 20}%`,
+              left: `${(6 - barre.endString) * 20}%`,
+              width: `${(barre.endString - barre.startString) * 20}%`,
+              height: '10px',
             }}
           />
         ))}
-        {[...Array(6)].map((_, stringIndex) => {
-          const openStrings = getOpenStrings(positions);
-          const isOpen = openStrings[5 - stringIndex] === 'O';
-          const isMuted = openStrings[5 - stringIndex] === 'X';
-          
-          return (
-            <React.Fragment key={`string-${stringIndex}`}>
-              <div 
-                className="string-line" 
-                style={{
-                  left: `${stringWidth * stringIndex}px`,
-                  borderTop: '2px solid #666', // Thicker strings
-                }}
-              />
-              <div 
-                className="string-indicator"
-                style={{
-                  left: `${stringWidth * stringIndex}px`,
-                  top: '-25px',
-                }}
-              >
-                {isOpen && (
-                  <div className="open-symbol" style={{ fontSize: '18px', fontWeight: 'bold' }}>O</div>
-                )}
-                {isMuted && (
-                  <div className="mute-symbol" style={{ fontSize: '18px', fontWeight: 'bold' }}>X</div>
-                )}
-              </div>
-            </React.Fragment>
-          );
-        })}
-        {positions.map((pos, index) => {
-          const stringIndex = strings.indexOf(pos.string.toString());
-          if (stringIndex === -1) return null;
-          
-          const fretIndex = frets.indexOf(pos.fret);
-          if (fretIndex === -1) return null;
-          
-          const stringX = stringWidth * stringIndex + stringWidth / 2;
-          const fretY = fretHeight * fretIndex + fretHeight / 2;
-          
-          return (
+        
+        {/* Positions */}
+        {positions
+          .filter(p => p.fret > 0)
+          .map((pos, idx) => (
             <div
-              key={index}
-              className="fret-position"
+              key={idx}
+              className={`fret-position ${pos.isRoot ? 'root' : ''}`}
               style={{
-                left: `${stringX - dotRadius}px`,
-                top: `${fretY - dotRadius}px`,
-                width: `${dotRadius * 2}px`,
-                height: `${dotRadius * 2}px`,
-                backgroundColor: pos.isRoot ? '#ff6b6b' : '#4d9de0',
-                border: '3px solid #000', // Add border to dots
-                boxShadow: '0 3px 6px rgba(0,0,0,0.3)',
+                top: `${(pos.fret - 0.5) * 20}%`,
+                left: `${(6 - pos.string) * 20}%`,
               }}
             >
-              <span className="finger-number" style={{ fontSize: '14px', fontWeight: 'bold', color: '#fff' }}>
-                {pos.finger}
-              </span>
+              {pos.finger}
             </div>
-          );
-        })}
+          ))}
+        
+        {/* Open and muted strings */}
+        {openStrings.map((open, i) => (
+          open && (
+            <div 
+              key={`open-${i}`}
+              className="string-indicator open-symbol"
+              style={{ left: `${i * 20}%`, top: '-15%' }}
+            >
+              {open}
+            </div>
+          )
+        ))}
+        {mutedStrings.map((muted, i) => (
+          muted && (
+            <div 
+              key={`muted-${i}`}
+              className="string-indicator mute-symbol"
+              style={{ left: `${i * 20}%`, top: '-15%' }}
+            >
+              {muted}
+            </div>
+          )
+        ))}
       </div>
       <style>
         {`
@@ -120,6 +147,13 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
             height: 160px;
             background-color: #fff;
             border: 1px solid #ddd;
+          }
+          .nut {
+            position: absolute;
+            width: 100%;
+            height: 5px;
+            background-color: #000;
+            top: 0;
           }
           .fret-line {
             position: absolute;
@@ -142,6 +176,11 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
             font-size: 18px;
             font-weight: bold;
           }
+          .barre {
+            position: absolute;
+            background-color: #000;
+            border-radius: 5px;
+          }
           .fret-position {
             position: absolute;
             border-radius: 50%;
@@ -151,10 +190,8 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
             border: 3px solid #000;
             box-shadow: 0 3px 6px rgba(0,0,0,0.3);
           }
-          .finger-number {
-            font-size: 14px;
-            font-weight: bold;
-            color: #fff;
+          .root {
+            background-color: #ff6b6b;
           }
         `}
       </style>

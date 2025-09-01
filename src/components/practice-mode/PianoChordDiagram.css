@@ -82,3 +82,21 @@
   background: linear-gradient(to bottom, #fcb045, #ff8c00);
   box-shadow: 0 4px 8px rgba(0,0,0,0.5);
 }
+
+.fill {
+  position: absolute;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.fill-white {
+  top: 0;
+  height: 100%;
+  background: rgba(204, 57, 188, 0.3); /* Example color, will be set dynamically */
+}
+
+.fill-black {
+  top: 0;
+  height: 62%;
+  background: rgba(204, 57, 188, 0.3); /* Example color, will be set dynamically */
+}

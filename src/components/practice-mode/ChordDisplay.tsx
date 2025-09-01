@@ -1,34 +1,43 @@
 import React from 'react';
-import type { Chord } from '../../data/chords';
 import GuitarChordDiagram from './GuitarChordDiagram';
 import PianoChordDiagram from './PianoChordDiagram';
+import type { Chord } from '../../data/chords';
 
-interface ChordDisplayProps {
+type ChordDisplayProps = {
   chord: Chord | null;
   instrument: 'guitar' | 'piano';
-}
+};
 
 const ChordDisplay: React.FC<ChordDisplayProps> = ({ chord, instrument }) => {
   if (!chord) {
-    return null;
+    return <div className="chord-display-empty">No chord selected</div>;
   }
 
-  return (
-    <div className="flex flex-col items-center justify-center space-y-4">
-      <div className="text-5xl font-bold text-gray-800" data-testid="current-chord-name">
-        {chord.name}
+  try {
+    return (
+      <div className="flex flex-col items-center justify-center space-y-4 chord-display">
+        <div className="text-5xl font-bold text-gray-800" data-testid="current-chord-name">
+          {chord.name}
+        </div>
+        
+        {instrument === 'guitar' ? (
+          <GuitarChordDiagram positions={chord.guitarPositions} />
+        ) : (
+          <PianoChordDiagram 
+            notes={chord.pianoNotes} 
+            chordName={chord.name}
+          />
+        )}
       </div>
-      
-      {instrument === 'guitar' && chord.guitarPositions && (
-        // @ts-ignore
-        <GuitarChordDiagram positions={chord.guitarPositions} />
-      )}
-      
-      {instrument === 'piano' && chord.pianoNotes && (
-        <PianoChordDiagram notes={chord.pianoNotes} />
-      )}
-    </div>
-  );
+    );
+  } catch (error) {
+    console.error('Error rendering chord diagram:', error);
+    return (
+      <div className="chord-display-error">
+        Error displaying chord diagram
+      </div>
+    );
+  }
 };
 
 export default ChordDisplay;
