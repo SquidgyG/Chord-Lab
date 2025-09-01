@@ -26,21 +26,6 @@ const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
     ...KEYBOARD_LAYOUT.blackKeys.map(k => ({ ...k, type: 'black' as const, root: getNoteName(k.note) })),
   ];
 
-  const keys = [
-    { type: 'white', note: 'C' },
-    { type: 'black', note: 'C#' },
-    { type: 'white', note: 'D' },
-    { type: 'black', note: 'D#' },
-    { type: 'white', note: 'E' },
-    { type: 'white', note: 'F' },
-    { type: 'black', note: 'F#' },
-    { type: 'white', note: 'G' },
-    { type: 'black', note: 'G#' },
-    { type: 'white', note: 'A' },
-    { type: 'black', note: 'A#', noteSharp: 'Bb' },
-    { type: 'white', note: 'B' },
-  ];
-
   // Calculate positions
   const whiteKeyWidth = 100 / KEYBOARD_LAYOUT.totalWhiteKeys;
 
@@ -57,10 +42,16 @@ const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
     return `${position * whiteKeyWidth}%`;
   };
 
-  // Update fill styles to use dynamic color
+  // Update fill styles to use the color prop
   const fillStyle = {
-    backgroundColor: `${color}33`, // Add alpha transparency
+    backgroundColor: color,
     border: `2px solid ${color}`
+  };
+
+  const keyboardWrapStyle: React.CSSProperties = {
+    position: 'relative',
+    width: '100%',
+    height: '360px'
   };
 
   return (
@@ -70,7 +61,7 @@ const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
           {chordName}
         </div>
       )}
-      <div className="keyboard-wrap">
+      <div className="keyboard-wrap" style={keyboardWrapStyle}>
         <div
           className="keyboard"
           role="img"
@@ -138,7 +129,7 @@ const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
                 className={`note ${isBlack ? 'black' : 'white'}`}
                 style={{
                   borderColor: color,
-                  boxShadow: `0 5px 10px ${color}33`,
+                  boxShadow: `0 5px 10px ${color}`,
                   left: `${(key.position + 0.5) * whiteKeyWidth}%`,
                   top: isBlack ? 'calc(62% - 43px)' : 'calc(100% - 18px - 43px)',
                 }}

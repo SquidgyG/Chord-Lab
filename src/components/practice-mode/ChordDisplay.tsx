@@ -23,11 +23,7 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ chord, instrument }) => {
         </div>
 
         {instrument === 'guitar' ? (
-<<<<<<< HEAD
           <GuitarChordDiagram positions={chord.guitarPositions} color={theme.primary} />
-=======
-          <GuitarChordDiagram positions={chord.guitarPositions} color={chord.color} />
->>>>>>> b483546b3a9c8b1cf18daade3e61ed45fef82514
         ) : (
           <PianoChordDiagram
             notes={chord.pianoNotes}
