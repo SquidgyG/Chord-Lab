@@ -110,10 +110,14 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
         {/* Open and muted strings */}
         {openStrings.map((open, i) => (
           open && (
-            <div 
+            <div
               key={`open-${i}`}
-              className="string-indicator open-symbol"
-              style={{ left: `${i * 20}%`, top: '-15%' }}
+              className="xo"
+              style={{
+                left: `${i * 20}%`,
+                top: '0',
+                color: 'var(--chord-color)',
+              }}
             >
               {open}
             </div>
@@ -121,10 +125,14 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
         ))}
         {mutedStrings.map((muted, i) => (
           muted && (
-            <div 
+            <div
               key={`muted-${i}`}
-              className="string-indicator mute-symbol"
-              style={{ left: `${i * 20}%`, top: '-15%' }}
+              className="xo"
+              style={{
+                left: `${i * 20}%`,
+                top: '0',
+                color: 'var(--chord-color)',
+              }}
             >
               {muted}
             </div>
@@ -167,14 +175,11 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
             width: 0;
             border-top: 1px solid #666;
           }
-          .string-indicator {
+          .xo {
             position: absolute;
-            width: 20px;
-            text-align: center;
-          }
-          .open-symbol, .mute-symbol {
-            font-size: 18px;
+            font-size: 32px;
             font-weight: bold;
+            transform: translate(-50%, -100%);
           }
           .barre {
             position: absolute;
