@@ -9,7 +9,8 @@ export interface ChordDefinition {
   pianoNotes: string[];
   guitarPositions: FretPosition[];
   level?: number;
-  color: string; // New color property
+  color: string;
+  noteLabels?: string[];
 }
 
 export const chords: Record<string, ChordDefinition> = {

@@ -1,73 +1,133 @@
 .guitar-chord-diagram {
-  position: relative;
-  display: inline-block;
-  margin: 20px;
+  margin: 0 auto;
+  display: block;
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 .fretboard {
   position: relative;
-  width: 100%;
-  height: 80%;
-  background-color: #f5e6c8;
-  border: 2px solid #8b4513;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 520px;
+  height: 700px;
+  background: #fff;
+  border-radius: 10px;
 }
 
 .nut {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  border-top: 5px solid #000;
+  right: 0;
+  height: 16px;
+  background: #000;
+  z-index: 12;
+}
+
+.endline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: #000;
+  z-index: 11;
 }
 
 .fret-line {
   position: absolute;
   left: 0;
-  width: 100%;
-  border-bottom: 3px solid #000;
+  right: 0;
+  height: 2px;
+  background: #111;
+  z-index: 10;
 }
 
-.string-line {
+.inlay {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.12);
+  z-index: 9;
+}
+
+.string {
   position: absolute;
   top: 0;
-  height: 100%;
-  border-left: 2px solid #666;
+  bottom: 0;
+  width: var(--sw, 2px);
+  background: var(--sc, #111);
+  transform: translateX(-50%);
+  border-radius: 2px;
+  z-index: 8;
 }
 
 .xo {
   position: absolute;
+<<<<<<< HEAD
+  transform: translate(-50%, -100%);
+  text-align: center;
+  font-weight: 800;
+  top: 0;
+  z-index: 15;
+  font-size: 32px;
+  line-height: 1;
+}
+
+.dot {
+=======
   font-size: 32px;
   font-weight: bold;
   transform: translate(-50%, -100%);
 }
 
 .fret-position {
+>>>>>>> origin/main
   position: absolute;
-  width: 10%;
-  height: 10%;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: bold;
-  font-size: 14px;
-  background: #3498db;
-  border: 3px solid #000;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
   transform: translate(-50%, -50%);
-}
-
-.fret-position.root {
-  background: #e74c3c;
+  width: 72px;
+  height: 72px;
+  border-radius: 999px;
+  background: var(--cc);
+  color: #fff;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 30px;
+  text-shadow: 0 1px 0 rgba(0,0,0,.25);
 }
 
 .barre {
   position: absolute;
-  background: #3498db;
-  border-radius: 10px;
   transform: translateY(-50%);
-  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+  height: 48px;
+  border-radius: 999px;
+  background: var(--cc);
+  z-index: 19;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 24px;
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0,0,0,.25);
+}
+
+.note-strip {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0;
+  margin-top: 12px;
+  font-weight: 800;
+  font-size: 32px;
+  letter-spacing: .5px;
+}
+
+.note-strip span {
+  text-align: center;
+  min-height: 1.1em;
 }
