@@ -47,19 +47,19 @@ const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
 
   // Update fill styles to use dynamic color
   const fillStyle = {
-    backgroundColor: `${color}33`, // Add alpha transparency
-    border: `2px solid ${color}`
-  };
+    backgroundColor: color,
+    boxShadow: 'inset 0 0 0 2px #000'
+  } as React.CSSProperties;
 
   return (
     <div className="piano-chart-container">
-      {chordName && (
-        <div className="chord-name-display">
-          {chordName}
-        </div>
-      )}
-      <div className="keyboard-wrap">
-        <div className="keyboard" role="img" aria-label={`${chordName} chord`}>
+      <section
+        className="sheet"
+        style={{ borderColor: color, backgroundColor: `${color}22` }}
+      >
+        {chordName && <h1 className="title">{chordName}</h1>}
+        <div className="keyboard-wrap">
+          <div className="keyboard" role="img" aria-label={`${chordName} chord`}>
           {keys.map((key, index) => {
             const isActive = activeNotes.includes(key.note);
             
@@ -89,10 +89,10 @@ const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
           {activeNotes.map((note, index) => {
             const keyIndex = keys.findIndex(k => k.note === note);
             if (keyIndex === -1) return null;
-            
+
             const key = keys[keyIndex];
             const isBlack = key.type === 'black';
-            
+
             return (
               <div
                 key={`fill-${index}`}
@@ -100,31 +100,28 @@ const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
                 style={{
                   ...fillStyle,
                   left: getFillLeft(keyIndex, isBlack),
-                  width: isBlack 
-                    ? `calc(${100 / keys.length}% * 0.64)` 
+                  width: isBlack
+                    ? `calc(${100 / keys.length}% * 0.64)`
                     : `calc(${100 / keys.length}%)`,
                 }}
               />
             );
           })}
-          
-          {/* Note indicators with chord color */}
+
+          {/* Note indicators */}
           {activeNotes.map((note, index) => {
             const keyIndex = keys.findIndex(k => k.note === note);
             if (keyIndex === -1) return null;
-            
+
             const key = keys[keyIndex];
             const isBlack = key.type === 'black';
-            
+
             return (
               <div
                 key={`note-${index}`}
                 className={`note ${isBlack ? 'black' : 'white'}`}
                 style={{
-                  borderColor: color,
-                  boxShadow: `0 5px 10px ${color}33`,
                   left: `calc(${(keyIndex + 0.5) * (100 / keys.length)}%)`,
-                  top: isBlack ? 'calc(62% - 43px)' : 'calc(100% - 18px - 43px)',
                 }}
               >
                 {note}
@@ -133,6 +130,7 @@ const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
           })}
         </div>
       </div>
+      </section>
     </div>
   );
 };
