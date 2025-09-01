@@ -2,6 +2,7 @@ import React from 'react';
 import GuitarChordDiagram from './GuitarChordDiagram';
 import PianoChordDiagram from './PianoChordDiagram';
 import type { Chord } from '../../data/chords';
+import { getChordTheme } from '../../utils/diagramTheme';
 
 interface ChordDisplayProps {
   chord: Chord | null;
@@ -14,12 +15,13 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ chord, instrument }) => {
   }
 
   try {
+    const theme = getChordTheme(chord.name);
     return (
       <div className="flex flex-col items-center justify-center space-y-4 chord-display">
         <div className="text-5xl font-bold text-gray-800" data-testid="current-chord-name">
           {chord.name}
         </div>
-        
+
         {instrument === 'guitar' ? (
           <GuitarChordDiagram
             positions={chord.guitarPositions}
@@ -27,9 +29,10 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ chord, instrument }) => {
             noteLabels={chord.noteLabels}
           />
         ) : (
-          <PianoChordDiagram 
-            notes={chord.pianoNotes} 
+          <PianoChordDiagram
+            notes={chord.pianoNotes}
             chordName={chord.name}
+            color={theme.primary}
           />
         )}
       </div>

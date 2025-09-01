@@ -68,6 +68,7 @@
 
 .xo {
   position: absolute;
+<<<<<<< HEAD
   transform: translate(-50%, -100%);
   text-align: center;
   font-weight: 800;
@@ -78,6 +79,14 @@
 }
 
 .dot {
+=======
+  font-size: 32px;
+  font-weight: bold;
+  transform: translate(-50%, -100%);
+}
+
+.fret-position {
+>>>>>>> origin/main
   position: absolute;
   transform: translate(-50%, -50%);
   width: 72px;
