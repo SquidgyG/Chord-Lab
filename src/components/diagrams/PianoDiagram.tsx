@@ -3,7 +3,7 @@ import { getChordTheme } from '../../utils/diagramTheme';
 import { getChordInversion, getNoteName } from '../../utils/music-theory';
 
 // --- Static Data for Keyboard Layout (from 'main') ---
-const KEYBOARD_LAYOUT = {
+export const KEYBOARD_LAYOUT = {
   whiteKeys: [
     { note: 'F4', position: 0 }, { note: 'G4', position: 1 }, { note: 'A4', position: 2 },
     { note: 'B4', position: 3 }, { note: 'C5', position: 4 }, { note: 'D5', position: 5 },
