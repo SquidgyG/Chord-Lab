@@ -13,6 +13,8 @@ import ChordDisplay from './ChordDisplay';
 import { chordList as chords, type Chord } from '../../data/chords';
 import SongPractice from './SongPractice';
 import { useHighestUnlockedLevel } from '../learning-path/LearningPathway';
+import React from 'react';
+import ChordWheel from '../chord-wheel/ChordWheel';
 
 const MAJORS_ORDER = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 'Bb', 'F'] as const;
 type MajorKey = (typeof MAJORS_ORDER)[number];
@@ -78,6 +80,7 @@ const PracticeMode: FC = () => {
     const practicedChordsRef = useRef<Set<string>>(new Set());
     const [keyCenter, setKeyCenter] = useState<MajorKey | null>(null);
     const { playChord, fretToNote, guitarLoaded } = useAudio();
+    const [activeTab, setActiveTab] = useState<'practice' | 'chords' | 'wheel'>('practice');
 
     useEffect(() => {
         if (currentChord && (currentChord.level ?? 1) > highestUnlockedLevel) {
@@ -188,146 +191,213 @@ const PracticeMode: FC = () => {
                     {beginnerMode ? 'More Options' : 'Beginner Mode'}
                 </button>
             </div>
-            {!beginnerMode && keyCenter && (
-                <div className="mb-4 p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30">
-                    <div className="flex items-center justify-between flex-wrap gap-2">
-                        <div className="text-gray-800 dark:text-gray-200 font-semibold">
-                            Key: {keyCenter} major
+            <div className="flex justify-between items-center mb-4">
+                <button 
+                    onClick={() => setActiveTab('practice')}
+                    className={activeTab === 'practice' ? 'active' : ''}
+                >
+                    Practice
+                </button>
+                <button 
+                    onClick={() => setActiveTab('chords')}
+                    className={activeTab === 'chords' ? 'active' : ''}
+                >
+                    Chords
+                </button>
+                <button 
+                    onClick={() => setActiveTab('wheel')}
+                    className={activeTab === 'wheel' ? 'active' : ''}
+                >
+                    Chord Wheel
+                </button>
+            </div>
+            {activeTab === 'practice' && (
+                <div>
+                    {!beginnerMode && keyCenter && (
+                        <div className="mb-4 p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30">
+                            <div className="flex items-center justify-between flex-wrap gap-2">
+                                <div className="text-gray-800 dark:text-gray-200 font-semibold">
+                                    Key: {keyCenter} major
+                                </div>
+                                <div className="text-sm text-gray-600 dark:text-gray-400">
+                                    These chords fit well in this key:
+                                </div>
+                            </div>
+                            <div data-testid="diatonic-chords" className="mt-2 flex flex-wrap gap-2">
+                                {diatonicChips.map(
+                                    ({
+                                        label,
+                                        available,
+                                        locked,
+                                        color,
+                                    }: {
+                                        label: string;
+                                        available: boolean;
+                                        locked: boolean;
+                                        color: { primary: string; background: string };
+                                    }) => (
+                                        <button
+                                            key={label}
+                                            onClick={() => {
+                                                if (!available) return;
+                                                const c = chords.find((c: Chord) => c.name === label);
+                                                if (c) setCurrentChord(c);
+                                            }}
+                                            disabled={!available}
+                                            className={`px-2.5 py-1 rounded-md text-xs font-bold relative ${
+                                                available
+                                                    ? 'text-white'
+                                                    : 'text-gray-800 dark:text-gray-300 cursor-not-allowed opacity-80'
+                                            }`}
+                                            style={{
+                                                background: available ? color.primary : color.background,
+                                                border: `1px solid ${color.primary}`,
+                                            }}
+                                            title={
+                                                available
+                                                    ? `Practice ${label}`
+                                                    : locked
+                                                    ? 'Locked: finish previous levels'
+                                                    : 'Diagram coming soon'
+                                            }
+                                        >
+                                            {label}
+                                            {locked && (
+                                                <span className="ml-1 text-[10px] bg-gray-600 text-white px-1 rounded">
+                                                    Locked
+                                                </span>
+                                            )}
+                                        </button>
+                                    ),
+                                )}
+                            </div>
                         </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
-                            These chords fit well in this key:
-                        </div>
-                    </div>
-                    <div data-testid="diatonic-chords" className="mt-2 flex flex-wrap gap-2">
-                        {diatonicChips.map(
-                            ({
-                                label,
-                                available,
-                                locked,
-                                color,
-                            }: {
-                                label: string;
-                                available: boolean;
-                                locked: boolean;
-                                color: { primary: string; background: string };
-                            }) => (
-                                <button
-                                    key={label}
-                                    onClick={() => {
-                                        if (!available) return;
-                                        const c = chords.find((c: Chord) => c.name === label);
-                                        if (c) setCurrentChord(c);
-                                    }}
-                                    disabled={!available}
-                                    className={`px-2.5 py-1 rounded-md text-xs font-bold relative ${
-                                        available
-                                            ? 'text-white'
-                                            : 'text-gray-800 dark:text-gray-300 cursor-not-allowed opacity-80'
-                                    }`}
-                                    style={{
-                                        background: available ? color.primary : color.background,
-                                        border: `1px solid ${color.primary}`,
-                                    }}
-                                    title={
-                                        available
-                                            ? `Practice ${label}`
-                                            : locked
-                                            ? 'Locked: finish previous levels'
-                                            : 'Diagram coming soon'
-                                    }
-                                >
-                                    {label}
-                                    {locked && (
-                                        <span className="ml-1 text-[10px] bg-gray-600 text-white px-1 rounded">
-                                            Locked
-                                        </span>
-                                    )}
-                                </button>
-                            ),
-                        )}
-                    </div>
-                </div>
-            )}
-
-            {!beginnerMode && (
-                <div className="mb-6 flex flex-wrap gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Tips
-                        </label>
-                        <button
-                            onClick={() => setShowTips(!showTips)}
-                            className={`px-4 py-2 rounded-lg ${
-                                showTips ? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-gray-700 dark:text-gray-300'
-                            }`}
-                        >
-                            {showTips ? 'On' : 'Off'}
-                        </button>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Song
-                        </label>
-                        <button
-                            onClick={() => setShowSongPractice(true)}
-                            className="px-4 py-2 rounded-lg bg-indigo-500 text-white"
-                        >
-                            Choose Song
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {currentChord && (
-                <div className="mb-6">
-                    <div className="flex justify-between items-center mb-4">
-                        <ChordDisplay chord={currentChord} instrument={selectedInstrument} />
-                        <PracticeMetronomeControls
-                            isPlaying={isPlaying}
-                            bpm={bpm}
-                            setBpm={setBpm}
-                            toggleMetronome={toggleMetronome}
-                            handleStrum={handleStrum}
-                            nextChord={nextChord}
-                            beginnerMode={beginnerMode}
-                            disableStrum={selectedInstrument === 'guitar' && !guitarLoaded}
-                        />
-                    </div>
+                    )}
 
                     {!beginnerMode && (
-                        <ChallengeMode
-                            isChallengeActive={isChallengeActive}
-                            startChallenge={startChallenge}
-                            stopChallenge={stopChallenge}
-                            challengeTime={challengeTime}
+                        <div className="mb-6 flex flex-wrap gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Tips
+                                </label>
+                                <button
+                                    onClick={() => setShowTips(!showTips)}
+                                    className={`px-4 py-2 rounded-lg ${
+                                        showTips ? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-gray-700 dark:text-gray-300'
+                                    }`}
+                                >
+                                    {showTips ? 'On' : 'Off'}
+                                </button>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Song
+                                </label>
+                                <button
+                                    onClick={() => setShowSongPractice(true)}
+                                    className="px-4 py-2 rounded-lg bg-indigo-500 text-white"
+                                >
+                                    Choose Song
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {currentChord && (
+                        <div className="mb-6">
+                            <div className="flex justify-between items-center mb-4">
+                                <ChordDisplay chord={currentChord} instrument={selectedInstrument} />
+                                <PracticeMetronomeControls
+                                    isPlaying={isPlaying}
+                                    bpm={bpm}
+                                    setBpm={setBpm}
+                                    toggleMetronome={toggleMetronome}
+                                    handleStrum={handleStrum}
+                                    nextChord={nextChord}
+                                    beginnerMode={beginnerMode}
+                                    disableStrum={selectedInstrument === 'guitar' && !guitarLoaded}
+                                />
+                            </div>
+
+                            {!beginnerMode && (
+                                <ChallengeMode
+                                    isChallengeActive={isChallengeActive}
+                                    startChallenge={startChallenge}
+                                    stopChallenge={stopChallenge}
+                                    challengeTime={challengeTime}
+                                    bestChallengeTime={bestChallengeTime}
+                                />
+                            )}
+
+                            <InstrumentPanel
+                                selectedInstrument={selectedInstrument}
+                                onInstrumentChange={setSelectedInstrument}
+                                beginnerMode={beginnerMode}
+                            />
+
+                            {selectedInstrument === 'guitar' && !guitarLoaded && (
+                                <p className="text-gray-500 text-sm mt-2">Loading sounds...</p>
+                            )}
+
+                            {showTips && (
+                                <div className="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-4 rounded">
+                                    <h4 className="font-bold text-blue-800 dark:text-blue-300 mb-2">Practice Tip</h4>
+                                    <p className="text-blue-700 dark:text-blue-400">
+                                        Practice this chord slowly at first, focusing on clean fingering. Make sure each note
+                                        rings clearly without any buzzing.
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {!beginnerMode && (
+                        <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <h4 className="font-bold text-gray-800 dark:text-gray-100 mb-2">
+                                Other Chords to Practice
+                            </h4>
+                            <div data-testid="other-chords" className="flex flex-wrap gap-2">
+                                {availableChords
+                                    .filter((chord: Chord) => chord.name !== currentChord?.name)
+                                    .map((chord: Chord) => {
+                                        const locked = (chord.level ?? 1) > highestUnlockedLevel;
+                                        return (
+                                            <button
+                                                key={chord.name}
+                                                onClick={() => {
+                                                    if (!locked) setCurrentChord(chord);
+                                                }}
+                                                disabled={locked}
+                                                className={`px-3 py-1 rounded-lg transition-colors ${
+                                                    locked
+                                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500'
+                                                        : 'bg-gray-100 hover:bg-blue-100 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200'
+                                                }`}
+                                            >
+                                                {chord.name}
+                                                {locked && (
+                                                    <span className="ml-1 text-xs bg-gray-500 text-white px-1 rounded">
+                                                        Locked
+                                                    </span>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                            </div>
+                        </div>
+                    )}
+                    {!beginnerMode && (
+                        <Statistics
+                            totalPracticeTime={totalPracticeTime}
+                            chordsPlayed={chordsPlayed}
+                            currentStreak={currentStreak}
                             bestChallengeTime={bestChallengeTime}
                         />
                     )}
-
-                    <InstrumentPanel
-                        selectedInstrument={selectedInstrument}
-                        onInstrumentChange={setSelectedInstrument}
-                        beginnerMode={beginnerMode}
-                    />
-
-                    {selectedInstrument === 'guitar' && !guitarLoaded && (
-                        <p className="text-gray-500 text-sm mt-2">Loading sounds...</p>
-                    )}
-
-                    {showTips && (
-                        <div className="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-4 rounded">
-                            <h4 className="font-bold text-blue-800 dark:text-blue-300 mb-2">Practice Tip</h4>
-                            <p className="text-blue-700 dark:text-blue-400">
-                                Practice this chord slowly at first, focusing on clean fingering. Make sure each note
-                                rings clearly without any buzzing.
-                            </p>
-                        </div>
-                    )}
                 </div>
             )}
-
-            {!beginnerMode && (
-                <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+            {activeTab === 'chords' && (
+                <div>
                     <h4 className="font-bold text-gray-800 dark:text-gray-100 mb-2">
                         Other Chords to Practice
                     </h4>
@@ -361,13 +431,13 @@ const PracticeMode: FC = () => {
                     </div>
                 </div>
             )}
-            {!beginnerMode && (
-                <Statistics
-                    totalPracticeTime={totalPracticeTime}
-                    chordsPlayed={chordsPlayed}
-                    currentStreak={currentStreak}
-                    bestChallengeTime={bestChallengeTime}
-                />
+            {activeTab === 'wheel' && (
+                <div className="wheel-container">
+                    <ChordWheel 
+                        chords={currentChord ? [currentChord.name] : ['C', 'G', 'Am', 'F']} 
+                        onChordSelect={(chord) => setCurrentChord(chord)}
+                    />
+                </div>
             )}
         </div>
     );
