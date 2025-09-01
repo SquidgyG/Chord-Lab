@@ -3,11 +3,11 @@ import './PianoChordDiagram.css';
 import { KEYBOARD_LAYOUT } from '../diagrams/PianoDiagram';
 import { getMidiNumber, getNoteFromMidi, getNoteName } from '../../utils/music-theory';
 
-type PianoChordDiagramProps = {
+interface PianoChordDiagramProps {
   notes: string[];
   chordName?: string;
   color?: string; // Hex color code
-};
+}
 
 const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
   notes,
@@ -24,6 +24,21 @@ const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
   const allKeys = [
     ...KEYBOARD_LAYOUT.whiteKeys.map(k => ({ ...k, type: 'white' as const, root: getNoteName(k.note) })),
     ...KEYBOARD_LAYOUT.blackKeys.map(k => ({ ...k, type: 'black' as const, root: getNoteName(k.note) })),
+  const activeNotes = (notes ?? []).map(n => n.replace(/\d/g, ''));
+  
+  const keys = [
+    { type: 'white', note: 'C' },
+    { type: 'black', note: 'C#' },
+    { type: 'white', note: 'D' },
+    { type: 'black', note: 'D#' },
+    { type: 'white', note: 'E' },
+    { type: 'white', note: 'F' },
+    { type: 'black', note: 'F#' },
+    { type: 'white', note: 'G' },
+    { type: 'black', note: 'G#' },
+    { type: 'white', note: 'A' },
+    { type: 'black', note: 'A#' },
+    { type: 'white', note: 'B' },
   ];
 
   // Calculate positions
