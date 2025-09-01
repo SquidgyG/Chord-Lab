@@ -42,38 +42,49 @@ Object.defineProperty(window, 'matchMedia', {
 });
 
 // Mock Web Audio API
-const MockAudioContext = vi.fn(() => ({
-  // Required properties
+global.AudioContext = vi.fn(() => ({
   baseLatency: 0,
   outputLatency: 0,
   currentTime: 0,
   sampleRate: 44100,
   state: 'running',
-  
-  // Required methods
   createOscillator: vi.fn(() => ({
     start: vi.fn(),
     stop: vi.fn(),
     connect: vi.fn(),
-    disconnect: vi.fn()
+    disconnect: vi.fn(),
   })),
-  
-  createGain: vi.fn(() => ({
-    gain: { value: 1 },
-    connect: vi.fn(),
-    disconnect: vi.fn()
-  })),
-  
-  close: vi.fn(),
-  suspend: vi.fn(),
+  createMediaStreamSource: vi.fn(),
+  getOutputTimestamp: vi.fn(),
+  audioWorklet: { addModule: vi.fn() },
+  destination: { channelCount: 2 },
   resume: vi.fn(),
+  suspend: vi.fn(),
+  close: vi.fn(),
+  createBuffer: vi.fn(),
+  createBufferSource: vi.fn(),
   createMediaElementSource: vi.fn(),
   createMediaStreamDestination: vi.fn(),
-  
-  // Event target methods
+  createScriptProcessor: vi.fn(),
+  createAnalyser: vi.fn(),
+  createBiquadFilter: vi.fn(),
+  createChannelMerger: vi.fn(),
+  createChannelSplitter: vi.fn(),
+  createConstantSource: vi.fn(),
+  createConvolver: vi.fn(),
+  createDelay: vi.fn(),
+  createDynamicsCompressor: vi.fn(),
+  createGain: vi.fn(),
+  createIIRFilter: vi.fn(),
+  createOscillator: vi.fn(),
+  createPanner: vi.fn(),
+  createPeriodicWave: vi.fn(),
+  createStereoPanner: vi.fn(),
+  createWaveShaper: vi.fn(),
+  decodeAudioData: vi.fn(),
+  listener: { positionX: { value: 0 }, positionY: { value: 0 }, positionZ: { value: 0 } },
+  onstatechange: null,
   addEventListener: vi.fn(),
   removeEventListener: vi.fn(),
-  dispatchEvent: vi.fn()
+  dispatchEvent: vi.fn(),
 }));
-
-window.AudioContext = MockAudioContext;

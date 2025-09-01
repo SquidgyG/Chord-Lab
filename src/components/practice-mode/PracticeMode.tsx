@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo, useRef, type FC, useCallback } from 'react';
+import type { FC } from 'react';
+import { useState, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { getChordTheme } from '../../utils/diagramTheme';
 import useMetronome from '../../hooks/useMetronome';
@@ -13,7 +14,6 @@ import ChordDisplay from './ChordDisplay';
 import { chordList as chords, type Chord } from '../../data/chords';
 import SongPractice from './SongPractice';
 import { useHighestUnlockedLevel } from '../learning-path/LearningPathway';
-import React from 'react';
 import ChordWheel from '../chord-wheel/ChordWheel';
 
 const MAJORS_ORDER = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 'Bb', 'F'] as const;
@@ -48,7 +48,7 @@ function getDiatonicForKey(keyCenter: MajorKey) {
 const PracticeMode: FC = () => {
     const [beginnerMode, setBeginnerMode] = useState(false);
     const highestUnlockedLevel = useHighestUnlockedLevel();
-    const availableChords = useMemo(
+    const availableChords = useState(
         () => chords.filter(c => (c.level ?? 1) <= highestUnlockedLevel),
         [highestUnlockedLevel]
     );
@@ -77,7 +77,7 @@ const PracticeMode: FC = () => {
     } = usePracticeStatistics();
     const [showTips, setShowTips] = useState<boolean>(true);
     const location = useLocation();
-    const practicedChordsRef = useRef<Set<string>>(new Set());
+    const practicedChordsRef = useState<Set<string>>(new Set());
     const [keyCenter, setKeyCenter] = useState<MajorKey | null>(null);
     const { playChord, fretToNote, guitarLoaded } = useAudio();
     const [activeTab, setActiveTab] = useState<'practice' | 'chords' | 'wheel'>('practice');
@@ -159,7 +159,7 @@ const PracticeMode: FC = () => {
         }
     };
 
-    const diatonicChips = useMemo(() => {
+    const diatonicChips = useState(() => {
         if (!keyCenter) return [];
         const { majors, minors } = getDiatonicForKey(keyCenter);
         const list: string[] = [...majors, ...minors];
@@ -174,6 +174,10 @@ const PracticeMode: FC = () => {
             };
         });
     }, [keyCenter, highestUnlockedLevel]);
+
+    const handleChordSelect = (chordName: string) => {
+        setCurrentChord(chordName as unknown as Chord);
+    };
 
     if (showSongPractice) {
         return <SongPractice onClose={() => setShowSongPractice(false)} />;
@@ -368,7 +372,7 @@ const PracticeMode: FC = () => {
                                                     if (!locked) setCurrentChord(chord);
                                                 }}
                                                 disabled={locked}
-                                                className={`px-3 py-1 rounded-lg transition-colors ${
+                                                className={`px-3 py-1 rounded-lg ${
                                                     locked
                                                         ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500'
                                                         : 'bg-gray-100 hover:bg-blue-100 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200'
@@ -413,7 +417,7 @@ const PracticeMode: FC = () => {
                                             if (!locked) setCurrentChord(chord);
                                         }}
                                         disabled={locked}
-                                        className={`px-3 py-1 rounded-lg transition-colors ${
+                                        className={`px-3 py-1 rounded-lg ${
                                             locked
                                                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500'
                                                 : 'bg-gray-100 hover:bg-blue-100 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200'
@@ -435,7 +439,7 @@ const PracticeMode: FC = () => {
                 <div className="wheel-container">
                     <ChordWheel 
                         chords={currentChord ? [currentChord.name] : ['C', 'G', 'Am', 'F']} 
-                        onChordSelect={(chord) => setCurrentChord(chord)}
+                        onChordSelect={handleChordSelect}
                     />
                 </div>
             )}

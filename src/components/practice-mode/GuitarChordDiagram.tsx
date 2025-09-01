@@ -11,18 +11,21 @@ interface GuitarChordDiagramProps {
   positions: FingerPosition[];
   chordName: string;
   rootNoteColor?: string;
-  noteLabels?: string[];
+  color?: string;
 }
 
-const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({ positions, chordName, rootNoteColor = '#ff6b6b', noteLabels = [] }) => {
+const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({ 
+  positions, 
+  chordName, 
+  rootNoteColor = '#ff6b6b',
+  color = rootNoteColor
+}) => {
+  const rootColor = color || rootNoteColor;
+
   const openStrings = useMemo<string[]>(() => {
-    const strings: string[] = Array(6).fill('') as string[];
-    positions.forEach(pos => {
-      if (pos.fret === 0) {
-        strings[6 - pos.string] = 'O';
-      }
+    return ['E', 'A', 'D', 'G', 'B', 'E'].map((note, string) => {
+      return positions.some(p => p.string === string) ? '' : note;
     });
-    return strings;
   }, [positions]);
 
   const mutedStrings = useMemo<string[]>(() => {
@@ -94,7 +97,7 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({ positions, chor
                     {position && position.fret > 0 && (
                       <div 
                         className={`finger-position ${isRoot ? 'root' : ''}`}
-                        style={isRoot ? { backgroundColor: rootNoteColor } : {}}
+                        style={isRoot ? { backgroundColor: rootColor } : {}}
                       >
                         {position.finger}
                       </div>
@@ -104,7 +107,7 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({ positions, chor
                         className="barre" 
                         style={{
                           height: `${(barre.maxString - barre.minString) * 20}px`,
-                          backgroundColor: rootNoteColor
+                          backgroundColor: rootColor
                         }}
                       />
                     )}

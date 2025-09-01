@@ -1,34 +1,43 @@
+import type { FC } from 'react';
+import { useCallback } from 'react';
 import { useChordBuilder } from '../../contexts/ChordBuilderContext';
 import { parseChord } from '../../utils/chordParser';
-import React from 'react';
 import ChordWheel from '../chord-wheel/ChordWheel';
 
-const ChordProgressionAnalysis = () => {
+interface Chord {
+  name: string;
+}
+
+const ChordProgressionAnalysis: FC = () => {
   const { chords: _chords, selectedKey: _selectedKey } = useChordBuilder();
 
   // Chord tones analysis
-  const chordTones = () => {
+  const chordTones = useCallback(() => {
     return _chords.flatMap(chord => parseChord(chord.name));
-  };
+  }, [_chords]);
 
   // Placeholder for other functions
-  const scaleNotes = () => {
+  const scaleNotes = useCallback(() => {
     // TODO: Implement scale notes analysis
     return [];
-  };
+  }, []);
 
-  const harmonicAnalysis = () => {
+  const harmonicAnalysis = useCallback(() => {
     // TODO: Implement harmonic function analysis
     return [];
-  };
+  }, []);
 
-  const songSuggestions = () => {
+  const songSuggestions = useCallback(() => {
     // TODO: Implement song suggestions
     return [];
-  };
+  }, []);
 
-  const analyzeChord = (chord) => {
+  const analyzeChord = useCallback((chord: Chord) => {
     console.log(chord);
+  }, []);
+
+  const handleChordSelect = (chordName: string) => {
+    analyzeChord({ name: chordName } as Chord);
   };
 
   return (
@@ -39,7 +48,7 @@ const ChordProgressionAnalysis = () => {
         <h3>Chord Wheel Visualization</h3>
         <ChordWheel 
           chords={_chords.map(chord => chord.name)} 
-          onChordSelect={(chord) => analyzeChord(chord)}
+          onChordSelect={handleChordSelect}
         />
         
         <div className="mb-6">
