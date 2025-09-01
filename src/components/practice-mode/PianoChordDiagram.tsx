@@ -1,4 +1,5 @@
 import React from 'react';
+import './PianoChordDiagram.css';
 
 interface PianoChordDiagramProps {
   notes: string[];
@@ -7,85 +8,114 @@ interface PianoChordDiagramProps {
   rootNote?: string; 
 }
 
+const whiteKeys = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+const blackKeys = ['C#', 'D#', 'F#', 'G#', 'A#'];
+
 const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({ 
   notes, 
   fingers = [],
   chordName = '',
   rootNote = ''
 }) => {
-  const whiteKeys = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
-  const blackKeys = ['C#', 'D#', 'F#', 'G#', 'A#'];
+  const activeNotes = notes || [];
+
+  const whiteKeyPositions: Record<string, string> = {
+    'C': '0%',
+    'D': '14.28%',
+    'E': '28.56%',
+    'F': '42.84%',
+    'G': '57.12%',
+    'A': '71.4%',
+    'B': '85.68%',
+  };
+
+  const getBlackKeyPosition = (key: string): string => {
+    const positions: Record<string, string> = {
+      'C#': '7%',
+      'D#': '22%',
+      'F#': '52%',
+      'G#': '67%',
+      'A#': '82%',
+    };
+    return positions[key] || '0%';
+  };
 
   return (
-    <div className="piano-chord-diagram w-full overflow-x-auto">
+    <div className="piano-chart-container">
       {chordName && (
-        <div className="text-center font-bold text-lg mb-2">
+        <div className="chord-name-display">
           {chordName}
         </div>
       )}
-      <div className="flex min-w-[400px] h-24 border border-gray-300 rounded relative">
-        {whiteKeys.map((key) => {
-          const isActive = notes.includes(key);
-          const fingerIndex = notes.indexOf(key);
-          const finger = fingers[fingerIndex];
-          const isRoot = key === rootNote;
-          
-          return (
-            <div
-              key={`white-${key}`}
-              className={`relative flex-1 border-r border-gray-300`}
-              style={{
-                background: isActive 
-                  ? (isRoot 
-                      ? 'linear-gradient(to bottom, #e53e3e, #c53030)' 
-                      : 'linear-gradient(to bottom, #4F46E5, #3730A3)'
-                    )
-                  : 'linear-gradient(to bottom, #FFF, #F3F4F6)',
-                boxShadow: isActive ? 'inset -2px -2px 5px rgba(0,0,0,0.2)' : 'none'
+      <div className="keyboard-wrap">
+        <div className="keyboard">
+          {whiteKeys.map(key => (
+            <div 
+              key={key}
+              className="white-key"
+              style={{ 
+                position: 'relative',
+                backgroundColor: activeNotes.includes(key) ? '#ffd86f' : '#fff',
+                background: activeNotes.includes(key) 
+                  ? 'linear-gradient(to bottom, #ffd86f, #fcb045)' 
+                  : 'linear-gradient(to bottom, #fff, #e0e0e0)',
+                boxShadow: activeNotes.includes(key) 
+                  ? '0 4px 8px rgba(0,0,0,0.3), inset 0 -3px 10px rgba(0,0,0,0.2)' 
+                  : 'inset 0 -3px 10px rgba(0,0,0,0.1)',
               }}
             >
-              <div className="absolute bottom-2 left-0 right-0 text-center text-xs text-gray-700">
+              <div className="key-label">
                 {key}
               </div>
-              {isActive && finger && (
-                <div className="absolute top-2 left-0 right-0 text-center text-white font-bold">
-                  {finger}
+              {activeNotes.includes(key) && fingers[activeNotes.indexOf(key)] && (
+                <div className="finger-label">
+                  {fingers[activeNotes.indexOf(key)]}
                 </div>
               )}
             </div>
-          );
-        })}
-        
-        <div className="absolute flex h-16 w-full pointer-events-none">
-          {blackKeys.map((key) => {
-            const isActive = notes.includes(key);
-            const fingerIndex = notes.indexOf(key);
-            const finger = fingers[fingerIndex];
-            const isRoot = key === rootNote;
+          ))}
+          {blackKeys.map(key => (
+            <div
+              key={key}
+              className="black-key"
+              style={{
+                left: getBlackKeyPosition(key),
+                backgroundColor: activeNotes.includes(key) ? '#fcb045' : '#333',
+                background: activeNotes.includes(key)
+                  ? 'linear-gradient(to bottom, #fcb045, #ff8c00)'
+                  : 'linear-gradient(to bottom, #333, #000)',
+                boxShadow: activeNotes.includes(key)
+                  ? '0 4px 8px rgba(0,0,0,0.5), inset 0 -3px 6px rgba(0,0,0,0.5)'
+                  : 'inset 0 -3px 6px rgba(0,0,0,0.5)',
+              }}
+            >
+              <div className="key-label">
+                {key}
+              </div>
+              {activeNotes.includes(key) && fingers[activeNotes.indexOf(key)] && (
+                <div className="finger-label">
+                  {fingers[activeNotes.indexOf(key)]}
+                </div>
+              )}
+            </div>
+          ))}
+          {activeNotes.map((note, index) => {
+            const noteName = note.replace(/\d/, '');
+            const isBlack = blackKeys.includes(noteName);
+            const left = isBlack ? getBlackKeyPosition(noteName) : whiteKeyPositions[noteName];
             
             return (
-              <div
-                key={`black-${key}`}
-                className={`absolute w-8 h-16 rounded-b z-10`}
-                style={{
-                  background: isActive 
-                    ? (isRoot 
-                        ? 'linear-gradient(to bottom, #e53e3e, #c53030)' 
-                        : 'linear-gradient(to bottom, #4F46E5, #3730A3)'
-                      )
-                    : 'linear-gradient(to bottom, #000, #111)',
-                  boxShadow: isActive ? 'inset -2px -2px 5px rgba(0,0,0,0.5)' : 'none',
-                  left: getBlackKeyPosition(key),
+              <div 
+                key={`${note}-${index}`}
+                className={`${isBlack ? 'black-key' : 'white-key'} active-note`}
+                style={{ 
+                  left,
+                  ...(isBlack ? { zIndex: 2 } : {})
                 }}
               >
-                <div className="absolute bottom-2 left-0 right-0 text-center text-xs text-white">
-                  {key}
+                <div className="active-note-indicator">
+                  {noteName}
                 </div>
-                {isActive && finger && (
-                  <div className="absolute top-2 left-0 right-0 text-center text-white font-bold">
-                    {finger}
-                  </div>
-                )}
               </div>
             );
           })}
@@ -94,16 +124,5 @@ const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
     </div>
   );
 };
-
-function getBlackKeyPosition(key: string): string {
-  const positions: Record<string, string> = {
-    'C#': '7%',
-    'D#': '22%',
-    'F#': '52%',
-    'G#': '67%',
-    'A#': '82%',
-  };
-  return positions[key] || '0%';
-}
 
 export default PianoChordDiagram;
