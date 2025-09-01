@@ -10,9 +10,13 @@ export interface GuitarPosition {
 
 interface GuitarPositionProps {
   positions: GuitarPosition[];
+  color?: string;
 }
 
-const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
+const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({
+  positions,
+  color = '#ff6b6b',
+}) => {
   // Calculate barre chords
   const barreChords = useMemo(() => {
     const barres: Record<number, { fret: number; startString: number; endString: number }> = {};
@@ -191,7 +195,7 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
             box-shadow: 0 3px 6px rgba(0,0,0,0.3);
           }
           .root {
-            background-color: #ff6b6b;
+            background-color: ${color};
           }
         `}
       </style>
