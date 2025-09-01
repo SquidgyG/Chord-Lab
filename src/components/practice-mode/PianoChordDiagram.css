@@ -1,3 +1,4 @@
+
 .piano-chart-container {
   display: flex;
   flex-direction: column;
@@ -6,11 +7,24 @@
   width: 100%;
 }
 
-.chord-name-display {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 10px;
+/* Sheet and title styles pulled from printable chord charts */
+.sheet {
+  padding: 26px;
+  border: 16px solid;
+  border-radius: 0;
+  box-shadow: 0 10px 28px rgba(0,0,0,.12);
+  position: relative;
+  overflow: hidden;
+}
+
+.title {
   text-align: center;
+  font-size: 46px;
+  font-weight: 800;
+  margin: 0 0 20px;
+  letter-spacing: .4px;
+  z-index: 1;
+  position: relative;
 }
 
 .keyboard-wrap {
@@ -31,6 +45,15 @@
   overflow: hidden;
   background: #ffffff;
   border-radius: 10px;
+}
+
+.keyboard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: repeating-linear-gradient(to right, rgba(0,0,0,.68) 0 2px, transparent 2px calc(100%/11));
 }
 
 .key {
@@ -55,6 +78,7 @@
   z-index: 5;
 }
 
+
 .note {
   position: absolute;
   transform: translateX(-50%);
@@ -64,39 +88,37 @@
   display: grid;
   place-items: center;
   font-weight: 800;
-  font-size: 22px;
+  font-size: 30px;
   background: #fff;
   border: 4px solid #000;
   color: #000;
   text-shadow: none;
   z-index: 7;
-  box-shadow: 0 5px 10px rgba(0,0,0,0.4);
 }
 
-.white-key.active {
-  background: linear-gradient(to bottom, #ffd86f, #fcb045);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+.note.white {
+  bottom: 18px;
 }
 
-.black-key.active {
-  background: linear-gradient(to bottom, #fcb045, #ff8c00);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+.note.black {
+  top: calc(62% - 10px - 43px);
 }
 
 .fill {
   position: absolute;
   pointer-events: none;
-  z-index: 4;
 }
 
 .fill-white {
   top: 0;
   height: 100%;
-  background: rgba(204, 57, 188, 0.3); /* Example color, will be set dynamically */
+  z-index: 3;
+  box-shadow: inset 0 0 0 2px #000;
 }
 
 .fill-black {
   top: 0;
   height: 62%;
-  background: rgba(204, 57, 188, 0.3); /* Example color, will be set dynamically */
+  z-index: 6;
+  box-shadow: inset 0 0 0 2px #000;
 }
