@@ -8,11 +8,13 @@ export interface GuitarPosition {
   isRoot?: boolean;
 }
 
-interface GuitarPositionProps {
+interface GuitarChordDiagramProps {
   positions: GuitarPosition[];
+  color?: string;
+  noteLabels?: string[];
 }
 
-const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
+const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({ positions, color = '#000', noteLabels = [] }) => {
   // Calculate barre chords
   const barreChords = useMemo(() => {
     const barres: Record<number, { fret: number; startString: number; endString: number }> = {};
@@ -31,7 +33,7 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
 
   // Calculate open and muted strings
   const openStrings = useMemo(() => {
-    const strings = Array(6).fill('');
+    const strings = Array<string>(6).fill('');
     positions.forEach(pos => {
       if (pos.fret === 0) {
         strings[6 - pos.string] = 'O';
@@ -41,10 +43,10 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
   }, [positions]);
 
   const mutedStrings = useMemo(() => {
-    const strings = Array(6).fill('');
+    const strings = Array<string>(6).fill('');
     const hasFret = positions.some(p => p.fret > 0);
     if (!hasFret) return strings;
-    
+
     for (let i = 0; i < 6; i++) {
       if (!positions.some(p => p.string === 6 - i && p.fret > 0)) {
         strings[i] = 'X';
@@ -56,64 +58,77 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
   return (
     <div className="guitar-chord-diagram" role="img" aria-label="Guitar chord diagram">
       <div className="fretboard">
-        {/* Nut */}
-        <div className="nut" style={{ top: '0%' }} />
-        
-        {/* Frets */}
-        {[1, 2, 3, 4].map(fret => (
-          <div 
+        <div className="nut" />
+        <div className="endline" />
+
+        {[1, 2, 3, 4, 5].map(fret => (
+          <div
             key={fret}
-            className="fret-line" 
-            style={{ top: `${fret * 20}%` }}
+            className="fret-line"
+            style={{ top: `calc((100%/6)*${fret})` }}
           />
         ))}
-        
-        {/* Strings */}
+
+        {[2.5, 4.5].map((fret, idx) => (
+          <div
+            key={`inlay-${idx}`}
+            className="inlay"
+            style={{ top: `calc((100%/6)*${fret})` }}
+          />
+        ))}
+
         {Array.from({ length: 6 }).map((_, i) => (
-          <div 
+          <div
             key={i}
-            className="string-line" 
-            style={{ left: `${i * 20}%` }}
+            className="string"
+            style={{
+              left: `calc((100%/6)*${i} + (100%/12))`,
+              '--sw': `${[18, 12, 8, 6, 4, 3][i]}px`,
+              '--sc': ['#bfbfbf', '#111', '#111', '#111', '#111', '#111'][i],
+            } as React.CSSProperties}
           />
         ))}
-        
-        {/* Barre chords */}
+
         {barreChords.map((barre, idx) => (
           <div
             key={idx}
             className="barre"
             style={{
-              top: `${(barre.fret - 0.5) * 20}%`,
-              left: `${(6 - barre.endString) * 20}%`,
-              width: `${(barre.endString - barre.startString) * 20}%`,
-              height: '10px',
-            }}
-          />
+              top: `calc((100%/6)*${barre.fret - 0.5})`,
+              left: `calc((100%/6)*${6 - barre.endString})`,
+              width: `calc((100%/6)*${barre.endString - barre.startString + 1})`,
+              '--cc': color,
+            } as React.CSSProperties}
+          >
+            {1}
+          </div>
         ))}
-        
-        {/* Positions */}
+
         {positions
           .filter(p => p.fret > 0)
           .map((pos, idx) => (
             <div
               key={idx}
-              className={`fret-position ${pos.isRoot ? 'root' : ''}`}
+              className={`dot ${pos.isRoot ? 'root' : ''}`}
               style={{
-                top: `${(pos.fret - 0.5) * 20}%`,
-                left: `${(6 - pos.string) * 20}%`,
-              }}
+                top: `calc((100%/6)*${pos.fret - 0.5})`,
+                left: `calc((100%/6)*${6 - pos.string} + (100%/12))`,
+                '--cc': color,
+              } as React.CSSProperties}
             >
               {pos.finger}
             </div>
           ))}
-        
-        {/* Open and muted strings */}
+
         {openStrings.map((open, i) => (
           open && (
-            <div 
+            <div
               key={`open-${i}`}
-              className="string-indicator open-symbol"
-              style={{ left: `${i * 20}%`, top: '-15%' }}
+              className="xo"
+              style={{
+                left: `calc((100%/6)*${i} + (100%/12))`,
+                color,
+              }}
             >
               {open}
             </div>
@@ -121,80 +136,28 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
         ))}
         {mutedStrings.map((muted, i) => (
           muted && (
-            <div 
+            <div
               key={`muted-${i}`}
-              className="string-indicator mute-symbol"
-              style={{ left: `${i * 20}%`, top: '-15%' }}
+              className="xo"
+              style={{
+                left: `calc((100%/6)*${i} + (100%/12))`,
+                color,
+              }}
             >
               {muted}
             </div>
           )
         ))}
       </div>
-      <style>
-        {`
-          .guitar-chord-diagram {
-            margin: 0 auto;
-            display: block;
-            background-color: #f8fafc;
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-          }
-          .fretboard {
-            position: relative;
-            width: 120px;
-            height: 160px;
-            background-color: #fff;
-            border: 1px solid #ddd;
-          }
-          .nut {
-            position: absolute;
-            width: 100%;
-            height: 5px;
-            background-color: #000;
-            top: 0;
-          }
-          .fret-line {
-            position: absolute;
-            width: 100%;
-            height: 0;
-            border-bottom: 3px solid #000;
-          }
-          .string-line {
-            position: absolute;
-            height: 100%;
-            width: 0;
-            border-top: 1px solid #666;
-          }
-          .string-indicator {
-            position: absolute;
-            width: 20px;
-            text-align: center;
-          }
-          .open-symbol, .mute-symbol {
-            font-size: 18px;
-            font-weight: bold;
-          }
-          .barre {
-            position: absolute;
-            background-color: #000;
-            border-radius: 5px;
-          }
-          .fret-position {
-            position: absolute;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 3px solid #000;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
-          }
-          .root {
-            background-color: #ff6b6b;
-          }
-        `}
-      </style>
+      {noteLabels.length > 0 && (
+        <div className="note-strip">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <span key={i} style={{ color }}>
+              {noteLabels[i] || ''}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

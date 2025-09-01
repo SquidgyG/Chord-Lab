@@ -1,11 +1,11 @@
 import React from 'react';
 import './PianoChordDiagram.css';
 
-type PianoChordDiagramProps = {
+interface PianoChordDiagramProps {
   notes: string[];
   chordName?: string;
   color?: string; // Hex color code
-};
+}
 
 const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({ 
   notes, 
