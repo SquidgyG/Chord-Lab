@@ -13,13 +13,19 @@ interface GuitarPositionProps {
   color?: string;
 }
 
+interface Barre {
+  fret: number;
+  startString: number;
+  endString: number;
+}
+
 const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({
   positions,
   color = '#ff6b6b',
 }) => {
   // Calculate barre chords
-  const barreChords = useMemo(() => {
-    const barres: Record<number, { fret: number; startString: number; endString: number }> = {};
+  const barreChords = useMemo<Barre[]>(() => {
+    const barres: Record<number, Barre> = {};
     positions.forEach(pos => {
       if (pos.finger === 1 && pos.fret > 0) {
         if (!barres[pos.fret]) {
@@ -34,8 +40,8 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({
   }, [positions]);
 
   // Calculate open and muted strings
-  const openStrings = useMemo(() => {
-    const strings = Array(6).fill('');
+  const openStrings = useMemo<string[]>(() => {
+    const strings: string[] = Array(6).fill('') as string[];
     positions.forEach(pos => {
       if (pos.fret === 0) {
         strings[6 - pos.string] = 'O';
@@ -44,8 +50,8 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({
     return strings;
   }, [positions]);
 
-  const mutedStrings = useMemo(() => {
-    const strings = Array(6).fill('');
+  const mutedStrings = useMemo<string[]>(() => {
+    const strings: string[] = Array(6).fill('') as string[];
     const hasFret = positions.some(p => p.fret > 0);
     if (!hasFret) return strings;
     
