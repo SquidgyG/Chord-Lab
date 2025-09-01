@@ -2,7 +2,7 @@ import React from 'react';
 
 interface GuitarChordDiagramProps {
   positions: {
-    string: string;
+    string: number;
     fret: number;
     finger: number;
     isRoot?: boolean; // Optional: if true, this note is the root
@@ -86,7 +86,7 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
 
         {/* Draw positions with finger numbers */}
         {positions.map((pos, index) => {
-          const stringIndex = strings.indexOf(pos.string);
+          const stringIndex = strings.indexOf(pos.string.toString());
           if (stringIndex === -1) return null;
           
           const fretIndex = frets.indexOf(pos.fret);

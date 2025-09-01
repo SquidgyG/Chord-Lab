@@ -62,7 +62,7 @@ const ChordSwitchingExercise: React.FC<ChordSwitchingExerciseProps> = ({ progres
             <GuitarDiagram
               chordName={chordName}
               positions={chords[chordName].guitarPositions}
-              fingers={chords[chordName].guitarFingers ?? []}
+              fingers={chords[chordName].guitarPositions.map(pos => pos.finger)}
             />
           </div>
         ))}

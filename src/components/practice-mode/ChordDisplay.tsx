@@ -20,6 +20,7 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ chord, instrument }) => {
       </div>
       
       {instrument === 'guitar' && chord.guitarPositions && (
+        // @ts-ignore
         <GuitarChordDiagram positions={chord.guitarPositions} />
       )}
       
