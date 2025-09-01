@@ -1,42 +1,29 @@
 import React from 'react';
 import './PianoChordDiagram.css';
 
-interface PianoChordDiagramProps {
+type PianoChordDiagramProps = {
   notes: string[];
-  fingers?: number[]; 
-  chordName?: string; 
-}
+  chordName?: string;
+};
 
-const whiteKeys = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
-const blackKeys = ['C#', 'D#', 'F#', 'G#', 'A#'];
-
-const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({ 
-  notes, 
-  fingers = [],
-  chordName = ''
-}) => {
+const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({ notes, chordName }) => {
   const activeNotes = notes || [];
-
-  const whiteKeyPositions: Record<string, string> = {
-    'C': '0%',
-    'D': '14.28%',
-    'E': '28.56%',
-    'F': '42.84%',
-    'G': '57.12%',
-    'A': '71.4%',
-    'B': '85.68%',
-  };
-
-  const getBlackKeyPosition = (key: string): string => {
-    const positions: Record<string, string> = {
-      'C#': '7%',
-      'D#': '22%',
-      'F#': '52%',
-      'G#': '67%',
-      'A#': '82%',
-    };
-    return positions[key] || '0%';
-  };
+  
+  // Define the keys in order
+  const keys = [
+    { type: 'white', note: 'C' },
+    { type: 'black', note: 'C#' },
+    { type: 'white', note: 'D' },
+    { type: 'black', note: 'D#' },
+    { type: 'white', note: 'E' },
+    { type: 'white', note: 'F' },
+    { type: 'black', note: 'F#' },
+    { type: 'white', note: 'G' },
+    { type: 'black', note: 'G#' },
+    { type: 'white', note: 'A' },
+    { type: 'black', note: 'A#' },
+    { type: 'white', note: 'B' },
+  ];
 
   return (
     <div className="piano-chart-container">
@@ -46,74 +33,37 @@ const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
         </div>
       )}
       <div className="keyboard-wrap">
-        <div className="keyboard">
-          {whiteKeys.map(key => (
-            <div 
-              key={key}
-              className="white-key"
-              style={{ 
-                position: 'relative',
-                backgroundColor: activeNotes.includes(key) ? '#ffd86f' : '#fff',
-                background: activeNotes.includes(key) 
-                  ? 'linear-gradient(to bottom, #ffd86f, #fcb045)' 
-                  : 'linear-gradient(to bottom, #fff, #e0e0e0)',
-                boxShadow: activeNotes.includes(key) 
-                  ? '0 4px 8px rgba(0,0,0,0.3), inset 0 -3px 10px rgba(0,0,0,0.2)' 
-                  : 'inset 0 -3px 10px rgba(0,0,0,0.1)',
-              }}
-            >
-              <div className="key-label">
-                {key}
-              </div>
-              {activeNotes.includes(key) && fingers[activeNotes.indexOf(key)] && (
-                <div className="finger-label">
-                  {fingers[activeNotes.indexOf(key)]}
-                </div>
-              )}
-            </div>
-          ))}
-          {blackKeys.map(key => (
-            <div
-              key={key}
-              className="black-key"
-              style={{
-                left: getBlackKeyPosition(key),
-                backgroundColor: activeNotes.includes(key) ? '#fcb045' : '#333',
-                background: activeNotes.includes(key)
-                  ? 'linear-gradient(to bottom, #fcb045, #ff8c00)'
-                  : 'linear-gradient(to bottom, #333, #000)',
-                boxShadow: activeNotes.includes(key)
-                  ? '0 4px 8px rgba(0,0,0,0.5), inset 0 -3px 6px rgba(0,0,0,0.5)'
-                  : 'inset 0 -3px 6px rgba(0,0,0,0.5)',
-              }}
-            >
-              <div className="key-label">
-                {key}
-              </div>
-              {activeNotes.includes(key) && fingers[activeNotes.indexOf(key)] && (
-                <div className="finger-label">
-                  {fingers[activeNotes.indexOf(key)]}
-                </div>
-              )}
-            </div>
-          ))}
-          {activeNotes.map((note, index) => {
-            const noteName = note.replace(/\d/, '');
-            const isBlack = blackKeys.includes(noteName);
-            const left = isBlack ? getBlackKeyPosition(noteName) : whiteKeyPositions[noteName];
+        <div className="keyboard" style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)' }}>
+          {keys.map((key, index) => {
+            const isActive = activeNotes.includes(key.note);
+            const KeyComponent = key.type === 'white' ? 'div' : 'div';
             
             return (
-              <div 
-                key={`${note}-${index}`}
-                className={`${isBlack ? 'black-key' : 'white-key'} active-note`}
-                style={{ 
-                  left,
-                  ...(isBlack ? { zIndex: 2 } : {})
+              <KeyComponent
+                key={index}
+                className={`key ${key.type}-key ${isActive ? 'active' : ''}`}
+                style={{ gridColumn: `${index + 1}` }}
+              />
+            );
+          })}
+          {activeNotes.map((note, index) => {
+            const keyIndex = keys.findIndex(k => k.note === note);
+            if (keyIndex === -1) return null;
+            
+            const key = keys[keyIndex];
+            const isBlack = key.type === 'black';
+            
+            return (
+              <div
+                key={`note-${index}`}
+                className={`note ${isBlack ? 'black-note-indicator' : 'white-note-indicator'} active-note-indicator`}
+                style={{
+                  gridColumn: `${keyIndex + 1}`,
+                  gridRow: isBlack ? '1' : '2',
+                  alignSelf: isBlack ? 'end' : 'start',
                 }}
               >
-                <div className="active-note-indicator">
-                  {noteName}
-                </div>
+                {note.replace(/\d/, '')}
               </div>
             );
           })}

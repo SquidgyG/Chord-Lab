@@ -38,7 +38,7 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
             className="fret-line" 
             style={{
               top: `${fretHeight * (fretIndex + 1)}px`,
-              borderBottom: fretIndex === 0 ? '4px solid #000' : '2px solid #000', // Thicker nut and frets
+              borderBottom: fretIndex === 0 ? '5px solid #000' : '3px solid #000', // Thicker nut and frets
             }}
           />
         ))}
@@ -93,7 +93,8 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
                 width: `${dotRadius * 2}px`,
                 height: `${dotRadius * 2}px`,
                 backgroundColor: pos.isRoot ? '#ff6b6b' : '#4d9de0',
-                border: '2px solid #000', // Add border to dots
+                border: '3px solid #000', // Add border to dots
+                boxShadow: '0 3px 6px rgba(0,0,0,0.3)',
               }}
             >
               <span className="finger-number" style={{ fontSize: '14px', fontWeight: 'bold', color: '#fff' }}>
@@ -124,7 +125,7 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
             position: absolute;
             width: 100%;
             height: 0;
-            border-bottom: 2px solid #000;
+            border-bottom: 3px solid #000;
           }
           .string-line {
             position: absolute;
@@ -147,6 +148,8 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
             display: flex;
             justify-content: center;
             align-items: center;
+            border: 3px solid #000;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
           }
           .finger-number {
             font-size: 14px;
