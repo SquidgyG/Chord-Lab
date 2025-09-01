@@ -1,4 +1,4 @@
-import React, { useState, useRef, useImperativeHandle, forwardRef, useEffect } from 'react';
+import { useState, useRef, useImperativeHandle, forwardRef, useEffect } from 'react';
 
 interface CountdownTimerProps {
   onComplete?: () => void;
@@ -17,7 +17,7 @@ const CountdownTimer = forwardRef<CountdownTimerHandle, CountdownTimerProps>((
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const totalRef = useRef(0);
-  const intervalRef = useRef<number>();
+  const intervalRef = useRef<number | undefined>(undefined);
 
   const clear = () => {
     if (intervalRef.current !== undefined) {

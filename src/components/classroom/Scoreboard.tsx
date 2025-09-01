@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState } from 'react';
+import type { FC, ReactNode } from 'react';
 
 interface Team {
   name: string
@@ -14,7 +15,7 @@ interface ScoreboardContextValue {
 
 const ScoreboardContext = createContext<ScoreboardContextValue | undefined>(undefined)
 
-export const ScoreboardProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const ScoreboardProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [teams, setTeams] = useState<Team[]>([])
 
   const addTeam = (name: string) => {
@@ -45,7 +46,7 @@ export const useScoreboard = () => {
   return context
 }
 
-export const Scoreboard: React.FC = () => {
+export const Scoreboard: FC = () => {
   const { teams, resetScores } = useScoreboard()
 
   if (teams.length === 0) return null
@@ -74,4 +75,3 @@ export const Scoreboard: React.FC = () => {
 }
 
 export default Scoreboard
-
