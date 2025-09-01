@@ -10,9 +10,10 @@ export interface GuitarPosition {
 
 interface GuitarPositionProps {
   positions: GuitarPosition[];
+  color?: string;
 }
 
-const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
+const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions, color = '#000' }) => {
   // Calculate barre chords
   const barreChords = useMemo(() => {
     const barres: Record<number, { fret: number; startString: number; endString: number }> = {};
@@ -30,8 +31,8 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
   }, [positions]);
 
   // Calculate open and muted strings
-  const openStrings = useMemo(() => {
-    const strings = Array(6).fill('');
+  const openStrings = useMemo((): string[] => {
+    const strings = Array<string>(6).fill('');
     positions.forEach(pos => {
       if (pos.fret === 0) {
         strings[6 - pos.string] = 'O';
@@ -40,11 +41,11 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
     return strings;
   }, [positions]);
 
-  const mutedStrings = useMemo(() => {
-    const strings = Array(6).fill('');
+  const mutedStrings = useMemo((): string[] => {
+    const strings = Array<string>(6).fill('');
     const hasFret = positions.some(p => p.fret > 0);
     if (!hasFret) return strings;
-    
+
     for (let i = 0; i < 6; i++) {
       if (!positions.some(p => p.string === 6 - i && p.fret > 0)) {
         strings[i] = 'X';
@@ -70,54 +71,79 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
         
         {/* Strings */}
         {Array.from({ length: 6 }).map((_, i) => (
-          <div 
+          <div
             key={i}
-            className="string-line" 
-            style={{ left: `${i * 20}%` }}
+            className="string-line"
+            style={{ left: `${(i + 0.5) * (100 / 6)}%` }}
           />
         ))}
         
         {/* Barre chords */}
-        {barreChords.map((barre, idx) => (
-          <div
-            key={idx}
-            className="barre"
-            style={{
-              top: `${(barre.fret - 0.5) * 20}%`,
-              left: `${(6 - barre.endString) * 20}%`,
-              width: `${(barre.endString - barre.startString) * 20}%`,
-              height: '10px',
-            }}
-          />
-        ))}
+        {barreChords.map((barre, idx) => {
+          const segment = 100 / 6;
+          const left = (6 - barre.endString + 0.5) * segment;
+          const width = (barre.endString - barre.startString) * segment;
+          return (
+            <div
+              key={idx}
+              className="barre"
+              style={{
+                top: `${(barre.fret - 0.5) * 20}%`,
+                left: `${left}%`,
+                width: `${width}%`,
+                '--cc': color,
+              } as React.CSSProperties}
+            >
+              1
+            </div>
+          );
+        })}
         
         {/* Positions */}
         {positions
-          .filter(p => p.fret > 0)
-          .map((pos, idx) => (
-            <div
-              key={idx}
-              className={`fret-position ${pos.isRoot ? 'root' : ''}`}
-              style={{
-                top: `${(pos.fret - 0.5) * 20}%`,
-                left: `${(6 - pos.string) * 20}%`,
-              }}
-            >
-              {pos.finger}
-            </div>
-          ))}
+          .filter(p =>
+            p.fret > 0 &&
+            !barreChords.some(
+              barre =>
+                p.finger === 1 &&
+                p.fret === barre.fret &&
+                p.string >= barre.startString &&
+                p.string <= barre.endString
+            )
+          )
+          .map((pos, idx) => {
+            const segment = 100 / 6;
+            return (
+              <div
+                key={idx}
+                className="dot"
+                style={{
+                  top: `${(pos.fret - 0.5) * 20}%`,
+                  left: `${(6 - pos.string + 0.5) * segment}%`,
+                  '--cc': color,
+                } as React.CSSProperties}
+              >
+                {pos.finger}
+              </div>
+            );
+          })}
         
         {/* Open and muted strings */}
         {openStrings.map((open, i) => (
           open && (
             <div
               key={`open-${i}`}
+<<<<<<< HEAD
               className="xo"
               style={{
                 left: `${i * 20}%`,
                 top: '0',
                 color: 'var(--chord-color)',
               }}
+=======
+              className="string-indicator open-symbol"
+              style={{ left: `${(i + 0.5) * (100 / 6)}%`, top: '-15%' }}
+>>>>>>> origin/main
             >
               {open}
             </div>
@@ -127,12 +153,17 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
           muted && (
             <div
               key={`muted-${i}`}
+<<<<<<< HEAD
               className="xo"
               style={{
                 left: `${i * 20}%`,
                 top: '0',
                 color: 'var(--chord-color)',
               }}
+=======
+              className="string-indicator mute-symbol"
+              style={{ left: `${(i + 0.5) * (100 / 6)}%`, top: '-15%' }}
+>>>>>>> origin/main
             >
               {muted}
             </div>
@@ -151,8 +182,8 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
           }
           .fretboard {
             position: relative;
-            width: 120px;
-            height: 160px;
+            width: 360px;
+            height: 360px;
             background-color: #fff;
             border: 1px solid #ddd;
           }
@@ -171,9 +202,11 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
           }
           .string-line {
             position: absolute;
+            top: 0;
             height: 100%;
             width: 0;
-            border-top: 1px solid #666;
+            border-left: 2px solid #666;
+            transform: translateX(-50%);
           }
           .xo {
             position: absolute;
@@ -183,20 +216,33 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
           }
           .barre {
             position: absolute;
-            background-color: #000;
-            border-radius: 5px;
-          }
-          .fret-position {
-            position: absolute;
-            border-radius: 50%;
+            transform: translateY(-50%);
+            height: 48px;
+            border-radius: 999px;
+            background: var(--cc);
+            color: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 3px solid #000;
+            font-weight: 800;
+            font-size: 24px;
             box-shadow: 0 3px 6px rgba(0,0,0,0.3);
           }
-          .root {
-            background-color: #ff6b6b;
+          .dot {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            width: 72px;
+            height: 72px;
+            border-radius: 999px;
+            background: var(--cc);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 800;
+            font-size: 30px;
+            text-shadow: 0 1px 0 rgba(0,0,0,0.25);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
           }
         `}
       </style>
