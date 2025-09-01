@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
-import CountdownTimer, { CountdownTimerHandle } from './CountdownTimer';
+import CountdownTimer from './CountdownTimer';
+import type { CountdownTimerHandle } from './CountdownTimer';
 
 const QuickQuiz: React.FC = () => {
   const timerRef = useRef<CountdownTimerHandle>(null);
