@@ -5,7 +5,6 @@ interface PianoChordDiagramProps {
   notes: string[];
   fingers?: number[]; 
   chordName?: string; 
-  rootNote?: string; 
 }
 
 const whiteKeys = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
@@ -14,8 +13,7 @@ const blackKeys = ['C#', 'D#', 'F#', 'G#', 'A#'];
 const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({ 
   notes, 
   fingers = [],
-  chordName = '',
-  rootNote = ''
+  chordName = ''
 }) => {
   const activeNotes = notes || [];
 

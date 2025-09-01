@@ -1,21 +1,28 @@
 import React from 'react';
+import './GuitarChordDiagram.css';
 
-interface GuitarChordDiagramProps {
-  positions: {
-    string: number;
-    fret: number;
-    finger: number;
-    isRoot?: boolean; // Optional: if true, this note is the root
-  }[];
-  openStrings?: string[]; // Array of string numbers that are open, e.g., ['1','2']
-  mutedStrings?: string[]; // Array of string numbers that are muted, e.g., ['5','6']
+export interface GuitarPosition {
+  string: number;
+  fret: number;
+  finger: number;
+  isRoot?: boolean;
 }
 
-const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({ 
-  positions, 
-  openStrings = [], 
-  mutedStrings = [] 
-}) => {
+interface GuitarPositionProps {
+  positions: GuitarPosition[];
+}
+
+const getOpenStrings = (positions: GuitarPosition[]): string[] => {
+  const openStrings = Array(6).fill('');
+  positions.forEach(pos => {
+    if (pos.fret === 0) {
+      openStrings[6 - pos.string] = 'O';
+    }
+  });
+  return openStrings;
+};
+
+const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions }) => {
   const strings = ['6', '5', '4', '3', '2', '1'];
   const frets = [0, 1, 2, 3, 4];
   const stringWidth = 20;
@@ -36,9 +43,9 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
           />
         ))}
         {[...Array(6)].map((_, stringIndex) => {
-          const stringPositions = positions.filter(p => p.string === 6 - stringIndex);
+          const openStrings = getOpenStrings(positions);
           const isOpen = openStrings[5 - stringIndex] === 'O';
-          const isMuted = mutedStrings[5 - stringIndex] === 'X';
+          const isMuted = openStrings[5 - stringIndex] === 'X';
           
           return (
             <React.Fragment key={`string-${stringIndex}`}>

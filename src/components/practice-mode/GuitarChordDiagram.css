@@ -1,0 +1,68 @@
+.guitar-chord-diagram {
+  position: relative;
+  display: inline-block;
+  margin: 20px;
+}
+
+.fretboard {
+  position: relative;
+  width: 250px;
+  height: 200px;
+  background-color: #f5e6c8;
+  border: 2px solid #8b4513;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.nut {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  border-top: 4px solid #000;
+}
+
+.fret-line {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  border-bottom: 2px solid #000;
+}
+
+.string-line {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-left: 2px solid #666;
+}
+
+.string-indicator {
+  position: absolute;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.open-symbol {
+  color: green;
+}
+
+.mute-symbol {
+  color: red;
+}
+
+.fret-position {
+  position: absolute;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.barre {
+  position: absolute;
+  border-radius: 10px;
+}
