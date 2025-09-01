@@ -3,10 +3,10 @@ import GuitarChordDiagram from './GuitarChordDiagram';
 import PianoChordDiagram from './PianoChordDiagram';
 import type { Chord } from '../../data/chords';
 
-type ChordDisplayProps = {
+interface ChordDisplayProps {
   chord: Chord | null;
   instrument: 'guitar' | 'piano';
-};
+}
 
 const ChordDisplay: React.FC<ChordDisplayProps> = ({ chord, instrument }) => {
   if (!chord) {
@@ -21,10 +21,10 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ chord, instrument }) => {
         </div>
         
         {instrument === 'guitar' ? (
-          <GuitarChordDiagram positions={chord.guitarPositions} />
+          <GuitarChordDiagram positions={chord.guitarPositions} color={chord.color} />
         ) : (
-          <PianoChordDiagram 
-            notes={chord.pianoNotes} 
+          <PianoChordDiagram
+            notes={chord.pianoNotes}
             chordName={chord.name}
           />
         )}
