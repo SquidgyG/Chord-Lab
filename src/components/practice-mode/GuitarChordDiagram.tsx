@@ -133,8 +133,17 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions, color = 
           open && (
             <div
               key={`open-${i}`}
+<<<<<<< HEAD
+              className="xo"
+              style={{
+                left: `${i * 20}%`,
+                top: '0',
+                color: 'var(--chord-color)',
+              }}
+=======
               className="string-indicator open-symbol"
               style={{ left: `${(i + 0.5) * (100 / 6)}%`, top: '-15%' }}
+>>>>>>> origin/main
             >
               {open}
             </div>
@@ -144,8 +153,17 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions, color = 
           muted && (
             <div
               key={`muted-${i}`}
+<<<<<<< HEAD
+              className="xo"
+              style={{
+                left: `${i * 20}%`,
+                top: '0',
+                color: 'var(--chord-color)',
+              }}
+=======
               className="string-indicator mute-symbol"
               style={{ left: `${(i + 0.5) * (100 / 6)}%`, top: '-15%' }}
+>>>>>>> origin/main
             >
               {muted}
             </div>
@@ -190,14 +208,11 @@ const GuitarChordDiagram: React.FC<GuitarPositionProps> = ({ positions, color = 
             border-left: 2px solid #666;
             transform: translateX(-50%);
           }
-          .string-indicator {
+          .xo {
             position: absolute;
-            width: 20px;
-            text-align: center;
-          }
-          .open-symbol, .mute-symbol {
-            font-size: 18px;
+            font-size: 32px;
             font-weight: bold;
+            transform: translate(-50%, -100%);
           }
           .barre {
             position: absolute;
