@@ -183,6 +183,7 @@ const PracticeMode: FC = () => {
                 <button
                     onClick={() => setBeginnerMode(!beginnerMode)}
                     className="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 dark:text-gray-300"
+                    data-testid="beginner-mode-toggle"
                 >
                     {beginnerMode ? 'More Options' : 'Beginner Mode'}
                 </button>
