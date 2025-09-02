@@ -1,0 +1,177 @@
+/* Responsive diagram optimizations for different orientations and screen sizes */
+
+/* Landscape tablet optimizations */
+@media screen and (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+  .fretboard-wrap {
+    --scale: min(1, calc(80vh / var(--base-height))) !important;
+  }
+  
+  .piano-diagram-container {
+    --scale: min(1.2, calc(90vw / var(--base-width))) !important;
+  }
+  
+  .chord-display {
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    gap: 2rem !important;
+  }
+  
+  .chord-display .diagram-size-control {
+    order: -1;
+    margin-bottom: 0 !important;
+  }
+}
+
+/* Portrait tablet optimizations */
+@media screen and (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .fretboard-wrap,
+  .piano-diagram-container {
+    --scale: calc(85vw / var(--base-width)) !important;
+    max-width: 85vw;
+  }
+}
+
+/* Mobile landscape optimizations */
+@media screen and (max-width: 767px) and (orientation: landscape) {
+  .chord-display {
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    gap: 1rem !important;
+    padding: 0.5rem !important;
+  }
+  
+  .fretboard-wrap {
+    --scale: calc(60vh / var(--base-height)) !important;
+  }
+  
+  .piano-diagram-container {
+    --scale: calc(70vw / var(--base-width)) !important;
+  }
+  
+  /* Hide size controls in mobile landscape to save space */
+  .diagram-size-control {
+    display: none !important;
+  }
+  
+  /* Compact chord name */
+  .chord-display [data-testid="current-chord-name"] {
+    font-size: 2rem !important;
+    writing-mode: vertical-rl !important;
+    text-orientation: mixed !important;
+    margin: 0 !important;
+  }
+}
+
+/* Mobile portrait optimizations */
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  .fretboard-wrap,
+  .piano-diagram-container {
+    --scale: calc(90vw / var(--base-width)) !important;
+    max-width: 90vw;
+  }
+  
+  .diagram-size-control {
+    transform: scale(0.9);
+  }
+  
+  .chord-display [data-testid="current-chord-name"] {
+    font-size: 3rem !important;
+  }
+}
+
+/* Very large screen optimizations */
+@media screen and (min-width: 1440px) {
+  .fretboard-wrap,
+  .piano-diagram-container {
+    --scale: min(1.5, calc(40vw / var(--base-width))) !important;
+  }
+  
+  /* Add some visual breathing room on large screens */
+  .chord-display {
+    padding: 2rem !important;
+  }
+}
+
+/* Ultra-wide screen optimizations */
+@media screen and (min-width: 1920px) {
+  .chord-display {
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    gap: 4rem !important;
+  }
+  
+  .chord-display [data-testid="current-chord-name"] {
+    writing-mode: vertical-rl !important;
+    text-orientation: mixed !important;
+    font-size: 4rem !important;
+  }
+  
+  .fretboard-wrap,
+  .piano-diagram-container {
+    --scale: 1.8 !important;
+  }
+}
+
+/* High DPI screen optimizations */
+@media screen and (-webkit-min-device-pixel-ratio: 2), screen and (min-resolution: 2dppx) {
+  .fretboard-wrap,
+  .piano-diagram-container {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+  
+  /* Sharper borders and elements on high DPI */
+  .string,
+  .fret-line,
+  .nut,
+  .white,
+  .black {
+    transform-origin: center;
+    will-change: transform;
+  }
+}
+
+/* Dark mode adaptations */
+@media (prefers-color-scheme: dark) {
+  .chord-display [data-testid="current-chord-name"] {
+    color: #f3f4f6 !important;
+  }
+  
+  .fretboard-wrap,
+  .keyboard-wrap {
+    background: #1f2937 !important;
+    box-shadow: 0 16px 40px rgba(0,0,0,.40), 0 8px 18px rgba(0,0,0,.24) !important;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .chord-display * {
+    transition: none !important;
+    animation: none !important;
+  }
+  
+  .animate-pulse {
+    animation: none !important;
+  }
+}
+
+/* Print optimizations */
+@media print {
+  .diagram-size-control {
+    display: none !important;
+  }
+  
+  .chord-display {
+    break-inside: avoid !important;
+  }
+  
+  .fretboard-wrap,
+  .piano-diagram-container {
+    --scale: 1 !important;
+    box-shadow: none !important;
+    border: 1px solid #000 !important;
+  }
+}

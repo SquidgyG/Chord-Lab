@@ -45,7 +45,19 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
     });
 
     return Object.entries(frets)
-      .filter(([, strings]) => strings.length >= 3) // Require at least 3 strings for barre
+      .filter(([, strings]) => {
+        // Require at least 3 strings AND they must be consecutive for a barre
+        if (strings.length < 3) return false;
+        
+        strings.sort((a, b) => a - b);
+        // Check if strings are consecutive (allowing for gaps of 1)
+        for (let i = 1; i < strings.length; i++) {
+          if (strings[i] - strings[i-1] > 2) return false;
+        }
+        
+        // Also check if the strings span at least 2 string positions
+        return (Math.max(...strings) - Math.min(...strings)) >= 2;
+      })
       .map(([fret, strings]) => ({
         fret: parseInt(fret),
         minString: Math.min(...strings),
@@ -71,9 +83,6 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
 
   return (
     <div className="fretboard-wrap">
-      <h3 className="chord-title" style={{ textAlign: 'center', marginBottom: '1rem', fontSize: '2rem', fontWeight: 'bold', color: rootColor }}>
-        {displayChordName}
-      </h3>
       <div className="fretboard">
         {/* Nut */}
         <div className="nut"></div>

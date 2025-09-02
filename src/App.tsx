@@ -7,6 +7,7 @@ import OnboardingFlow from './components/onboarding/OnboardingFlow'
 import { AchievementProvider } from './contexts/AchievementContext'
 import { AchievementToast } from './components/achievements/AchievementToast'
 import { ScoreboardProvider } from './components/classroom/Scoreboard'
+import './styles/responsive-diagrams.css'
 
 // Lazy-loaded components for code splitting
 const Dashboard = lazy(() => import('./components/Dashboard'))

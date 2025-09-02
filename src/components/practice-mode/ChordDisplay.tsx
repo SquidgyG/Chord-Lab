@@ -1,6 +1,8 @@
 import React, { Suspense, lazy } from 'react';
 import type { Chord } from '../../data/chords';
 import { getChordTheme } from '../../utils/diagramTheme';
+import DiagramSizeControl from '../controls/DiagramSizeControl';
+import '../controls/DiagramSizeControl.css';
 
 // Lazy load heavy chord diagram components
 const GuitarChordDiagram = lazy(() => import('./GuitarChordDiagram'));
@@ -11,6 +13,22 @@ interface ChordDisplayProps {
   instrument: 'guitar' | 'piano';
 }
 
+// Helper function to get chord quality
+const getChordQuality = (chordName: string): string => {
+  if (chordName.includes('m') && !chordName.includes('maj')) {
+    return 'Minor';
+  } else if (chordName.includes('maj7')) {
+    return 'Major 7th';
+  } else if (chordName.includes('m7')) {
+    return 'Minor 7th';
+  } else if (chordName.includes('7')) {
+    return 'Dominant 7th';
+  } else if (chordName.length === 1 || (chordName.length === 2 && chordName.includes('#'))) {
+    return 'Major';
+  }
+  return '';
+};
+
 const ChordDisplay: React.FC<ChordDisplayProps> = ({ chord, instrument }) => {
   if (!chord) {
     return <div className="chord-display-empty">No chord selected</div>;
@@ -18,11 +36,23 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ chord, instrument }) => {
 
   try {
     const theme = getChordTheme(chord.name);
+    const chordQuality = getChordQuality(chord.name);
+    
     return (
       <div className="flex flex-col items-center justify-center space-y-4 chord-display">
-        <div className="text-5xl font-bold text-gray-800" data-testid="current-chord-name">
-          {chord.name}
+        <div className="text-center">
+          <div className="text-5xl font-bold text-gray-800" data-testid="current-chord-name">
+            {chord.name}
+          </div>
+          {chordQuality && (
+            <div className="text-xl font-medium text-gray-600 mt-1">
+              {chordQuality}
+            </div>
+          )}
         </div>
+
+        {/* Size control for diagrams */}
+        <DiagramSizeControl className="mb-4" />
 
         <Suspense fallback={
           <div className="flex items-center justify-center min-h-[400px]">

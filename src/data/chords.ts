@@ -64,9 +64,12 @@ export const chords: Record<string, ChordDefinition> = {
   E: {
     pianoNotes: ['E3', 'G#3', 'B3'],
     guitarPositions: [
-      { string: 5, fret: 2, finger: 2 },
-      { string: 4, fret: 2, finger: 3 },
-      { string: 3, fret: 1, finger: 1 },
+      { string: 6, fret: 0, finger: 0 }, // Open low E
+      { string: 5, fret: 2, finger: 2 }, // B at 2nd fret
+      { string: 4, fret: 2, finger: 3 }, // E at 2nd fret
+      { string: 3, fret: 1, finger: 1 }, // G# at 1st fret
+      { string: 2, fret: 0, finger: 0 }, // Open B
+      { string: 1, fret: 0, finger: 0 }, // Open high E
     ],
     level: 1,
     color: "#ff33cc"

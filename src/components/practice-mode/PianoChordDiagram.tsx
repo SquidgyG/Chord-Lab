@@ -46,11 +46,6 @@ const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
 
   return (
     <div className="piano-diagram-container">
-      {chordName && (
-        <h3 className="chord-title" style={{ textAlign: 'center', marginBottom: '1rem', fontSize: '2rem', fontWeight: 'bold', color }}>
-          {chordName}
-        </h3>
-      )}
       <div className="keyboard-wrap">
       <div
         className="keyboard"
