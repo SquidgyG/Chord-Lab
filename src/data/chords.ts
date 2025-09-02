@@ -3,6 +3,7 @@ export interface FretPosition {
   fret: number;
   finger: number;
   isRoot?: boolean;
+  muted?: boolean; // Explicitly mark muted strings
 }
 
 export interface ChordDefinition {
@@ -17,9 +18,12 @@ export const chords: Record<string, ChordDefinition> = {
   C: {
     pianoNotes: ['C4', 'E4', 'G4'],
     guitarPositions: [
-      { string: 2, fret: 1, finger: 1 },
-      { string: 4, fret: 2, finger: 2 },
-      { string: 5, fret: 3, finger: 3 },
+      { string: 6, fret: 0, finger: 0, muted: true }, // Muted (X)
+      { string: 5, fret: 3, finger: 3 }, // A string, 3rd fret
+      { string: 4, fret: 2, finger: 2 }, // D string, 2nd fret  
+      { string: 3, fret: 0, finger: 0 }, // Open G (O)
+      { string: 2, fret: 1, finger: 1 }, // B string, 1st fret
+      { string: 1, fret: 0, finger: 0 }, // Open high E (O)
     ],
     level: 1,
     color: "#cc39bc"

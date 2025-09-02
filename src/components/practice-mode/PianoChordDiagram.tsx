@@ -77,8 +77,7 @@ const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
           />
         ))}
         
-        {/* Keyboard grid overlay */}
-        <div className="keyboard-grid"></div>
+        {/* Grid lines overlay */}
         
         {/* Fill overlays for active notes */}
         {activeNotes.map((note, index) => {

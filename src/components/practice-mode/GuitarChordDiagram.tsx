@@ -5,6 +5,7 @@ interface FingerPosition {
   fret: number;
   string: number;
   finger?: number;
+  muted?: boolean;
 }
 
 interface GuitarChordDiagramProps {
@@ -58,8 +59,11 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
   // Get X/O status for each string (1-6, where 6 is low E)
   const getStringStatus = (stringNum: number) => {
     const position = positions.find(p => p.string === stringNum);
-    if (!position) return 'X'; // Muted if no position defined
-    return position.fret === 0 ? 'O' : null; // Open if fret 0, otherwise null (fretted)
+    if (!position) return null; // Not specified, don't show anything
+    if (position.fret === 0) {
+      return position.muted ? 'X' : 'O'; // Use explicit muted flag
+    }
+    return null; // Fretted note, no X/O indicator
   };
   
   // Add chord name display
@@ -94,7 +98,7 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
         {[6, 5, 4, 3, 2, 1].map((string, index) => {
           const position = positions.find(p => p.string === string);
           const stringWidth = stringWidths[string - 1]; // Use direct string index
-          const stringColor = position ? '#111' : '#bfbfbf'; // Active vs muted string color
+          const stringColor = position?.muted ? '#bfbfbf' : '#111'; // Gray for muted, black for active
           
           return (
             <div 
