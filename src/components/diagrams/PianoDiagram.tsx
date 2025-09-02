@@ -128,7 +128,8 @@ const PianoDiagram = ({
           style={{
             position: 'relative',
             border: '2px solid #111',
-            height: '370px',
+            height: '180px',
+            minWidth: '600px',
             display: 'grid',
             gridTemplateColumns: `repeat(${KEYBOARD_LAYOUT.totalWhiteKeys}, 1fr)`,
             gap: 0,
@@ -171,15 +172,15 @@ const PianoDiagram = ({
               style={{
                 position: 'absolute',
                 top: 0,
-                width: `calc(100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * .64)`,
-                height: '62%',
+                width: `calc(100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * 0.6)`,
+                height: '60%',
                 background: isNotePressed(note) ? theme.primary : '#000',
                 border: '1px solid #111',
                 borderBottomLeftRadius: '6px',
                 borderBottomRightRadius: '6px',
                 boxShadow: 'inset 0 -5px 0 rgba(255,255,255,.08)',
                 zIndex: 5,
-                left: `calc(100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * ${position} - (100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * .32))`,
+                left: `calc(100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * ${position} - (100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * .3))`,
                 cursor: onPlayNote ? 'pointer' : 'default',
                 transition: 'background 0.1s ease-in-out',
               }}
@@ -187,25 +188,25 @@ const PianoDiagram = ({
             ></div>
           ))}
 
-          {/* Note Labels (only for the main chord notes) */}
+          {/* Note Labels */}
           {showLabels && pressedKeysToDisplay.map(({ note, type }) => {
             const noteName = getNoteName(note);
             const style: React.CSSProperties = {
               position: 'absolute',
               transform: 'translateX(-50%)',
-              width: '86px',
-              height: '86px',
+              width: '50px',
+              height: '50px',
               borderRadius: '999px',
               display: 'grid',
               placeItems: 'center',
               fontWeight: 800,
-              fontSize: '30px',
+              fontSize: '20px',
               background: '#fff',
-              border: '4px solid #000',
+              border: '3px solid #000',
               color: '#000',
               textShadow: 'none',
               zIndex: 7,
-              pointerEvents: 'none', // Labels shouldn't block clicks
+              pointerEvents: 'none',
             };
 
             if (type === 'white') {
@@ -216,7 +217,7 @@ const PianoDiagram = ({
             } else { // black
               const keyInfo = KEYBOARD_LAYOUT.blackKeys.find(k => k.note === note);
               if (!keyInfo) return null;
-              style.top = `calc(62% - 10px - 43px)`; // Position above the key
+              style.top = `calc(60% - 10px - 43px)`; // Position above the key
               style.left = `calc(100% / ${KEYBOARD_LAYOUT.totalWhiteKeys} * ${keyInfo.position})`;
             }
 
