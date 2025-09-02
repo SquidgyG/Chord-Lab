@@ -1,5 +1,7 @@
 import React, { useRef } from 'react';
 import { useDrag } from 'react-dnd';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useAudio } from '../../contexts/AudioContext';
 import './ChordWheel.css';
 
@@ -55,17 +57,19 @@ const ChordItem: React.FC<ChordItemProps> = ({ chord, index, total, onChordSelec
 
 const ChordWheel: React.FC<ChordWheelProps> = ({ chords, onChordSelect }) => {
   return (
-    <div className="chord-wheel">
-      {chords.map((chord, index) => (
-        <ChordItem 
-          key={`${chord}-${index}`} 
-          chord={chord} 
-          index={index}
-          total={chords.length}
-          onChordSelect={onChordSelect}
-        />
-      ))}
-    </div>
+    <DndProvider backend={HTML5Backend}>
+      <div className="chord-wheel">
+        {chords.map((chord, index) => (
+          <ChordItem 
+            key={`${chord}-${index}`} 
+            chord={chord} 
+            index={index}
+            total={chords.length}
+            onChordSelect={onChordSelect}
+          />
+        ))}
+      </div>
+    </DndProvider>
   );
 };
 
