@@ -24,6 +24,6 @@
     "noUncheckedSideEffectImports": true,
     "types": ["vitest"]
   },
-  "include": ["src"],
+  "include": ["src", "src/types"],
   "exclude": ["**/*.test.ts", "**/*.test.tsx"]
 }

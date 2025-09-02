@@ -14,6 +14,12 @@ interface GuitarChordDiagramProps {
   color?: string;
 }
 
+interface BarreChord {
+  fret: number;
+  minString: number;
+  maxString: number;
+}
+
 const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({ 
   positions, 
   chordName, 
@@ -21,32 +27,13 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
   color = rootNoteColor
 }) => {
   const rootColor = color || rootNoteColor;
-
-  const openStrings = useMemo<string[]>(() => {
-    return ['E', 'A', 'D', 'G', 'B', 'E'].map((note, string) => {
-      return positions.some(p => p.string === string) ? '' : note;
-    });
-  }, [positions]);
-
-  const mutedStrings = useMemo<string[]>(() => {
-    const strings: string[] = Array(6).fill('') as string[];
-    const hasFret = positions.some(p => p.fret > 0);
-    if (!hasFret) return strings;
-    
-    for (let i = 0; i < 6; i++) {
-      if (!positions.some(p => p.string === 6 - i && p.fret > 0)) {
-        strings[i] = 'X';
-      }
-    }
-    return strings;
-  }, [positions]);
-
+  
   // Find the highest fret to determine diagram offset
   const highestFret = Math.max(...positions.map(p => p.fret), 1);
   const startFret = highestFret > 4 ? highestFret - 3 : 1;
 
   // Check if there's a barre chord
-  const barreChords = useMemo(() => {
+  const barreChords = useMemo<BarreChord[]>(() => {
     const frets: Record<number, number[]> = {};
     
     positions.forEach(pos => {
@@ -69,54 +56,72 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
     <div className="guitar-chord-diagram">
       <div className="chord-name">{chordName}</div>
       <div className="fretboard">
-        <div className="open-strings">
-          {openStrings.map((marker, i) => (
-            <div key={`open-${i}`} className="open-string">{marker}</div>
-          ))}
-        </div>
-        <div className="muted-strings">
-          {mutedStrings.map((marker, i) => (
-            <div key={`mute-${i}`} className="muted-string">{marker}</div>
-          ))}
-        </div>
+        {/* Nut */}
+        <div className="nut" />
         
-        {[...Array(5)].map((_, fretIndex) => {
-          const fret = startFret + fretIndex;
+        {/* Fret lines */}
+        {[1, 2, 3, 4, 5].map((fret) => (
+          <div 
+            key={`fret-line-${fret}`}
+            className="fret-line"
+            style={{
+              top: `${fret * 60}px`,
+              width: '100%'
+            }}
+          />
+        ))}
+        
+        {/* Strings */}
+        {[0, 1, 2, 3, 4, 5].map((stringIndex) => {
+          const string = 6 - stringIndex;
+          const position = positions.find(p => p.string === string);
+          const isRoot = position && chordName.startsWith(chordName.split(' ')[0]);
+          const barre = barreChords.find(b => string >= b.minString && string <= b.maxString);
+          
           return (
-            <div key={`fret-${fret}`} className="fret">
-              {[...Array(6)].map((_, stringIndex) => {
-                const string = 6 - stringIndex;
-                const position = positions.find(p => p.string === string && p.fret === fret);
-                const isRoot = position && position.fret > 0 && chordName.startsWith(chordName.split(' ')[0]);
-                
-                // Check if this position is part of a barre chord
-                const barre = barreChords.find(b => b.fret === fret && string >= b.minString && string <= b.maxString);
-
-                return (
-                  <div key={`string-${string}`} className="string">
-                    {position && position.fret > 0 && (
-                      <div 
-                        className={`finger-position ${isRoot ? 'root' : ''}`}
-                        style={isRoot ? { backgroundColor: rootColor } : {}}
-                      >
-                        {position.finger}
-                      </div>
-                    )}
-                    {barre && string === barre.minString && (
-                      <div 
-                        className="barre" 
-                        style={{
-                          height: `${(barre.maxString - barre.minString) * 20}px`,
-                          backgroundColor: rootColor
-                        }}
-                      />
-                    )}
-                  </div>
-                );
-              })}
+            <div 
+              key={`string-${string}`}
+              className="string"
+              style={{
+                left: `${20 + (stringIndex * 20)}%`,
+                '--cc': color
+              } as React.CSSProperties}
+            >
+              {position && (
+                <div 
+                  className="fret-position"
+                  style={{
+                    top: `${(position.fret - 0.5) * 60}px`,
+                    backgroundColor: isRoot ? rootColor : ''
+                  }}
+                >
+                  {position.finger}
+                </div>
+              )}
+              {barre && string === barre.minString && (
+                <div 
+                  className="barre"
+                  style={{
+                    top: `${(barre.fret - 0.5) * 60}px`,
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: `${(barre.maxString - barre.minString) * 20}%`,
+                    '--cc': color
+                  } as React.CSSProperties}
+                />
+              )}
             </div>
           );
         })}
+        
+        {/* Note strip */}
+        <div className="note-strip">
+          {['E', 'A', 'D', 'G', 'B', 'E'].map((note, i) => (
+            <span key={`note-${i}`}>
+              {positions.some(p => p.string === 6 - i) ? '' : note}
+            </span>
+          ))}
+        </div>
       </div>
       {startFret > 1 && (
         <div className="fret-number">
