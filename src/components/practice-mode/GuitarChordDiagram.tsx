@@ -57,7 +57,7 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
     });
 
     return Object.entries(frets)
-      .filter(([fret, strings]) => strings.length >= 2)
+      .filter(([, strings]) => strings.length >= 2)
       .map(([fret, strings]) => ({
         fret: parseInt(fret),
         minString: Math.min(...strings),

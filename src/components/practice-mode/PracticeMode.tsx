@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { FC } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import type { FC } from 'react';
 import { useLocation } from 'react-router-dom';
 import { getChordTheme } from '../../utils/diagramTheme';
 import useMetronome from '../../hooks/useMetronome';
@@ -48,10 +48,10 @@ function getDiatonicForKey(keyCenter: MajorKey) {
 const PracticeMode: FC = () => {
     const [beginnerMode, setBeginnerMode] = useState(false);
     const highestUnlockedLevel = useHighestUnlockedLevel();
-    const availableChords = useState(
-        () => chords.filter(c => (c.level ?? 1) <= highestUnlockedLevel),
-        [highestUnlockedLevel]
-    );
+    const [availableChords, setAvailableChords] = useState<Chord[]>([]);
+    useEffect(() => {
+        setAvailableChords(chords.filter(c => (c.level ?? 1) <= highestUnlockedLevel));
+    }, [highestUnlockedLevel]);
     const [selectedInstrument, setSelectedInstrument] =
         useState<'guitar' | 'piano'>('guitar');
     const [currentChord, setCurrentChord] = useState<Chord | null>(
@@ -60,6 +60,7 @@ const PracticeMode: FC = () => {
     const [showSongPractice, setShowSongPractice] = useState(false);
     const { unlockAchievement } = useAchievements();
     const [{ isPlaying, bpm }, { start, stop, setBpm }] = useMetronome(60, 4);
+    const practicedChordsRef = useRef<Set<string>>(new Set());
     const {
         totalPracticeTime,
         chordsPlayed,
@@ -77,7 +78,6 @@ const PracticeMode: FC = () => {
     } = usePracticeStatistics();
     const [showTips, setShowTips] = useState<boolean>(true);
     const location = useLocation();
-    const practicedChordsRef = useState<Set<string>>(new Set());
     const [keyCenter, setKeyCenter] = useState<MajorKey | null>(null);
     const { playChord, fretToNote, guitarLoaded } = useAudio();
     const [activeTab, setActiveTab] = useState<'practice' | 'chords' | 'wheel'>('practice');
@@ -159,20 +159,32 @@ const PracticeMode: FC = () => {
         }
     };
 
-    const diatonicChips = useState(() => {
-        if (!keyCenter) return [];
+    const [diatonicChips, setDiatonicChips] = useState<Array<{
+        label: string;
+        available: boolean;
+        locked: boolean;
+        color: { primary: string; background: string };
+    }>>([]);
+
+    useEffect(() => {
+        if (!keyCenter) {
+            setDiatonicChips([]);
+            return;
+        }
         const { majors, minors } = getDiatonicForKey(keyCenter);
         const list: string[] = [...majors, ...minors];
-        return list.map((label: string) => {
-            const chord = chords.find((c: Chord) => c.name === label);
-            const available = !!chord && (chord.level ?? 1) <= highestUnlockedLevel;
-            return {
-                label,
-                available,
-                locked: !!chord && (chord.level ?? 1) > highestUnlockedLevel,
-                color: getChordTheme(label),
-            };
-        });
+        setDiatonicChips(
+            list.map((label: string) => {
+                const chord = chords.find((c: Chord) => c.name === label);
+                const available = !!chord && (chord.level ?? 1) <= highestUnlockedLevel;
+                return {
+                    label,
+                    available,
+                    locked: !!chord && (chord.level ?? 1) > highestUnlockedLevel,
+                    color: getChordTheme(label)
+                };
+            })
+        );
     }, [keyCenter, highestUnlockedLevel]);
 
     const handleChordSelect = (chordName: string) => {
@@ -272,7 +284,7 @@ const PracticeMode: FC = () => {
                                                 </span>
                                             )}
                                         </button>
-                                    ),
+                                    )
                                 )}
                             </div>
                         </div>
