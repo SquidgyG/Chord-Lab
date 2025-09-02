@@ -51,12 +51,15 @@ export const chords: Record<string, ChordDefinition> = {
   A: {
     pianoNotes: ['A3', 'C#4', 'E4'],
     guitarPositions: [
-      { string: 4, fret: 2, finger: 1 },
-      { string: 3, fret: 2, finger: 2 },
-      { string: 2, fret: 2, finger: 3 },
+      { string: 6, fret: 0, finger: 0, muted: true }, // X - muted low E
+      { string: 5, fret: 0, finger: 0 }, // O - open A
+      { string: 4, fret: 2, finger: 1 }, // E at 2nd fret
+      { string: 3, fret: 2, finger: 2 }, // A at 2nd fret
+      { string: 2, fret: 2, finger: 3 }, // C# at 2nd fret
+      { string: 1, fret: 0, finger: 0 }, // O - open high E
     ],
     level: 1,
-    color: "#66ccff"
+    color: "#02c7f9"
   },
   E: {
     pianoNotes: ['E3', 'G#3', 'B3'],
@@ -293,6 +296,135 @@ export const chords: Record<string, ChordDefinition> = {
     ],
     level: 1,
     color: "#33cccc"
+  },
+
+  // Major 7th Chords
+  Cmaj7: {
+    pianoNotes: ['C4', 'E4', 'G4', 'B4'],
+    guitarPositions: [
+      { string: 6, fret: 0, finger: 0, muted: true }, // Muted
+      { string: 5, fret: 3, finger: 3 }, // C
+      { string: 4, fret: 2, finger: 2 }, // E  
+      { string: 3, fret: 0, finger: 0 }, // G (open)
+      { string: 2, fret: 0, finger: 0 }, // B (open)
+      { string: 1, fret: 0, finger: 0 }, // E (open)
+    ],
+    level: 2,
+    color: "#ff9999"
+  },
+
+  Gmaj7: {
+    pianoNotes: ['G3', 'B3', 'D4', 'F#4'],
+    guitarPositions: [
+      { string: 6, fret: 3, finger: 3 }, // G
+      { string: 5, fret: 2, finger: 2 }, // B
+      { string: 4, fret: 0, finger: 0 }, // D (open)
+      { string: 3, fret: 0, finger: 0 }, // G (open)
+      { string: 2, fret: 0, finger: 0 }, // B (open)
+      { string: 1, fret: 2, finger: 1 }, // F#
+    ],
+    level: 2,
+    color: "#99ff99"
+  },
+
+  Dmaj7: {
+    pianoNotes: ['D4', 'F#4', 'A4', 'C#5'],
+    guitarPositions: [
+      { string: 6, fret: 0, finger: 0, muted: true }, // Muted
+      { string: 5, fret: 0, finger: 0, muted: true }, // Muted
+      { string: 4, fret: 0, finger: 0 }, // D (open)
+      { string: 3, fret: 2, finger: 2 }, // A
+      { string: 2, fret: 2, finger: 3 }, // C#
+      { string: 1, fret: 2, finger: 1 }, // F#
+    ],
+    level: 2,
+    color: "#9999ff"
+  },
+
+  // Minor 7th Chords
+  Am7: {
+    pianoNotes: ['A3', 'C4', 'E4', 'G4'],
+    guitarPositions: [
+      { string: 6, fret: 0, finger: 0, muted: true }, // Muted
+      { string: 5, fret: 0, finger: 0 }, // A (open)
+      { string: 4, fret: 2, finger: 2 }, // E
+      { string: 3, fret: 0, finger: 0 }, // G (open)
+      { string: 2, fret: 1, finger: 1 }, // C
+      { string: 1, fret: 0, finger: 0 }, // E (open)
+    ],
+    level: 2,
+    color: "#ffcc99"
+  },
+
+  Em7: {
+    pianoNotes: ['E4', 'G4', 'B4', 'D5'],
+    guitarPositions: [
+      { string: 6, fret: 0, finger: 0 }, // E (open)
+      { string: 5, fret: 2, finger: 2 }, // B
+      { string: 4, fret: 0, finger: 0 }, // D (open)
+      { string: 3, fret: 0, finger: 0 }, // G (open)
+      { string: 2, fret: 0, finger: 0 }, // B (open)
+      { string: 1, fret: 0, finger: 0 }, // E (open)
+    ],
+    level: 2,
+    color: "#cc99ff"
+  },
+
+  Dm7: {
+    pianoNotes: ['D4', 'F4', 'A4', 'C5'],
+    guitarPositions: [
+      { string: 6, fret: 0, finger: 0, muted: true }, // Muted
+      { string: 5, fret: 0, finger: 0, muted: true }, // Muted
+      { string: 4, fret: 0, finger: 0 }, // D (open)
+      { string: 3, fret: 2, finger: 2 }, // A
+      { string: 2, fret: 1, finger: 1 }, // F
+      { string: 1, fret: 1, finger: 1 }, // C
+    ],
+    level: 2,
+    color: "#99ccff"
+  },
+
+  // Dominant 7th Chords  
+  G7: {
+    pianoNotes: ['G3', 'B3', 'D4', 'F4'],
+    guitarPositions: [
+      { string: 6, fret: 3, finger: 3 }, // G
+      { string: 5, fret: 2, finger: 2 }, // B
+      { string: 4, fret: 0, finger: 0 }, // D (open)
+      { string: 3, fret: 0, finger: 0 }, // G (open)
+      { string: 2, fret: 0, finger: 0 }, // B (open)
+      { string: 1, fret: 1, finger: 1 }, // F
+    ],
+    level: 2,
+    color: "#ffcc66"
+  },
+
+  C7: {
+    pianoNotes: ['C4', 'E4', 'G4', 'Bb4'],
+    guitarPositions: [
+      { string: 6, fret: 0, finger: 0, muted: true }, // Muted
+      { string: 5, fret: 3, finger: 3 }, // C
+      { string: 4, fret: 2, finger: 2 }, // E
+      { string: 3, fret: 3, finger: 4 }, // Bb
+      { string: 2, fret: 1, finger: 1 }, // F
+      { string: 1, fret: 0, finger: 0 }, // E (open)
+    ],
+    level: 2,
+    color: "#ff9966"
+  },
+
+  D7: {
+    pianoNotes: ['D4', 'F#4', 'A4', 'C5'],
+    guitarPositions: [
+      { string: 6, fret: 0, finger: 0, muted: true }, // Muted
+      { string: 5, fret: 0, finger: 0, muted: true }, // Muted
+      { string: 4, fret: 0, finger: 0 }, // D (open)
+      { string: 3, fret: 2, finger: 2 }, // A
+      { string: 2, fret: 1, finger: 1 }, // C
+      { string: 1, fret: 2, finger: 3 }, // F#
+    ],
+    level: 2,
+    color: "#66ccff"
   },
 };
 

@@ -58,10 +58,13 @@ const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
         aria-label={`${chordName} chord`}
       >
         {/* White keys */}
-        {KEYBOARD_LAYOUT.whiteKeys.map(({ note }) => (
+        {KEYBOARD_LAYOUT.whiteKeys.map(({ note }, index) => (
           <div
             key={note}
             className="white"
+            style={{
+              left: `calc(100% / 11 * ${index})`,
+            }}
             aria-label={note}
           />
         ))}

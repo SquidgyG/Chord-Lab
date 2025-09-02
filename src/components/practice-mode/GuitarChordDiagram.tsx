@@ -106,7 +106,7 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
               className="string"
               style={{
                 left: `calc((100%/6)*${index} + (100%/6)/2)`, // Position 0-5 from left to right
-                '--sw': stringWidth,
+                '--sw': `calc(${stringWidth} * var(--scale))`,
                 '--sc': stringColor
               } as React.CSSProperties}
             />
@@ -187,12 +187,33 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
           const stringNumber = 6 - index; // Convert index to string number (0->6, 1->5, etc.)
           const position = positions.find(p => p.string === stringNumber);
           
+          // Show note name if the string is played (either open or fretted, but not muted)
+          const shouldShowNote = position && !position.muted;
+          let noteName = '';
+          
+          if (shouldShowNote) {
+            if (position.fret === 0) {
+              noteName = note; // Open string note
+            } else {
+              // Calculate fretted note (simplified - you might want a more comprehensive note calculation)
+              const noteMap: { [key: string]: string[] } = {
+                'E': ['E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#'],
+                'A': ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'],
+                'D': ['D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#'],
+                'G': ['G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#'],
+                'B': ['B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#'],
+              };
+              const baseNote = stringNumber === 1 ? 'E' : note;
+              noteName = noteMap[baseNote]?.[position.fret] || note;
+            }
+          }
+          
           return (
             <span 
               key={`note-${stringNumber}`} 
-              style={{ color: position ? rootColor : 'transparent' }}
+              style={{ color: shouldShowNote ? rootColor : 'transparent' }}
             >
-              {position && position.fret === 0 ? note : ''}
+              {noteName}
             </span>
           );
         })}

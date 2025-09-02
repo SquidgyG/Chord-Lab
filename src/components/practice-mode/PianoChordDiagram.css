@@ -1,30 +1,54 @@
 .piano-diagram-container {
+  --base-width: 800px;
+  --base-height: 370px;
+  --scale: 1;
+  
   width: 100%;
-  max-width: 800px;
+  max-width: 100%;
   margin: 0 auto;
+  container-type: inline-size;
+}
+
+@container (max-width: 500px) {
+  .piano-diagram-container {
+    --scale: 0.7;
+  }
+}
+
+@container (min-width: 501px) and (max-width: 800px) {
+  .piano-diagram-container {
+    --scale: calc(100cqw / var(--base-width));
+  }
+}
+
+@container (min-width: 801px) {
+  .piano-diagram-container {
+    --scale: min(1.2, calc(100cqw / var(--base-width)));
+  }
 }
 
 .keyboard-wrap {
   position: relative;
   z-index: 1;
-  padding: 18px;
-  border-radius: 14px;
+  padding: calc(18px * var(--scale));
+  border-radius: calc(14px * var(--scale));
   background: #fff;
   box-shadow: 0 16px 40px rgba(0,0,0,.20), 0 8px 18px rgba(0,0,0,.12);
-  width: 100%;
+  width: fit-content;
+  margin: 0 auto;
+  max-width: 100%;
 }
 
 .keyboard {
   position: relative;
-  border: 2px solid #111;
-  height: 370px;
-  display: grid;
-  grid-template-columns: repeat(11, 1fr);
-  gap: 0;
-  overflow: hidden;
+  border: calc(2px * var(--scale)) solid #111;
+  height: calc(var(--base-height) * var(--scale));
+  width: calc(var(--base-width) * var(--scale));
+  min-width: calc(400px * var(--scale));
+  display: block;
+  overflow: visible;
   background: #ffffff;
-  border-radius: 10px;
-  width: 100%;
+  border-radius: calc(10px * var(--scale));
 }
 
 .keyboard::before {
@@ -41,9 +65,13 @@
 }
 
 .white {
-  position: relative;
+  position: absolute;
   background: #fff;
+  border: calc(1px * var(--scale)) solid #ccc;
+  border-radius: 0 0 calc(6px * var(--scale)) calc(6px * var(--scale));
   z-index: 1;
+  height: 100%;
+  width: calc(100% / 11);
 }
 
 .black {
@@ -52,10 +80,10 @@
   width: calc(100%/11 * 0.64);
   height: 62%;
   background: #000;
-  border: 1px solid #111;
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6px;
-  box-shadow: inset 0 -5px 0 rgba(255,255,255,.08);
+  border: calc(1px * var(--scale)) solid #111;
+  border-bottom-left-radius: calc(6px * var(--scale));
+  border-bottom-right-radius: calc(6px * var(--scale));
+  box-shadow: inset 0 calc(-5px * var(--scale)) 0 rgba(255,255,255,.08);
   z-index: 5;
 }
 
@@ -68,37 +96,37 @@
   top: 0;
   height: 100%;
   z-index: 3;
-  box-shadow: inset 0 0 0 2px #000;
+  box-shadow: inset 0 0 0 calc(2px * var(--scale)) #000;
 }
 
 .fill-black {
   top: 0;
   height: 62%;
   z-index: 6;
-  box-shadow: inset 0 0 0 2px #000;
+  box-shadow: inset 0 0 0 calc(2px * var(--scale)) #000;
 }
 
 .note {
   position: absolute;
   transform: translateX(-50%);
-  width: 86px;
-  height: 86px;
+  width: calc(86px * var(--scale));
+  height: calc(86px * var(--scale));
   border-radius: 999px;
   display: grid;
   place-items: center;
   font-weight: 800;
-  font-size: 30px;
+  font-size: calc(30px * var(--scale));
   background: #fff;
-  border: 4px solid #000;
+  border: calc(4px * var(--scale)) solid #000;
   color: #000;
   text-shadow: none;
   z-index: 7;
 }
 
 .note.white {
-  bottom: 18px;
+  bottom: calc(18px * var(--scale));
 }
 
 .note.black {
-  top: calc(62% - 10px - 43px);
+  top: calc(62% - calc(10px * var(--scale)) - calc(43px * var(--scale)));
 }

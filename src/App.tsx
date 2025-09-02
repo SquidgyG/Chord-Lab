@@ -1,27 +1,38 @@
-import { useState } from 'react'
+import { useState, Suspense, lazy } from 'react'
 import { NavLink, Route, Routes, Navigate } from 'react-router-dom'
-import Dashboard from './components/Dashboard'
-import ChordProgressionBuilder from './components/chord-builder/ChordProgressionBuilder'
-import PracticeMode from './components/practice-mode/PracticeMode'
-import Metronome from './components/practice-mode/Metronome'
-import LearningPathway from './components/learning-path/LearningPathway'
 import { useClassroomMode } from './contexts/ClassroomModeContext'
-import ChordWheel from './components/ChordWheel'
 import { useTheme } from './contexts/ThemeContext'
-import ScrollingPractice from './components/practice-mode/ScrollingPractice'
-import ClassroomMode from './components/classroom/ClassroomMode'
-import TeacherDashboard from './components/classroom/TeacherDashboard'
-import TeacherGamesDashboard from './components/classroom/TeacherGamesDashboard'
-import { ScoreboardProvider } from './components/classroom/Scoreboard'
-import ExampleGame from './components/classroom/games/ExampleGame'
-// --- MERGED IMPORTS (from both branches) ---
 import { useUserProfile } from './contexts/UserProfileContext'
 import OnboardingFlow from './components/onboarding/OnboardingFlow'
 import { AchievementProvider } from './contexts/AchievementContext'
 import { AchievementToast } from './components/achievements/AchievementToast'
-import HelpResources from './components/HelpResources'
-import { ProfilePage } from './components/profile/ProfilePage'
-import ChordProgressionAnalysis from './components/theory-analysis/ChordProgressionAnalysis'
+import { ScoreboardProvider } from './components/classroom/Scoreboard'
+
+// Lazy-loaded components for code splitting
+const Dashboard = lazy(() => import('./components/Dashboard'))
+const ChordProgressionBuilder = lazy(() => import('./components/chord-builder/ChordProgressionBuilder'))
+const PracticeMode = lazy(() => import('./components/practice-mode/PracticeMode'))
+const Metronome = lazy(() => import('./components/practice-mode/Metronome'))
+const LearningPathway = lazy(() => import('./components/learning-path/LearningPathway'))
+const ChordWheel = lazy(() => import('./components/ChordWheel'))
+const ScrollingPractice = lazy(() => import('./components/practice-mode/ScrollingPractice'))
+const ClassroomMode = lazy(() => import('./components/classroom/ClassroomMode'))
+const TeacherDashboard = lazy(() => import('./components/classroom/TeacherDashboard'))
+const TeacherGamesDashboard = lazy(() => import('./components/classroom/TeacherGamesDashboard'))
+const ExampleGame = lazy(() => import('./components/classroom/games/ExampleGame'))
+const HelpResources = lazy(() => import('./components/HelpResources'))
+const ProfilePage = lazy(() => import('./components/profile/ProfilePage').then(module => ({ default: module.ProfilePage })))
+const ChordProgressionAnalysis = lazy(() => import('./components/theory-analysis/ChordProgressionAnalysis'))
+
+// Loading component for Suspense
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center min-h-[400px]">
+    <div className="flex flex-col items-center space-y-4">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+    </div>
+  </div>
+)
 
 function App() {
   const { classroomMode, toggleClassroomMode } = useClassroomMode()
@@ -213,31 +224,33 @@ function App() {
         </header>
 
         <main className="w-full mx-auto px-4 md:px-8 py-6">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/create" element={<ChordProgressionBuilder />} />
-            <Route path="/practice" element={<PracticeMode />} />
-            <Route path="/practice/scrolling" element={<ScrollingPractice />} />
-            <Route path="/learn" element={<LearningPathway />} />
-            <Route path="/wheel" element={<ChordWheel />} />
-            <Route path="/help" element={<HelpResources />} />
-            <Route path="/metronome" element={<Metronome />} />
-            <Route path="/classroom" element={<ClassroomMode />} />
-            <Route path="/classroom/dashboard" element={<TeacherDashboard />} />
-            <Route
-              path="/classroom/games/*"
-              element={
-                <ScoreboardProvider>
-                  <TeacherGamesDashboard />
-                </ScoreboardProvider>
-              }
-            >
-              <Route path="example" element={<ExampleGame />} />
-            </Route>
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/theory" element={<ChordProgressionAnalysis />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+          <Suspense fallback={<LoadingSpinner />}>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/create" element={<ChordProgressionBuilder />} />
+              <Route path="/practice" element={<PracticeMode />} />
+              <Route path="/practice/scrolling" element={<ScrollingPractice />} />
+              <Route path="/learn" element={<LearningPathway />} />
+              <Route path="/wheel" element={<ChordWheel />} />
+              <Route path="/help" element={<HelpResources />} />
+              <Route path="/metronome" element={<Metronome />} />
+              <Route path="/classroom" element={<ClassroomMode />} />
+              <Route path="/classroom/dashboard" element={<TeacherDashboard />} />
+              <Route
+                path="/classroom/games/*"
+                element={
+                  <ScoreboardProvider>
+                    <TeacherGamesDashboard />
+                  </ScoreboardProvider>
+                }
+              >
+                <Route path="example" element={<ExampleGame />} />
+              </Route>
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/theory" element={<ChordProgressionAnalysis />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Suspense>
         </main>
       </div>
     </AchievementProvider>
