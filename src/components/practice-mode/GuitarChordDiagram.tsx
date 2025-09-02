@@ -44,7 +44,7 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
     });
 
     return Object.entries(frets)
-      .filter(([, strings]) => strings.length >= 2)
+      .filter(([, strings]) => strings.length >= 3) // Require at least 3 strings for barre
       .map(([fret, strings]) => ({
         fret: parseInt(fret),
         minString: Math.min(...strings),
@@ -52,51 +52,22 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
       }));
   }, [positions]);
 
-  const fretboardStyle = {
-    height: '700px',
-    width: '520px',
-    padding: '72px 28px 22px',
-    position: 'relative' as const,
-  };
-
-  const stringStyle = {
-    width: 'var(--sw, 2px)',
-    background: 'var(--sc, #111)',
-    position: 'absolute' as const,
-    top: 0,
-    bottom: 0,
-    transform: 'translateX(-50%)',
-    borderRadius: '2px',
-    zIndex: 8,
-  };
-
-  const nutStyle = {
-    height: '16px',
-    background: '#000',
-  };
-
-  const fretLineStyle = {
-    height: '2px',
-    background: '#111',
-  };
-
-  const fingerMarkerStyle = {
-    width: '72px',
-    height: '72px',
-    fontSize: '30px',
-  };
-
-  const xoIndicatorStyle = {
-    fontSize: '38px',
-    fontWeight: 800,
+  // String widths from thickest (low E) to thinnest (high E)
+  const stringWidths = ['18px', '12px', '8px', '6px', '4px', '3px'];
+  
+  // Get X/O status for each string (1-6, where 6 is low E)
+  const getStringStatus = (stringNum: number) => {
+    const position = positions.find(p => p.string === stringNum);
+    if (!position) return 'X'; // Muted if no position defined
+    return position.fret === 0 ? 'O' : null; // Open if fret 0, otherwise null (fretted)
   };
 
   return (
-    <div className="guitar-chord-diagram">
-      <div className="chord-name">{chordName}</div>
-      <div className="fretboard" style={fretboardStyle}>
+    <div className="fretboard-wrap">
+      <div className="fretboard">
         {/* Nut */}
-        <div className="nut" style={nutStyle} />
+        <div className="nut"></div>
+        <div className="endline"></div>
         
         {/* Fret lines */}
         {[1, 2, 3, 4, 5].map((fret) => (
@@ -104,81 +75,111 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
             key={`fret-line-${fret}`}
             className="fret-line"
             style={{
-              top: `${fret * 70}px`,
-              ...fretLineStyle
+              top: `calc((100%/6)*${fret})`
             }}
           />
         ))}
         
+        {/* Inlays at 3rd and 5th frets */}
+        <div className="inlay" style={{ top: 'calc((100%/6)*2.5)' }}></div>
+        <div className="inlay" style={{ top: 'calc((100%/6)*4.5)' }}></div>
+        
         {/* Strings */}
         {[6, 5, 4, 3, 2, 1].map((string, index) => {
           const position = positions.find(p => p.string === string);
-          const isRoot = position && chordName.startsWith(chordName.split(' ')[0]);
-          const barre = barreChords.find(b => string >= b.minString && string <= b.maxString);
-          const xo = position && position.fret === 0 ? 'X' : 'O';
-          const chordColor = isRoot ? rootColor : color;
+          const stringWidth = stringWidths[string - 1]; // string-1 because array is 0-indexed
+          const stringColor = position ? '#111' : '#bfbfbf'; // Active vs muted string color
           
           return (
             <div 
               key={`string-${string}`}
               className="string"
               style={{
-                left: `${15 + (index * 18)}%`,
-                ...stringStyle,
-                '--sw': '3px',
-                '--sc': color
+                left: `calc((100%/6)*${index} + (100%/6)/2)`,
+                '--sw': stringWidth,
+                '--sc': stringColor
               } as React.CSSProperties}
+            />
+          );
+        })}
+        
+        {/* X/O Indicators */}
+        {[6, 5, 4, 3, 2, 1].map((string, index) => {
+          const status = getStringStatus(string);
+          if (!status) return null;
+          
+          return (
+            <div 
+              key={`xo-${string}`}
+              className="xo"
+              style={{
+                left: `calc((100%/6)*${index} + (100%/6)/2)`,
+                color: rootColor
+              }}
             >
-              {position && position.fret > 0 && (
-                <div 
-                  className="fret-position"
-                  style={{
-                    top: `${(position.fret - 0.5) * 70}px`,
-                    ...fingerMarkerStyle,
-                    backgroundColor: isRoot ? rootColor : ''
-                  }}
-                >
-                  {position.finger}
-                </div>
-              )}
-              {barre && string === barre.minString && (
-                <div 
-                  className="barre"
-                  style={{
-                    top: `${(barre.fret - 0.5) * 70}px`,
-                    left: `${15 + (6 - barre.maxString) * 18}%`,
-                    width: `${(barre.maxString - barre.minString) * 18}%`,
-                    '--cc': color
-                  } as React.CSSProperties}
-                />
-              )}
-              <div 
-                className="xo" 
-                style={{
-                  ...xoIndicatorStyle,
-                  left: `calc((100%/6)*${index} + (100%/6)/2)`,
-                  color: chordColor
-                }}
-              >
-                {xo}
-              </div>
+              {status}
             </div>
           );
         })}
         
-        {/* Note strip - shows open string notes from low E (6th) to high E (1st) */}
-        <div className="note-strip">
-          {['E', 'A', 'D', 'G', 'B', 'E'].map((note, i) => {
-            const stringNumber = 6 - i;
-            const hasFinger = positions.some(p => p.string === stringNumber);
-            return (
-              <span key={`note-${stringNumber}`}>
-                {hasFinger ? '' : note}
-              </span>
-            );
-          })}
-        </div>
+        {/* Barre chords */}
+        {barreChords.map((barre, idx) => (
+          <div 
+            key={`barre-${idx}`}
+            className="barre"
+            style={{
+              left: `calc((100%/6)*${6 - barre.maxString} + (100%/6)*0.12)`,
+              width: `calc((100%/6)*${barre.maxString - barre.minString + 1} + (100%/6)*0.76)`,
+              top: `calc((100%/6)*${barre.fret - 0.5})`,
+              '--cc': rootColor
+            } as React.CSSProperties}
+          >
+            1
+          </div>
+        ))}
+        
+        {/* Finger positions */}
+        {positions.filter(p => p.fret > 0).map((pos, idx) => {
+          // Skip if this position is part of a barre chord
+          const isBarrePosition = barreChords.some(b => 
+            pos.fret === b.fret && pos.string >= b.minString && pos.string <= b.maxString
+          );
+          if (isBarrePosition) return null;
+          
+          return (
+            <div 
+              key={`dot-${idx}`}
+              className="dot"
+              style={{
+                left: `calc((100%/6)*${6 - pos.string} + (100%/6)/2)`,
+                top: `calc((100%/6)*${pos.fret - 0.5})`,
+                '--cc': rootColor
+              } as React.CSSProperties}
+            >
+              {pos.finger || ''}
+            </div>
+          );
+        })}
       </div>
+      
+      {/* Note strip */}
+      <div className="note-strip">
+        {[6, 5, 4, 3, 2, 1].map((string) => {
+          const position = positions.find(p => p.string === string);
+          const stringNotes = ['E', 'A', 'D', 'G', 'B', 'E'];
+          const note = stringNotes[6 - string];
+          
+          return (
+            <span 
+              key={`note-${string}`} 
+              style={{ color: position ? rootColor : 'transparent' }}
+            >
+              {position && position.fret === 0 ? note : ''}
+            </span>
+          );
+        })}
+      </div>
+      
       {startFret > 1 && (
         <div className="fret-number">
           {startFret}fr

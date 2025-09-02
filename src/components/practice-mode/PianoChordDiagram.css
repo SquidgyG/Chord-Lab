@@ -1,24 +1,10 @@
-.piano-chart-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-}
-
-.chord-name-display {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  text-align: center;
-}
-
 .keyboard-wrap {
   position: relative;
+  z-index: 1;
   padding: 18px;
   border-radius: 14px;
   background: #fff;
-  box-shadow: 0 16px 40px rgba(0,0,0,0.20), 0 8px 18px rgba(0,0,0,0.12);
+  box-shadow: 0 16px 40px rgba(0,0,0,.20), 0 8px 18px rgba(0,0,0,.12);
 }
 
 .keyboard {
@@ -33,26 +19,55 @@
   border-radius: 10px;
 }
 
-.key {
-  position: relative;
+.keyboard-grid::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to right, 
+    rgba(0,0,0,.68) 0 2px, 
+    transparent 2px calc(100%/11)
+  );
 }
 
-.white-key {
+.white {
+  position: relative;
   background: #fff;
   z-index: 1;
 }
 
-.black-key {
+.black {
   position: absolute;
   top: 0;
-  width: calc(100% / 11 * 0.64);
+  width: calc(100%/11 * 0.64);
   height: 62%;
   background: #000;
   border: 1px solid #111;
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 6px;
-  box-shadow: inset 0 -5px 0 rgba(255,255,255,0.08);
+  box-shadow: inset 0 -5px 0 rgba(255,255,255,.08);
   z-index: 5;
+}
+
+.fill {
+  position: absolute;
+  pointer-events: none;
+}
+
+.fill-white {
+  top: 0;
+  height: 100%;
+  z-index: 3;
+  box-shadow: inset 0 0 0 2px #000;
+}
+
+.fill-black {
+  top: 0;
+  height: 62%;
+  z-index: 6;
+  box-shadow: inset 0 0 0 2px #000;
 }
 
 .note {
@@ -64,39 +79,18 @@
   display: grid;
   place-items: center;
   font-weight: 800;
-  font-size: 22px;
+  font-size: 30px;
   background: #fff;
   border: 4px solid #000;
   color: #000;
   text-shadow: none;
   z-index: 7;
-  box-shadow: 0 5px 10px rgba(0,0,0,0.4);
 }
 
-.white-key.active {
-  background: linear-gradient(to bottom, #ffd86f, #fcb045);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+.note.white {
+  bottom: 18px;
 }
 
-.black-key.active {
-  background: linear-gradient(to bottom, #fcb045, #ff8c00);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-}
-
-.fill {
-  position: absolute;
-  pointer-events: none;
-  z-index: 4;
-}
-
-.fill-white {
-  top: 0;
-  height: 100%;
-  background: rgba(204, 57, 188, 0.3); /* Example color, will be set dynamically */
-}
-
-.fill-black {
-  top: 0;
-  height: 62%;
-  background: rgba(204, 57, 188, 0.3); /* Example color, will be set dynamically */
+.note.black {
+  top: calc(62% - 10px - 43px);
 }

@@ -1,25 +1,21 @@
-.guitar-chord-diagram {
+.fretboard-wrap {
+  width: 520px;
+  max-width: 100%;
   margin: 0 auto;
-  display: block;
-  background: #f8fafc;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  width: 100%;
-  max-width: 600px;
-  min-width: 400px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+  background: #fff;
+  border-radius: 14px;
+  padding: 72px 28px 22px;
+  box-shadow: 0 16px 40px rgba(0,0,0,.20), 0 8px 18px rgba(0,0,0,.12);
+  position: relative;
+  font-family: "Readex Pro", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
 }
 
 .fretboard {
   position: relative;
-  width: 100%;
-  height: 400px;
-  background: #fff;
+  height: 700px;
   border-radius: 10px;
-  margin: 0 auto;
-  padding: 10px 0;
-  border: 2px solid #333;
+  background: #fff;
+  overflow: visible;
 }
 
 .nut {
@@ -32,67 +28,97 @@
   z-index: 12;
 }
 
+.endline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: #000;
+  z-index: 11;
+}
+
 .fret-line {
   position: absolute;
-  left: 15%;
-  right: 15%;
+  left: 0;
+  right: 0;
   height: 2px;
-  background: #666;
+  background: #111;
   z-index: 10;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.inlay {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.12);
+  z-index: 9;
 }
 
 .string {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 2px;
-  background: #333;
+  width: var(--sw, 2px);
+  background: var(--sc, #111);
   transform: translateX(-50%);
+  border-radius: 2px;
   z-index: 8;
-  box-shadow: 0 0 2px rgba(0,0,0,0.3);
 }
 
-.fret-position {
+.xo {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  text-align: center;
+  font-weight: 800;
+  top: 0;
+  z-index: 15;
+  font-size: 32px;
+  line-height: 1;
+}
+
+.dot {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--cc, #4f46e5);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
+  width: 72px;
+  height: 72px;
+  border-radius: 999px;
+  background: var(--cc);
+  color: #fff;
   z-index: 20;
-  font-size: 16px;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-  border: 2px solid rgba(255,255,255,0.3);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 30px;
+  text-shadow: 0 1px 0 rgba(0,0,0,.25);
 }
 
 .barre {
   position: absolute;
-  background: var(--cc, #4f46e5);
-  border-radius: 15px;
-  z-index: 15;
-  height: 30px;
   transform: translateY(-50%);
-  opacity: 0.9;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  height: 48px;
+  border-radius: 999px;
+  background: var(--cc);
+  z-index: 19;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 24px;
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0,0,0,.25);
 }
 
 .note-strip {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 0;
-  margin-top: 20px;
-  font-weight: 700;
-  text-align: center;
-  padding: 0 10%;
-  color: #4b5563;
-  font-size: 14px;
+  margin-top: 12px;
+  font-weight: 800;
+  font-size: 32px;
+  letter-spacing: .5px;
 }
 
 .note-strip span {
@@ -100,12 +126,12 @@
   min-height: 1.1em;
 }
 
-.chord-name {
-  text-align: center;
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  color: #1f2937;
-  text-transform: capitalize;
-  letter-spacing: 0.5px;
+.fret-number {
+  position: absolute;
+  right: -40px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  font-weight: 600;
+  color: #666;
 }

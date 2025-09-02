@@ -55,90 +55,76 @@ const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
   };
 
   return (
-    <div className="piano-chart-container">
-      {chordName && (
-        <div className="chord-name-display">
-          {chordName}
-        </div>
-      )}
-      <div className="keyboard-wrap" style={keyboardWrapStyle}>
-        <div
-          className="keyboard"
-          role="img"
-          aria-label={`${chordName} chord`}
-          style={{ gridTemplateColumns: `repeat(${KEYBOARD_LAYOUT.totalWhiteKeys}, 1fr)` }}
-        >
-          {KEYBOARD_LAYOUT.whiteKeys.map(({ note }) => {
-            const isActive = activeNotes.includes(getNoteName(note));
-            return (
-              <div
-                key={note}
-                className={`white-key ${isActive ? 'active' : ''}`}
-                aria-label={note}
-              />
-            );
-          })}
+    <div className="keyboard-wrap">
+      <div
+        className="keyboard"
+        role="img"
+        aria-label={`${chordName} chord`}
+      >
+        {/* White keys */}
+        {KEYBOARD_LAYOUT.whiteKeys.map(({ note }, index) => (
+          <div
+            key={note}
+            className="white"
+            aria-label={note}
+          />
+        ))}
+        
+        {/* Black keys with positioning */}
+        {KEYBOARD_LAYOUT.blackKeys.map(({ note, position }) => (
+          <div
+            key={note}
+            className="black"
+            style={{
+              left: getBlackKeyLeft(position)
+            }}
+          />
+        ))}
+        
+        {/* Keyboard grid overlay */}
+        <div className="keyboard-grid"></div>
+        
+        {/* Fill overlays for active notes */}
+        {activeNotes.map((note, index) => {
+          const key = allKeys.find(k => k.root === note);
+          if (!key) return null;
 
-          {KEYBOARD_LAYOUT.blackKeys.map(({ note, position }) => {
-            const isActive = activeNotes.includes(getNoteName(note));
-            return (
-              <div
-                key={note}
-                className={`black-key ${isActive ? 'active' : ''}`}
-                style={{
-                  left: getBlackKeyLeft(position),
-                  width: `${whiteKeyWidth * 0.64}%`,
-                }}
-                aria-label={note}
-              />
-            );
-          })}
+          const isBlack = key.type === 'black';
 
-          {/* Fill overlays with dynamic color */}
-          {activeNotes.map((note, index) => {
-            const key = allKeys.find(k => k.root === note);
-            if (!key) return null;
+          return (
+            <div
+              key={`fill-${index}`}
+              className={`fill ${isBlack ? 'fill-black' : 'fill-white'}`}
+              style={{
+                left: getFillLeft(key.position, isBlack),
+                width: isBlack
+                  ? `calc(100%/11 * 0.64)`
+                  : `calc(100%/11)`,
+                background: color
+              }}
+            />
+          );
+        })}
 
-            const isBlack = key.type === 'black';
+        {/* Note indicators */}
+        {activeNotes.map((note, index) => {
+          const key = allKeys.find(k => k.root === note);
+          if (!key) return null;
 
-            return (
-              <div
-                key={`fill-${index}`}
-                className={`fill ${isBlack ? 'fill-black' : 'fill-white'}`}
-                style={{
-                  ...fillStyle,
-                  left: getFillLeft(key.position, isBlack),
-                  width: isBlack
-                    ? `${whiteKeyWidth * 0.64}%`
-                    : `${whiteKeyWidth}%`,
-                }}
-              />
-            );
-          })}
+          const isBlack = key.type === 'black';
 
-          {/* Note indicators with chord color */}
-          {activeNotes.map((note, index) => {
-            const key = allKeys.find(k => k.root === note);
-            if (!key) return null;
-
-            const isBlack = key.type === 'black';
-
-            return (
-              <div
-                key={`note-${index}`}
-                className={`note ${isBlack ? 'black' : 'white'}`}
-                style={{
-                  borderColor: color,
-                  boxShadow: `0 5px 10px ${color}`,
-                  left: `${(key.position + 0.5) * whiteKeyWidth}%`,
-                  top: isBlack ? 'calc(62% - 43px)' : 'calc(100% - 18px - 43px)',
-                }}
-              >
-                {note}
-              </div>
-            );
-          })}
-        </div>
+          return (
+            <div
+              key={`note-${index}`}
+              className={`note ${isBlack ? 'black' : 'white'}`}
+              style={{
+                left: `calc(100%/11*${key.position} + 100%/11*0.5)`,
+              }}
+            >
+              {note}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
