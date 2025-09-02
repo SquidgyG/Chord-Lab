@@ -23,22 +23,12 @@ const numeralMap: Record<string, number> = {
 // Add type guard for positions
 const safePositions = (positions?: FretPosition[]): FretPosition[] => positions || [];
 
-// Add explicit type guard for ChordOption
-const isChordOption = (chord: unknown): chord is ChordOption => {
-  return typeof chord === 'object' && 
-         chord !== null && 
-         'name' in chord && 
-         'positions' in chord && 
-         'notes' in chord;
-};
-
-// Ensure proper type checking for chord data
-const chordOptions: ChordOption[] = chordData
-  .filter(isChordOption)
-  .map((chord: ChordOption) => ({
-    name: chord.name,
-    positions: safePositions(chord.positions),
-    notes: chord.notes || []
+// Convert chordData to ChordOption array with correct property mapping
+const chordOptions: ChordOption[] = Object.entries(chordData)
+  .map(([name, chord]) => ({
+    name,
+    positions: chord.guitarPositions,
+    notes: chord.pianoNotes
   }));
 
 const ClassroomMode: React.FC = () => {
@@ -133,17 +123,14 @@ const ClassroomMode: React.FC = () => {
       <div className="mt-6">
         <h4 className="font-bold text-gray-700 dark:text-gray-200">Generated Progression:</h4>
         <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-2`}>
-          {generatedChords.map((chord, index) => {
-            const data = chordOptions.find(c => c.name === chord);
+          {generatedChords.map((chordName, index) => {
+            const data = chordOptions.find(c => c.name === chordName);
             return (
-              <div
-                key={index}
-                className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg text-center"
-              >
+              <div key={index} className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg text-center">
                 {instrument === 'guitar' ? (
-                  <GuitarDiagram chordName={chord} positions={safePositions(data?.positions)} />
+                  <GuitarDiagram chordName={chordName} positions={safePositions(data?.positions)} />
                 ) : (
-                  <PianoDiagram chord={chord} rootNoteColor={data?.notes[0]} />
+                  <PianoDiagram chord={data || {name: chordName, positions: [], notes: []}} rootNoteColor={data?.notes[0]} />
                 )}
               </div>
             )
