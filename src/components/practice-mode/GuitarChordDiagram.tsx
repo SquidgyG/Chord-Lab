@@ -1,18 +1,16 @@
 import React, { useMemo } from 'react';
 import './GuitarChordDiagram.css';
+import type { ChordOption } from '../../types';
 
 interface FingerPosition {
   fret: number;
   string: number;
-  finger?: number;
   muted?: boolean;
 }
 
 interface GuitarChordDiagramProps {
-  positions: FingerPosition[];
-  chordName: string;
+  chord: ChordOption;
   rootNoteColor?: string;
-  color?: string;
 }
 
 interface BarreChord {
@@ -22,22 +20,18 @@ interface BarreChord {
 }
 
 const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({ 
-  positions, 
-  chordName, 
+  chord, 
   rootNoteColor = '#ff6b6b',
-  color = rootNoteColor
 }) => {
-  const rootColor = color || rootNoteColor;
-  
   // Find the highest fret to determine diagram offset
-  const highestFret = Math.max(...positions.map(p => p.fret), 1);
+  const highestFret = Math.max(...chord.positions.map(p => p.fret), 1);
   const startFret = highestFret > 4 ? highestFret - 3 : 1;
 
   // Check if there's a barre chord
   const barreChords = useMemo<BarreChord[]>(() => {
     const frets: Record<number, number[]> = {};
     
-    positions.forEach(pos => {
+    chord.positions.forEach(pos => {
       if (pos.fret > 0) {
         if (!frets[pos.fret]) frets[pos.fret] = [];
         frets[pos.fret].push(pos.string);
@@ -63,14 +57,14 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
         minString: Math.min(...strings),
         maxString: Math.max(...strings)
       }));
-  }, [positions]);
+  }, [chord.positions]);
 
   // String widths from thinnest (high E, string 1) to thickest (low E, string 6)
   const stringWidths = ['3px', '4px', '6px', '8px', '12px', '18px']; // Index 0 = string 1, Index 5 = string 6
   
   // Get X/O status for each string (1-6, where 6 is low E)
   const getStringStatus = (stringNum: number) => {
-    const position = positions.find(p => p.string === stringNum);
+    const position = chord.positions.find(p => p.string === stringNum);
     if (!position) return null; // Not specified, don't show anything
     if (position.fret === 0) {
       return position.muted ? 'X' : 'O'; // Use explicit muted flag
@@ -80,8 +74,8 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
   
   return (
     <div className="fretboard-wrap">
-      <div className="chord-name" style={{ color: rootColor }}>
-        {chordName}
+      <div className="chord-name" style={{ color: rootNoteColor }}>
+        {chord.name}
       </div>
       <div className="fretboard">
         {/* Nut */}
@@ -105,7 +99,7 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
         
         {/* Strings - from left to right: 6, 5, 4, 3, 2, 1 */}
         {[6, 5, 4, 3, 2, 1].map((string, index) => {
-          const position = positions.find(p => p.string === string);
+          const position = chord.positions.find(p => p.string === string);
           const stringWidth = stringWidths[string - 1]; // Use direct string index
           const stringColor = position?.muted ? '#bfbfbf' : '#111'; // Gray for muted, black for active
           
@@ -133,7 +127,7 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
               className="xo"
               style={{
                 left: `calc((100%/6)*${index} + (100%/6)/2)`, // Match string positioning
-                color: rootColor
+                color: rootNoteColor
               }}
             >
               {status}
@@ -155,7 +149,7 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
                 left: `calc((100%/6)*${minIndex} + (100%/6)*0.12)`,
                 width: `calc((100%/6)*${maxIndex - minIndex + 1} + (100%/6)*0.76)`,
                 top: `calc((100%/6)*${barre.fret - 0.5})`,
-                '--cc': rootColor
+                '--cc': rootNoteColor
               } as React.CSSProperties}
             >
               1
@@ -164,7 +158,7 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
         })}
         
         {/* Finger positions */}
-        {positions.filter(p => p.fret > 0).map((pos, idx) => {
+        {chord.positions.filter(p => p.fret > 0).map((pos, idx) => {
           // Skip if this position is part of a barre chord
           const isBarrePosition = barreChords.some(b => 
             pos.fret === b.fret && pos.string >= b.minString && pos.string <= b.maxString
@@ -181,11 +175,25 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
               style={{
                 left: `calc((100%/6)*${positionIndex} + (100%/6)/2)`,
                 top: `calc((100%/6)*${pos.fret - 0.5})`,
-                '--cc': rootColor
+                '--cc': rootNoteColor
               } as React.CSSProperties}
-            >
-              {pos.finger || ''}
-            </div>
+            />
+          );
+        })}
+        
+        {/* Positions */}
+        {chord.positions.map((pos) => {
+          if (pos.muted) return <div key={`${pos.string}-muted`} className="string-marker" style={{ left: `calc((100%/6)*${6 - pos.string} + (100%/6)/2)` }} />;
+          return (
+            <div 
+              key={`${pos.string}-${pos.fret}`}
+              className="fret-marker"
+              style={{
+                left: `calc((100%/6)*${6 - pos.string} + (100%/6)/2)`,
+                top: `calc((100%/6)*${pos.fret - 0.5})`,
+                '--cc': rootNoteColor
+              } as React.CSSProperties}
+            />
           );
         })}
       </div>
@@ -194,7 +202,7 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
       <div className="note-strip">
         {['E', 'A', 'D', 'G', 'B', 'E'].map((note, index) => {
           const stringNumber = 6 - index; // Convert index to string number (0->6, 1->5, etc.)
-          const position = positions.find(p => p.string === stringNumber);
+          const position = chord.positions.find(p => p.string === stringNumber);
           
           // Show note name if the string is played (either open or fretted, but not muted)
           const shouldShowNote = position && !position.muted;
@@ -220,7 +228,7 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
           return (
             <span 
               key={`note-${stringNumber}`} 
-              style={{ color: shouldShowNote ? rootColor : 'transparent' }}
+              style={{ color: shouldShowNote ? rootNoteColor : 'transparent' }}
             >
               {noteName}
             </span>

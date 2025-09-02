@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { getChordTheme } from '../../utils/diagramTheme';
 import { getChordInversion, getNoteName } from '../../utils/music-theory';
+import type { ChordOption } from '../../types';
 
 // --- Static Data for Keyboard Layout (from 'main') ---
 export const KEYBOARD_LAYOUT = {
@@ -20,11 +21,8 @@ export const KEYBOARD_LAYOUT = {
 
 // --- Interfaces (Merged) ---
 interface PianoDiagramProps {
-  chordName: string;
-  notes: string[]; // Notes with octaves, e.g., ["C4", "E4", "G4"]
-  inversion?: 0 | 1 | 2;
-  showLabels?: boolean;
-  onPlayNote?: (note: string) => void;
+  chord: ChordOption;
+  rootNoteColor?: string;
 }
 
 // --- Helper Components (from 'main') ---
@@ -78,24 +76,46 @@ const KeyboardWrap = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
+const PianoKeyMarker = ({ note, root, rootNoteColor }: { note: string; root: boolean; rootNoteColor?: string }) => {
+  const style: React.CSSProperties = {
+    position: 'absolute',
+    transform: 'translateX(-50%)',
+    width: '86px',
+    height: '86px',
+    borderRadius: '999px',
+    display: 'grid',
+    placeItems: 'center',
+    fontWeight: 800,
+    fontSize: '30px',
+    background: root ? rootNoteColor : '#3b82f6',
+    border: '4px solid #000',
+    color: '#000',
+    textShadow: 'none',
+    zIndex: 7,
+    pointerEvents: 'none',
+  };
+
+  return (
+    <div style={style}>
+      {getNoteName(note)}
+    </div>
+  );
+};
+
 // --- Main Component (Merged) ---
-const PianoDiagram = ({
-  chordName,
-  notes,
-  inversion = 0,
-  showLabels = true,
-  onPlayNote,
-}: PianoDiagramProps) => {
-  const theme = getChordTheme(chordName);
+const PianoDiagram: React.FC<PianoDiagramProps> = ({
+  chord,
+  rootNoteColor,
+}) => {
+  const theme = getChordTheme(chord.name);
   const [userPressedKeys, setUserPressedKeys] = useState<Set<string>>(new Set());
 
   const invertedNotes = useMemo(
-    () => getChordInversion(notes, inversion),
-    [notes, inversion]
+    () => getChordInversion(chord.notes, 0),
+    [chord.notes]
   );
 
   const handleKeyPress = (note: string) => {
-    onPlayNote?.(note);
     setUserPressedKeys(prev => new Set(prev).add(note));
     setTimeout(() => {
       setUserPressedKeys(prev => {
@@ -134,12 +154,12 @@ const PianoDiagram = ({
 
   return (
     <Sheet theme={theme}>
-      <Title>{chordName}</Title>
+      <Title>{chord.name}</Title>
       <KeyboardWrap>
         <div
           className="keyboard"
           role="img"
-          aria-label={`${chordName} chord chart`}
+          aria-label={`${chord.name} chord chart`}
           style={{
             position: 'relative',
             border: '2px solid #111',
@@ -171,7 +191,7 @@ const PianoDiagram = ({
                 position: 'relative',
                 background: isNotePressed(note) ? theme.background : '#fff',
                 zIndex: 1,
-                cursor: onPlayNote ? 'pointer' : 'default',
+                cursor: 'pointer',
                 transition: 'background 0.1s ease-in-out',
                 ...getWhiteNotePosition(position)
               }}
@@ -196,7 +216,7 @@ const PianoDiagram = ({
                 boxShadow: 'inset 0 -5px 0 rgba(255,255,255,.08)',
                 zIndex: 5,
                 ...getBlackKeyPosition(position),
-                cursor: onPlayNote ? 'pointer' : 'default',
+                cursor: 'pointer',
                 transition: 'background 0.1s ease-in-out',
               }}
               onClick={() => handleKeyPress(note)}
@@ -204,7 +224,7 @@ const PianoDiagram = ({
           ))}
 
           {/* Note Labels */}
-          {showLabels && pressedKeysToDisplay.map(({ note, type, position }) => {
+          {pressedKeysToDisplay.map(({ note, type, position }) => {
             const noteName = getNoteName(note);
             const style: React.CSSProperties = {
               position: 'absolute',
@@ -216,7 +236,7 @@ const PianoDiagram = ({
               placeItems: 'center',
               fontWeight: 800,
               fontSize: '30px',
-              background: '#fff',
+              background: note === chord.notes[0] ? '#3b82f6' : '#3b82f6',
               border: '4px solid #000',
               color: '#000',
               textShadow: 'none',
@@ -238,7 +258,7 @@ const PianoDiagram = ({
               </div>
             );
           })}
-          {showLabels && pressedKeysToDisplay.filter(key => key.type === 'black').map(({ note, position }) => (
+          {pressedKeysToDisplay.filter(key => key.type === 'black').map(({ note, position }) => (
             <div 
               key={`black-note-${note}`} 
               style={{
@@ -255,6 +275,14 @@ const PianoDiagram = ({
             >
               {getNoteName(note)}
             </div>
+          ))}
+          {chord.notes.map((note) => (
+            <PianoKeyMarker 
+              key={note}
+              note={note} 
+              root={note === chord.notes[0]}
+              rootNoteColor={rootNoteColor}
+            />
           ))}
         </div>
       </KeyboardWrap>

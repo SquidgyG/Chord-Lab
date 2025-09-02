@@ -1,0 +1,14 @@
+.student-view {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.chord-display {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}

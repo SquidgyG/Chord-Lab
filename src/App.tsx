@@ -8,6 +8,7 @@ import { AchievementProvider } from './contexts/AchievementContext'
 import { AchievementToast } from './components/achievements/AchievementToast'
 import { ScoreboardProvider } from './components/classroom/Scoreboard'
 import './styles/responsive-diagrams.css'
+import { StudentView } from './components/student/StudentView';
 
 // Lazy-loaded components for code splitting
 const Dashboard = lazy(() => import('./components/Dashboard'))
@@ -249,6 +250,7 @@ function App() {
               </Route>
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/theory" element={<ChordProgressionAnalysis />} />
+              <Route path="/student" element={<StudentView />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
