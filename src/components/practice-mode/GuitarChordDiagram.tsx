@@ -52,18 +52,51 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
       }));
   }, [positions]);
 
+  const fretboardStyle = {
+    height: '700px',
+    width: '520px',
+    padding: '72px 28px 22px',
+    position: 'relative' as const,
+  };
+
+  const stringStyle = {
+    width: 'var(--sw, 2px)',
+    background: 'var(--sc, #111)',
+    position: 'absolute' as const,
+    top: 0,
+    bottom: 0,
+    transform: 'translateX(-50%)',
+    borderRadius: '2px',
+    zIndex: 8,
+  };
+
+  const nutStyle = {
+    height: '16px',
+    background: '#000',
+  };
+
+  const fretLineStyle = {
+    height: '2px',
+    background: '#111',
+  };
+
+  const fingerMarkerStyle = {
+    width: '72px',
+    height: '72px',
+    fontSize: '30px',
+  };
+
+  const xoIndicatorStyle = {
+    fontSize: '38px',
+    fontWeight: 800,
+  };
+
   return (
     <div className="guitar-chord-diagram">
       <div className="chord-name">{chordName}</div>
-      <div className="fretboard" style={{
-        position: 'relative',
-        width: '100%',
-        height: '400px',
-        margin: '0 auto',
-        padding: '20px 0'
-      }}>
+      <div className="fretboard" style={fretboardStyle}>
         {/* Nut */}
-        <div className="nut" style={{ height: '8px' }} />
+        <div className="nut" style={nutStyle} />
         
         {/* Fret lines */}
         {[1, 2, 3, 4, 5].map((fret) => (
@@ -72,8 +105,7 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
             className="fret-line"
             style={{
               top: `${fret * 70}px`,
-              height: '3px',
-              width: '100%'
+              ...fretLineStyle
             }}
           />
         ))}
@@ -83,6 +115,8 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
           const position = positions.find(p => p.string === string);
           const isRoot = position && chordName.startsWith(chordName.split(' ')[0]);
           const barre = barreChords.find(b => string >= b.minString && string <= b.maxString);
+          const xo = position && position.fret === 0 ? 'X' : 'O';
+          const chordColor = isRoot ? rootColor : color;
           
           return (
             <div 
@@ -90,8 +124,9 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
               className="string"
               style={{
                 left: `${15 + (index * 18)}%`,
-                width: '3px',
-                '--cc': color
+                ...stringStyle,
+                '--sw': '3px',
+                '--sc': color
               } as React.CSSProperties}
             >
               {position && position.fret > 0 && (
@@ -99,10 +134,7 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
                   className="fret-position"
                   style={{
                     top: `${(position.fret - 0.5) * 70}px`,
-                    width: '30px',
-                    height: '30px',
-                    lineHeight: '30px',
-                    fontSize: '16px',
+                    ...fingerMarkerStyle,
                     backgroundColor: isRoot ? rootColor : ''
                   }}
                 >
@@ -120,6 +152,16 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
                   } as React.CSSProperties}
                 />
               )}
+              <div 
+                className="xo" 
+                style={{
+                  ...xoIndicatorStyle,
+                  left: `calc((100%/6)*${index} + (100%/6)/2)`,
+                  color: chordColor
+                }}
+              >
+                {xo}
+              </div>
             </div>
           );
         })}
