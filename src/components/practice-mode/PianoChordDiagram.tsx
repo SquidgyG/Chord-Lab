@@ -42,27 +42,23 @@ const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
     return `${position * whiteKeyWidth}%`;
   };
 
-  // Update fill styles to use the color prop
-  const fillStyle = {
-    backgroundColor: color,
-    border: `2px solid ${color}`
-  };
-
-  const keyboardWrapStyle: React.CSSProperties = {
-    position: 'relative',
-    width: '100%',
-    height: '360px'
-  };
+  // Process chord data
 
   return (
-    <div className="keyboard-wrap">
+    <div className="piano-diagram-container">
+      {chordName && (
+        <h3 className="chord-title" style={{ textAlign: 'center', marginBottom: '1rem', fontSize: '2rem', fontWeight: 'bold', color }}>
+          {chordName}
+        </h3>
+      )}
+      <div className="keyboard-wrap">
       <div
         className="keyboard"
         role="img"
         aria-label={`${chordName} chord`}
       >
         {/* White keys */}
-        {KEYBOARD_LAYOUT.whiteKeys.map(({ note }, index) => (
+        {KEYBOARD_LAYOUT.whiteKeys.map(({ note }) => (
           <div
             key={note}
             className="white"
@@ -126,6 +122,7 @@ const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
           );
         })}
       </div>
+    </div>
     </div>
   );
 };

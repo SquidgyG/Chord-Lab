@@ -52,8 +52,8 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
       }));
   }, [positions]);
 
-  // String widths from thickest (low E) to thinnest (high E)
-  const stringWidths = ['18px', '12px', '8px', '6px', '4px', '3px'];
+  // String widths from thinnest (high E, string 1) to thickest (low E, string 6)
+  const stringWidths = ['3px', '4px', '6px', '8px', '12px', '18px']; // Index 0 = string 1, Index 5 = string 6
   
   // Get X/O status for each string (1-6, where 6 is low E)
   const getStringStatus = (stringNum: number) => {
@@ -61,9 +61,15 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
     if (!position) return 'X'; // Muted if no position defined
     return position.fret === 0 ? 'O' : null; // Open if fret 0, otherwise null (fretted)
   };
+  
+  // Add chord name display
+  const displayChordName = chordName || 'Unknown';
 
   return (
     <div className="fretboard-wrap">
+      <h3 className="chord-title" style={{ textAlign: 'center', marginBottom: '1rem', fontSize: '2rem', fontWeight: 'bold', color: rootColor }}>
+        {displayChordName}
+      </h3>
       <div className="fretboard">
         {/* Nut */}
         <div className="nut"></div>
@@ -84,10 +90,10 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
         <div className="inlay" style={{ top: 'calc((100%/6)*2.5)' }}></div>
         <div className="inlay" style={{ top: 'calc((100%/6)*4.5)' }}></div>
         
-        {/* Strings */}
+        {/* Strings - from left to right: 6, 5, 4, 3, 2, 1 */}
         {[6, 5, 4, 3, 2, 1].map((string, index) => {
           const position = positions.find(p => p.string === string);
-          const stringWidth = stringWidths[string - 1]; // string-1 because array is 0-indexed
+          const stringWidth = stringWidths[string - 1]; // Use direct string index
           const stringColor = position ? '#111' : '#bfbfbf'; // Active vs muted string color
           
           return (
@@ -95,7 +101,7 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
               key={`string-${string}`}
               className="string"
               style={{
-                left: `calc((100%/6)*${index} + (100%/6)/2)`,
+                left: `calc((100%/6)*${index} + (100%/6)/2)`, // Position 0-5 from left to right
                 '--sw': stringWidth,
                 '--sc': stringColor
               } as React.CSSProperties}
@@ -113,7 +119,7 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
               key={`xo-${string}`}
               className="xo"
               style={{
-                left: `calc((100%/6)*${index} + (100%/6)/2)`,
+                left: `calc((100%/6)*${index} + (100%/6)/2)`, // Match string positioning
                 color: rootColor
               }}
             >
@@ -123,20 +129,26 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
         })}
         
         {/* Barre chords */}
-        {barreChords.map((barre, idx) => (
-          <div 
-            key={`barre-${idx}`}
-            className="barre"
-            style={{
-              left: `calc((100%/6)*${6 - barre.maxString} + (100%/6)*0.12)`,
-              width: `calc((100%/6)*${barre.maxString - barre.minString + 1} + (100%/6)*0.76)`,
-              top: `calc((100%/6)*${barre.fret - 0.5})`,
-              '--cc': rootColor
-            } as React.CSSProperties}
-          >
-            1
-          </div>
-        ))}
+        {barreChords.map((barre, idx) => {
+          // Convert string numbers to position indices
+          const minIndex = 6 - barre.maxString; // Left-most position
+          const maxIndex = 6 - barre.minString; // Right-most position
+          
+          return (
+            <div 
+              key={`barre-${idx}`}
+              className="barre"
+              style={{
+                left: `calc((100%/6)*${minIndex} + (100%/6)*0.12)`,
+                width: `calc((100%/6)*${maxIndex - minIndex + 1} + (100%/6)*0.76)`,
+                top: `calc((100%/6)*${barre.fret - 0.5})`,
+                '--cc': rootColor
+              } as React.CSSProperties}
+            >
+              1
+            </div>
+          );
+        })}
         
         {/* Finger positions */}
         {positions.filter(p => p.fret > 0).map((pos, idx) => {
@@ -146,12 +158,15 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
           );
           if (isBarrePosition) return null;
           
+          // Convert string number to position index (string 6=index 0, string 1=index 5)
+          const positionIndex = 6 - pos.string;
+          
           return (
             <div 
               key={`dot-${idx}`}
               className="dot"
               style={{
-                left: `calc((100%/6)*${6 - pos.string} + (100%/6)/2)`,
+                left: `calc((100%/6)*${positionIndex} + (100%/6)/2)`,
                 top: `calc((100%/6)*${pos.fret - 0.5})`,
                 '--cc': rootColor
               } as React.CSSProperties}
@@ -162,16 +177,15 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
         })}
       </div>
       
-      {/* Note strip */}
+      {/* Note strip - from left to right: E A D G B E (strings 6 5 4 3 2 1) */}
       <div className="note-strip">
-        {[6, 5, 4, 3, 2, 1].map((string) => {
-          const position = positions.find(p => p.string === string);
-          const stringNotes = ['E', 'A', 'D', 'G', 'B', 'E'];
-          const note = stringNotes[6 - string];
+        {['E', 'A', 'D', 'G', 'B', 'E'].map((note, index) => {
+          const stringNumber = 6 - index; // Convert index to string number (0->6, 1->5, etc.)
+          const position = positions.find(p => p.string === stringNumber);
           
           return (
             <span 
-              key={`note-${string}`} 
+              key={`note-${stringNumber}`} 
               style={{ color: position ? rootColor : 'transparent' }}
             >
               {position && position.fret === 0 ? note : ''}
