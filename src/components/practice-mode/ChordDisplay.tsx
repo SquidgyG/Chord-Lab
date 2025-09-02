@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import type { Chord } from '../../data/chords';
+import type { ChordOption } from '../../types';
 import { getChordTheme } from '../../utils/diagramTheme';
 import DiagramSizeControl from '../controls/DiagramSizeControl';
 import '../controls/DiagramSizeControl.css';
@@ -9,7 +9,8 @@ const GuitarChordDiagram = lazy(() => import('./GuitarChordDiagram'));
 const PianoChordDiagram = lazy(() => import('./PianoChordDiagram'));
 
 interface ChordDisplayProps {
-  chord: Chord | null;
+  chord: ChordOption;
+  color: string;
   instrument: 'guitar' | 'piano';
 }
 
@@ -29,7 +30,7 @@ const getChordQuality = (chordName: string): string => {
   return '';
 };
 
-const ChordDisplay: React.FC<ChordDisplayProps> = ({ chord, instrument }) => {
+const ChordDisplay: React.FC<ChordDisplayProps> = ({ chord, color, instrument }) => {
   if (!chord) {
     return <div className="chord-display-empty">No chord selected</div>;
   }
@@ -37,6 +38,7 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ chord, instrument }) => {
   try {
     const theme = getChordTheme(chord.name);
     const chordQuality = getChordQuality(chord.name);
+    const notes = chord.notes;
     
     return (
       <div className="flex flex-col items-center justify-center space-y-4 chord-display">
@@ -63,13 +65,12 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ chord, instrument }) => {
         }>
           {instrument === 'guitar' ? (
             <GuitarChordDiagram 
-              positions={chord.guitarPositions} 
-              chordName={chord.name} 
-              color={chord.color}
+              chord={chord} 
+              rootNoteColor={color}
             />
           ) : (
             <PianoChordDiagram
-              notes={chord.pianoNotes}
+              notes={notes}
               chordName={chord.name}
               color={theme.primary}
             />

@@ -23,6 +23,7 @@ export const KEYBOARD_LAYOUT = {
 interface PianoDiagramProps {
   chord: ChordOption;
   rootNoteColor?: string;
+  customProp?: string; // Add a new optional property
 }
 
 // --- Helper Components (from 'main') ---

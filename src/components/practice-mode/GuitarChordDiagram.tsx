@@ -2,12 +2,6 @@ import React, { useMemo } from 'react';
 import './GuitarChordDiagram.css';
 import type { ChordOption } from '../../types';
 
-interface FingerPosition {
-  fret: number;
-  string: number;
-  muted?: boolean;
-}
-
 interface GuitarChordDiagramProps {
   chord: ChordOption;
   rootNoteColor?: string;

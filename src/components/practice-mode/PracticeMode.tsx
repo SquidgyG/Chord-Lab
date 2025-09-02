@@ -46,6 +46,22 @@ function getDiatonicForKey(keyCenter: MajorKey) {
     return { majors, minors };
 }
 
+interface ChordOption {
+  name: string;
+  positions: any[];
+  notes: any[];
+  level: number;
+  color: string;
+}
+
+const toChordOption = (chord: Chord): ChordOption => ({
+  name: chord.name,
+  positions: chord.guitarPositions || [],
+  notes: chord.pianoNotes || [],
+  level: chord.level || 1,
+  color: chord.color || '#000000'
+});
+
 const PracticeMode: FC = () => {
     const [beginnerMode, setBeginnerMode] = useState(false);
     const highestUnlockedLevel = useHighestUnlockedLevel();
@@ -55,9 +71,7 @@ const PracticeMode: FC = () => {
     }, [highestUnlockedLevel]);
     const [selectedInstrument, setSelectedInstrument] =
         useState<'guitar' | 'piano'>('guitar');
-    const [currentChord, setCurrentChord] = useState<Chord | null>(
-        availableChords[0] || null
-    );
+    const [currentChord, setCurrentChord] = useState<ChordOption>(toChordOption(chords[0]));
     const [showSongPractice, setShowSongPractice] = useState(false);
     const { unlockAchievement } = useAchievements();
     const [{ isPlaying, bpm }, { start, stop, setBpm }] = useMetronome(60, 4);
@@ -85,10 +99,10 @@ const PracticeMode: FC = () => {
 
     useEffect(() => {
         if (currentChord && (currentChord.level ?? 1) > highestUnlockedLevel) {
-            setCurrentChord(availableChords[0] || null);
+            setCurrentChord(toChordOption(chords[0]));
         }
         if (!currentChord && availableChords.length > 0) {
-            setCurrentChord(availableChords[0]);
+            setCurrentChord(toChordOption(availableChords[0]));
         }
     }, [highestUnlockedLevel, availableChords, currentChord]);
 
@@ -103,10 +117,10 @@ const PracticeMode: FC = () => {
             const target = availableChords.find(
                 c => c.name.toLowerCase() === chordParam.toLowerCase()
             );
-            if (target) setCurrentChord(target);
+            if (target) setCurrentChord(toChordOption(target));
         }
         if (!chordParam && availableChords.length > 0 && !currentChord) {
-            setCurrentChord(availableChords[0]);
+            setCurrentChord(toChordOption(availableChords[0]));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.search, availableChords]);
@@ -135,8 +149,8 @@ const PracticeMode: FC = () => {
         if (currentChord) {
             const notes =
                 selectedInstrument === 'piano'
-                    ? currentChord.pianoNotes
-                    : currentChord.guitarPositions.map(p => fretToNote(p.string, p.fret));
+                    ? currentChord.notes
+                    : currentChord.positions.map(p => fretToNote(p.string, p.fret));
             playChord(notes, 1, selectedInstrument);
         }
     }, [currentChord, selectedInstrument, fretToNote, playChord]);
@@ -146,7 +160,7 @@ const PracticeMode: FC = () => {
         if (availableChords.length === 0) return;
         const randomIndex = Math.floor(Math.random() * availableChords.length);
         const next = availableChords[randomIndex];
-        if (next) setCurrentChord(next);
+        if (next) setCurrentChord(toChordOption(next));
     }, [incrementChordsPlayed, availableChords]);
 
     const toggleMetronome = () => {
@@ -189,7 +203,10 @@ const PracticeMode: FC = () => {
     }, [keyCenter, highestUnlockedLevel]);
 
     const handleChordSelect = (chordName: string) => {
-        setCurrentChord(chordName as unknown as Chord);
+        const target = availableChords.find(
+            c => c.name.toLowerCase() === chordName.toLowerCase()
+        );
+        if (target) setCurrentChord(toChordOption(target));
     };
 
     if (showSongPractice) {
@@ -259,7 +276,7 @@ const PracticeMode: FC = () => {
                                                 onClick={() => {
                                                     if (!available) return;
                                                     const c = chords.find((c: Chord) => c.name === label);
-                                                    if (c) setCurrentChord(c);
+                                                    if (c) setCurrentChord(toChordOption(c));
                                                 }}
                                                 disabled={!available}
                                                 className={`px-2.5 py-1 rounded-md text-xs font-bold relative ${
@@ -324,7 +341,11 @@ const PracticeMode: FC = () => {
                         {currentChord && (
                             <div className="mb-6">
                                 <div className="flex justify-between items-center mb-4">
-                                    <ChordDisplay chord={currentChord} instrument={selectedInstrument} />
+                                    <ChordDisplay 
+                                      chord={currentChord}
+                                      color={currentChord.color}
+                                      instrument={selectedInstrument} 
+                                    />
                                     <PracticeMetronomeControls
                                         isPlaying={isPlaying}
                                         bpm={bpm}
@@ -383,7 +404,7 @@ const PracticeMode: FC = () => {
                                                 <button
                                                     key={chord.name}
                                                     onClick={() => {
-                                                        if (!locked) setCurrentChord(chord);
+                                                        if (!locked) setCurrentChord(toChordOption(chord));
                                                     }}
                                                     disabled={locked}
                                                     className={`px-3 py-1 rounded-lg ${
@@ -428,7 +449,7 @@ const PracticeMode: FC = () => {
                                         <button
                                             key={chord.name}
                                             onClick={() => {
-                                                if (!locked) setCurrentChord(chord);
+                                                if (!locked) setCurrentChord(toChordOption(chord));
                                             }}
                                             disabled={locked}
                                             className={`px-3 py-1 rounded-lg ${

@@ -170,14 +170,12 @@ const TeacherDashboard: React.FC = () => {
         <div className="fullscreen-chord">
           {instrument === 'guitar' ? (
             <GuitarChordDiagram 
-              positions={currentChord.positions} 
-              chordName={currentChord.name}
+              chord={currentChord} 
               rootNoteColor="#3b82f6"
             />
           ) : (
             <PianoDiagram 
-              chordName={currentChord.name}
-              notes={currentChord.notes}
+              chord={currentChord}
               rootNoteColor="#3b82f6"
             />
           )}
