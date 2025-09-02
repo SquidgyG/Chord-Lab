@@ -160,3 +160,14 @@
   font-weight: 600;
   color: #666;
 }
+
+.chord-name {
+  position: absolute;
+  top: calc(12px * var(--scale));
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-weight: 800;
+  font-size: calc(32px * var(--scale));
+  color: inherit;
+}

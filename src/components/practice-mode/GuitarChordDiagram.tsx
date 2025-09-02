@@ -78,11 +78,11 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
     return null; // Fretted note, no X/O indicator
   };
   
-  // Add chord name display
-  const displayChordName = chordName || 'Unknown';
-
   return (
     <div className="fretboard-wrap">
+      <div className="chord-name" style={{ color: rootColor }}>
+        {chordName}
+      </div>
       <div className="fretboard">
         {/* Nut */}
         <div className="nut"></div>
