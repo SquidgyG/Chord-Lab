@@ -1,3 +1,4 @@
+ 
 import { useState, useEffect, useRef } from 'react'
 
 interface MetronomeState {
@@ -44,9 +45,9 @@ const useMetronome = (
   // Initialize audio context
   const initAudioContext = () => {
     if (audioContextRef.current === null) {
-      const AudioContext = window.AudioContext ?? window.webkitAudioContext
-      if (AudioContext) {
-        audioContextRef.current = new AudioContext()
+      const AudioContextClass = window.AudioContext ?? (window as { webkitAudioContext?: typeof window.AudioContext }).webkitAudioContext
+      if (AudioContextClass) {
+        audioContextRef.current = new AudioContextClass()
       }
     }
     return audioContextRef.current
