@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.test.tsbuildinfo",
+    "noEmit": true,
+    "types": ["@playwright/test", "vitest", "@testing-library/jest-dom"]
+  },
+  "include": [
+    "tests/**/*.ts",
+    "tests-examples/**/*.ts", 
+    "playwright.config.ts",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx"
+  ],
+  "exclude": []
+}

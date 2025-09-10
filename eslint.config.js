@@ -17,6 +17,7 @@ export default tseslint.config(
         'scripts/**',
         '**/*.test.ts',
         '**/*.test.tsx',
+        'tests-examples/**',
         'src/components/chord-builder/**',
         'src/components/classroom/**',
         'src/components/diagrams/**',
@@ -36,7 +37,7 @@ export default tseslint.config(
         ...globals.browser,
       },
       parserOptions: {
-        project: ['./tsconfig.app.json', './tsconfig.node.json'],
+        project: ['./tsconfig.app.json', './tsconfig.node.json', './tsconfig.test.json'],
         tsconfigRootDir: import.meta.dirname,
       },
     },

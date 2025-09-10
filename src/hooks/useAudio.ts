@@ -1,3 +1,4 @@
+ 
 import { useState, useEffect, useRef } from 'react';
 import Soundfont, { type Player } from 'soundfont-player';
 
@@ -53,9 +54,9 @@ const useAudio = () => {
   // Initialize audio context on first user interaction
   const initAudio = () => {
     if (!isInitialized.current) {
-      const AudioContext = window.AudioContext ?? window.webkitAudioContext
-      if (AudioContext) {
-        const context = new AudioContext()
+      const AudioContextConstructor = window.AudioContext ?? (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+      if (AudioContextConstructor) {
+        const context = new AudioContextConstructor()
         setAudioContext(context)
         isInitialized.current = true;
         // Load guitar soundfont
