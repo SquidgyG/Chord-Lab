@@ -31,8 +31,6 @@ const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
     { type: 'white', note: 'A' },
     { type: 'black', note: 'A#' },
     { type: 'white', note: 'B' },
-=======
-  color = '#cc39bc' // Default color
 }) => {
   const normalizeNote = (note: string) => {
     const midi = getMidiNumber(note);
