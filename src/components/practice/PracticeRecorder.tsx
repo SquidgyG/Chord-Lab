@@ -79,14 +79,14 @@ const PracticeRecorder: React.FC<PracticeRecorderProps> = ({
     // Calculate session summary
     const chordEvents = eventsRef.current.filter(e => e.type === 'chord_played');
     const uniqueChords = new Set(chordEvents.map(e => e.data.chordName)).size;
-    const totalAccuracy = chordEvents.reduce((sum, e) => sum + (e.data.accuracy || 0), 0);
+    const totalAccuracy = chordEvents.reduce((sum, e) => sum + (e.data.accuracy ?? 0), 0);
     const averageAccuracy = chordEvents.length > 0 ? totalAccuracy / chordEvents.length : 0;
     
     // Calculate longest streak (consecutive successful chord changes)
     let currentStreak = 0;
     let longestStreak = 0;
     chordEvents.forEach(event => {
-      if ((event.data.accuracy || 0) > 0.7) { // Consider 70%+ as successful
+      if ((event.data.accuracy ?? 0) > 0.7) { // Consider 70%+ as successful
         currentStreak++;
         longestStreak = Math.max(longestStreak, currentStreak);
       } else {
@@ -111,7 +111,7 @@ const PracticeRecorder: React.FC<PracticeRecorderProps> = ({
     };
 
     // Save to localStorage
-    const savedSessions = JSON.parse(localStorage.getItem('practice_sessions') || '[]');
+    const savedSessions: PracticeSession[] = JSON.parse(localStorage.getItem('practice_sessions') ?? '[]') as PracticeSession[];
     savedSessions.push(completedSession);
     localStorage.setItem('practice_sessions', JSON.stringify(savedSessions.slice(-50))); // Keep last 50 sessions
 
