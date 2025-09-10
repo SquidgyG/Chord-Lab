@@ -53,7 +53,7 @@ const useAudio = () => {
   // Initialize audio context on first user interaction
   const initAudio = () => {
     if (!isInitialized.current) {
-      const AudioContext = window.AudioContext ?? window.webkitAudioContext
+      const AudioContext = window.AudioContext ?? (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
       if (AudioContext) {
         const context = new AudioContext()
         setAudioContext(context)

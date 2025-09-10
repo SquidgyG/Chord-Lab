@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { FC } from 'react';
 import { useLocation } from 'react-router-dom';
+import type { FretPosition } from '../../types';
 import { getChordTheme } from '../../utils/diagramTheme';
 import useMetronome from '../../hooks/useMetronome';
 import { useAchievements } from '../../contexts/AchievementContext';
@@ -48,18 +49,18 @@ function getDiatonicForKey(keyCenter: MajorKey) {
 
 interface ChordOption {
   name: string;
-  positions: any[];
-  notes: any[];
+  positions: FretPosition[];
+  notes: string[];
   level: number;
   color: string;
 }
 
 const toChordOption = (chord: Chord): ChordOption => ({
   name: chord.name,
-  positions: chord.guitarPositions || [],
-  notes: chord.pianoNotes || [],
-  level: chord.level || 1,
-  color: chord.color || '#000000'
+  positions: chord.guitarPositions ?? [],
+  notes: chord.pianoNotes ?? [],
+  level: chord.level ?? 1,
+  color: chord.color ?? '#000000'
 });
 
 const PracticeMode: FC = () => {
@@ -150,7 +151,7 @@ const PracticeMode: FC = () => {
             const notes =
                 selectedInstrument === 'piano'
                     ? currentChord.notes
-                    : currentChord.positions.map(p => fretToNote(p.string, p.fret));
+                    : currentChord.positions.map((p: FretPosition) => fretToNote(p.string, p.fret));
             playChord(notes, 1, selectedInstrument);
         }
     }, [currentChord, selectedInstrument, fretToNote, playChord]);
@@ -174,12 +175,12 @@ const PracticeMode: FC = () => {
         }
     };
 
-    const [diatonicChips, setDiatonicChips] = useState<Array<{
+    const [diatonicChips, setDiatonicChips] = useState<{
         label: string;
         available: boolean;
         locked: boolean;
         color: { primary: string; background: string };
-    }>>([]);
+    }[]>([]);
 
     useEffect(() => {
         if (!keyCenter) {

@@ -44,7 +44,7 @@ const useMetronome = (
   // Initialize audio context
   const initAudioContext = () => {
     if (audioContextRef.current === null) {
-      const AudioContext = window.AudioContext ?? window.webkitAudioContext
+      const AudioContext = window.AudioContext ?? (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
       if (AudioContext) {
         audioContextRef.current = new AudioContext()
       }

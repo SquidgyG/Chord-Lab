@@ -207,7 +207,7 @@ const GuitarChordDiagram: React.FC<GuitarChordDiagramProps> = ({
               noteName = note; // Open string note
             } else {
               // Calculate fretted note (simplified - you might want a more comprehensive note calculation)
-              const noteMap: { [key: string]: string[] } = {
+              const noteMap: Record<string, string[]> = {
                 'E': ['E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#', 'D', 'D#'],
                 'A': ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'],
                 'D': ['D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B', 'C', 'C#'],

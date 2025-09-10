@@ -1,5 +1,4 @@
-import React from 'react';
-import { render, screen, fireEvent, act, waitFor, within } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import '@testing-library/jest-dom';

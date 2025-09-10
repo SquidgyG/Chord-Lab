@@ -29,7 +29,7 @@ Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query: string) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -62,7 +62,7 @@ const mockAudioContext = {
     maxChannelCount: 2,
     channelCountMode: 'explicit',
     channelInterpretation: 'speakers',
-    context: {} as any,
+    context: {} as AudioContext,
     numberOfInputs: 1,
     numberOfOutputs: 0,
     connect: vi.fn(),
