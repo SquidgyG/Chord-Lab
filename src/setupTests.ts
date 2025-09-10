@@ -31,6 +31,7 @@ Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: vi.fn().mockImplementation(query => ({
     matches: false,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     media: query,
     onchange: null,
     addListener: vi.fn(),
@@ -62,6 +63,7 @@ const mockAudioContext = {
     maxChannelCount: 2,
     channelCountMode: 'explicit',
     channelInterpretation: 'speakers',
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
     context: {} as any,
     numberOfInputs: 1,
     numberOfOutputs: 0,
