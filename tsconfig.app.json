@@ -25,5 +25,5 @@
     "types": ["vitest"]
   },
   "include": ["src", "src/types"],
-  "exclude": ["**/*.test.ts", "**/*.test.tsx"]
+  "exclude": ["**/*.test.ts", "**/*.test.tsx", "tests", "tests-examples"]
 }

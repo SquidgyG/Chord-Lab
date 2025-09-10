@@ -17,6 +17,8 @@ export default tseslint.config(
         'scripts/**',
         '**/*.test.ts',
         '**/*.test.tsx',
+        'tests-examples/**',
+        'tests/**',
         'src/components/chord-builder/**',
         'src/components/classroom/**',
         'src/components/diagrams/**',

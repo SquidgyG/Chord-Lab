@@ -24,12 +24,12 @@ const ChordProgressionAnalysis: FC = () => {
             return [];
           }
           return tones;
-        } catch (e) {
-          console.error(`Failed to parse chord ${chord.name}:`, e);
+        } catch (error) {
+          console.error(`Failed to parse chord ${chord.name}:`, error);
           return [];
         }
       }).filter(Boolean);
-    } catch (e) {
+    } catch {
       setError('Failed to analyze chord progression');
       return [];
     }

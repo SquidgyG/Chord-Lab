@@ -13,12 +13,12 @@ type Instrument = 'guitar' | 'piano';
 
 export interface ChordOption {
   name: string;
-  positions: Array<{
+  positions: {
     fret: number;
     string: number;
     finger?: number;
     muted?: boolean;
-  }>;
+  }[];
   notes: string[];
 }
 
