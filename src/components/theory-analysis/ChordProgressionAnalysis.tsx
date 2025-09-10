@@ -29,7 +29,7 @@ const ChordProgressionAnalysis: FC = () => {
           return [];
         }
       }).filter(Boolean);
-    } catch (_e) {
+    } catch {
       setError('Failed to analyze chord progression');
       return [];
     }

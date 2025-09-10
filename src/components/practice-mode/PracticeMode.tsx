@@ -11,7 +11,7 @@ import Statistics from './Statistics';
 import PracticeMetronomeControls from './PracticeMetronomeControls';
 import { InstrumentPanel } from './InstrumentPanel';
 import ChordDisplay from './ChordDisplay';
-import { chordList as chords, type Chord } from '../../data/chords';
+import { chordList as chords, type Chord, type FretPosition } from '../../data/chords';
 import SongPractice from './SongPractice';
 import { useHighestUnlockedLevel } from '../learning-path/LearningPathway';
 import ChordWheel from '../chord-wheel/ChordWheel';
@@ -48,18 +48,18 @@ function getDiatonicForKey(keyCenter: MajorKey) {
 
 interface ChordOption {
   name: string;
-  positions: any[];
-  notes: any[];
+  positions: FretPosition[];
+  notes: string[];
   level: number;
   color: string;
 }
 
 const toChordOption = (chord: Chord): ChordOption => ({
   name: chord.name,
-  positions: chord.guitarPositions || [],
-  notes: chord.pianoNotes || [],
-  level: chord.level || 1,
-  color: chord.color || '#000000'
+  positions: chord.guitarPositions ?? [],
+  notes: chord.pianoNotes ?? [],
+  level: chord.level ?? 1,
+  color: chord.color ?? '#000000'
 });
 
 const PracticeMode: FC = () => {

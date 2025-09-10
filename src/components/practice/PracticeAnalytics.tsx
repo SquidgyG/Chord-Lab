@@ -26,7 +26,7 @@ const PracticeAnalytics: React.FC<PracticeAnalyticsProps> = ({ className = '' })
     const loadSessions = () => {
       const saved = localStorage.getItem('practice_sessions');
       if (saved) {
-        setSessions(JSON.parse(saved));
+        setSessions(JSON.parse(saved) as PracticeSession[]);
       }
     };
 
