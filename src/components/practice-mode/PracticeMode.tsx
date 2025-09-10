@@ -174,12 +174,12 @@ const PracticeMode: FC = () => {
         }
     };
 
-    const [diatonicChips, setDiatonicChips] = useState<Array<{
+    const [diatonicChips, setDiatonicChips] = useState<{
         label: string;
         available: boolean;
         locked: boolean;
         color: { primary: string; background: string };
-    }>>([]);
+    }[]>([]);
 
     useEffect(() => {
         if (!keyCenter) {

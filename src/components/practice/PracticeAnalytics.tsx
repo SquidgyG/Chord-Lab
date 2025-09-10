@@ -84,7 +84,7 @@ const PracticeAnalytics: React.FC<PracticeAnalyticsProps> = ({ className = '' })
     const improvementTrend = secondHalfAccuracy - firstHalfAccuracy;
 
     // Count chord usage
-    const chordCounts: { [chord: string]: number } = {};
+    const chordCounts: Record<string, number> = {};
     filteredSessions.forEach(session => {
       session.events
         .filter(event => event.type === 'chord_played' && event.data.chordName)

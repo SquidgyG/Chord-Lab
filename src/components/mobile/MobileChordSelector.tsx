@@ -75,11 +75,11 @@ const MobileChordSelector: React.FC<MobileChordSelectorProps> = ({
           <div className="flex items-center space-x-3">
             <div 
               className="w-4 h-8 rounded"
-              style={{ backgroundColor: currentChord?.color || '#gray' }}
+              style={{ backgroundColor: currentChord?.color ?? '#gray' }}
             ></div>
             <div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                {currentChord?.name || 'Select Chord'}
+                {currentChord?.name ?? 'Select Chord'}
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400">
                 Tap to expand • Swipe to change • Double-tap for random
