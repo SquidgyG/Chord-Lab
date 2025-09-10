@@ -15,7 +15,7 @@ const PianoChordDiagram: React.FC<PianoChordDiagramProps> = ({
   chordName,
   color
 }) => {
-  color = color ?? getChordTheme(chordName ?? '').primary;
+  const resolvedColor = color ?? getChordTheme(chordName ?? '').primary;
   const activeNotes = notes || [];
   
   const keys = [
