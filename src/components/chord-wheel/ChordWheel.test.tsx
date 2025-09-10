@@ -1,11 +1,12 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { vi } from 'vitest';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import ChordWheel from './ChordWheel';
 
 const mockChords = ['C', 'G', 'D', 'A'];
-const mockOnSelect = jest.fn();
+const mockOnSelect = vi.fn();
 
 const TestWrapper: React.FC<{children: React.ReactNode}> = ({ children }) => (
   <DndProvider backend={HTML5Backend}>
