@@ -28,3 +28,11 @@ dist-ssr
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Build artifacts
+chord-lab-standalone.html
+*.patch
+
+# Legacy/demo files (should be in archive if needed)
+guitar_chord_charts_*.html
+piano_chord_charts_*.html
