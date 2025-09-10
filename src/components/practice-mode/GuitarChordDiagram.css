@@ -1,81 +1,173 @@
-.guitar-chord-diagram {
+.fretboard-wrap {
+  --base-width: 520px;
+  --base-height: 700px;
+  --scale: 1;
+  
+  width: calc(var(--base-width) * var(--scale));
+  max-width: 100%;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: calc(14px * var(--scale));
+  padding: calc(72px * var(--scale)) calc(28px * var(--scale)) calc(22px * var(--scale));
+  box-shadow: 0 16px 40px rgba(0,0,0,.20), 0 8px 18px rgba(0,0,0,.12);
   position: relative;
-  display: inline-block;
-  margin: 20px;
+  font-family: "Readex Pro", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  
+  /* Responsive scaling based on container width */
+  container-type: inline-size;
+}
+
+@container (max-width: 520px) {
+  .fretboard-wrap {
+    --scale: calc(100cqw / 520);
+  }
+}
+
+@container (min-width: 521px) and (max-width: 800px) {
+  .fretboard-wrap {
+    --scale: calc(100cqw / 520);
+  }
+}
+
+@container (min-width: 801px) {
+  .fretboard-wrap {
+    --scale: min(1.5, calc(100cqw / 520));
+  }
 }
 
 .fretboard {
   position: relative;
-  width: 100%;
-  height: 80%;
-  background-color: #f5e6c8;
-  border: 2px solid #8b4513;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  height: calc(var(--base-height) * var(--scale));
+  border-radius: calc(10px * var(--scale));
+  background: #fff;
+  overflow: visible;
 }
 
 .nut {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  border-top: 5px solid #000;
+  right: 0;
+  height: calc(16px * var(--scale));
+  background: #000;
+  z-index: 12;
+}
+
+.endline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(6px * var(--scale));
+  background: #000;
+  z-index: 11;
 }
 
 .fret-line {
   position: absolute;
   left: 0;
-  width: 100%;
-  border-bottom: 3px solid #000;
+  right: 0;
+  height: calc(2px * var(--scale));
+  background: #111;
+  z-index: 10;
 }
 
-.string-line {
+.inlay {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(16px * var(--scale));
+  height: calc(16px * var(--scale));
+  border-radius: 999px;
+  background: rgba(0,0,0,.12);
+  z-index: 9;
+}
+
+.string {
   position: absolute;
   top: 0;
-  height: 100%;
-  border-left: 2px solid #666;
+  bottom: 0;
+  width: var(--sw);
+  background: var(--sc, #111);
+  transform: translateX(-50%);
+  border-radius: calc(2px * var(--scale));
+  z-index: 8;
 }
 
-.string-indicator {
+.xo {
   position: absolute;
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
+  transform: translate(-50%, -100%);
+  text-align: center;
+  font-weight: 800;
+  top: 0;
+  z-index: 15;
+  font-size: calc(32px * var(--scale));
+  line-height: 1;
 }
 
-.open-symbol {
-  color: green;
-}
-
-.mute-symbol {
-  color: red;
-}
-
-.fret-position {
+.dot {
   position: absolute;
-  width: 10%;
-  height: 10%;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: bold;
-  font-size: 14px;
-  background: #3498db;
-  border: 3px solid #000;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
   transform: translate(-50%, -50%);
-}
-
-.fret-position.root {
-  background: #e74c3c;
+  width: calc(72px * var(--scale));
+  height: calc(72px * var(--scale));
+  border-radius: 999px;
+  background: var(--cc);
+  color: #fff;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: calc(30px * var(--scale));
+  text-shadow: 0 1px 0 rgba(0,0,0,.25);
 }
 
 .barre {
   position: absolute;
-  background: #3498db;
-  border-radius: 10px;
   transform: translateY(-50%);
-  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+  height: calc(48px * var(--scale));
+  border-radius: 999px;
+  background: var(--cc);
+  z-index: 19;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: calc(24px * var(--scale));
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0,0,0,.25);
+}
+
+.note-strip {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0;
+  margin-top: calc(12px * var(--scale));
+  font-weight: 800;
+  font-size: calc(32px * var(--scale));
+  letter-spacing: calc(0.5px * var(--scale));
+}
+
+.note-strip span {
+  text-align: center;
+  min-height: 1.1em;
+}
+
+.fret-number {
+  position: absolute;
+  right: -40px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  font-weight: 600;
+  color: #666;
+}
+
+.chord-name {
+  position: absolute;
+  top: calc(12px * var(--scale));
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-weight: 800;
+  font-size: calc(32px * var(--scale));
+  color: inherit;
 }

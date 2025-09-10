@@ -1,0 +1,70 @@
+/* Global diagram size overrides */
+:root {
+  --diagram-size-multiplier: 1;
+}
+
+/* Size-specific overrides for guitar diagrams */
+.diagram-size-small .fretboard-wrap {
+  --scale: 0.6 !important;
+}
+
+.diagram-size-medium .fretboard-wrap {
+  --scale: 0.8 !important;
+}
+
+.diagram-size-large .fretboard-wrap {
+  --scale: 1.2 !important;
+}
+
+/* Size-specific overrides for piano diagrams */
+.diagram-size-small .piano-diagram-container {
+  --scale: 0.6 !important;
+}
+
+.diagram-size-medium .piano-diagram-container {
+  --scale: 0.8 !important;
+}
+
+.diagram-size-large .piano-diagram-container {
+  --scale: 1.2 !important;
+}
+
+/* Override container queries when manual size is set */
+.diagram-size-small .fretboard-wrap,
+.diagram-size-medium .fretboard-wrap,
+.diagram-size-large .fretboard-wrap {
+  container-type: normal;
+}
+
+.diagram-size-small .piano-diagram-container,
+.diagram-size-medium .piano-diagram-container,
+.diagram-size-large .piano-diagram-container {
+  container-type: normal;
+}
+
+/* Responsive adjustments for small screens even with manual sizing */
+@media (max-width: 480px) {
+  .diagram-size-large .fretboard-wrap {
+    --scale: 0.9 !important;
+  }
+  
+  .diagram-size-large .piano-diagram-container {
+    --scale: 0.9 !important;
+  }
+  
+  .diagram-size-medium .fretboard-wrap {
+    --scale: 0.7 !important;
+  }
+  
+  .diagram-size-medium .piano-diagram-container {
+    --scale: 0.7 !important;
+  }
+}
+
+/* Ensure diagrams don't overflow on very small screens */
+@media (max-width: 320px) {
+  .fretboard-wrap,
+  .piano-diagram-container {
+    --scale: min(var(--scale), 0.5) !important;
+  }
+}

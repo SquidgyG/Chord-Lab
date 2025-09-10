@@ -1,0 +1,82 @@
+.chord-wheel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.instrument-selector {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.instrument-selector button {
+  padding: 0.5rem 1rem;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+}
+
+.instrument-selector button.active {
+  border-color: #4CAF50;
+  background: #e8f5e9;
+}
+
+.chord-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.5rem;
+}
+
+.chord-option {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chord-option:hover {
+  background: #f5f5f5;
+}
+
+.chord-option.selected {
+  background: #4CAF50;
+  color: white;
+  border-color: #388E3C;
+}
+
+.progressions {
+  margin-top: 2rem;
+}
+
+.progression-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.progression {
+  padding: 1rem;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.progression:hover {
+  background: #f9f9f9;
+}
+
+.progression-name {
+  font-weight: bold;
+}
+
+.progression-chords {
+  color: #666;
+  font-size: 0.9em;
+}

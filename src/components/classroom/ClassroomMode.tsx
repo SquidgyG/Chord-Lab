@@ -5,6 +5,8 @@ import PianoDiagram from '../diagrams/PianoDiagram'
 import ClassroomDisplay from '../classroom/ClassroomDisplay'
 import { chords as chordData } from '../../data/chords'
 import { useNavigate } from 'react-router-dom'
+import type { ChordOption } from '../../types';
+import type { FretPosition } from '../../types';
 
 const keys = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 'Bb', 'F']
 const progressions = ['I–V–vi–IV', 'vi–IV–I–V', 'ii–V–I', 'I–vi–IV–V']
@@ -18,13 +20,22 @@ const numeralMap: Record<string, number> = {
   vii: 6,
 }
 
-// chordData imported from data/chords
+// Add type guard for positions
+const safePositions = (positions?: FretPosition[]): FretPosition[] => positions || [];
+
+// Convert chordData to ChordOption array with correct property mapping
+const chordOptions: ChordOption[] = Object.entries(chordData)
+  .map(([name, chord]) => ({
+    name,
+    positions: chord.guitarPositions,
+    notes: chord.pianoNotes
+  }));
 
 const ClassroomMode: React.FC = () => {
   const [selectedKey, setSelectedKey] = useState('C')
   const [selectedProgression, setSelectedProgression] = useState('I–V–vi–IV')
   const [instrument, setInstrument] = useState<'guitar' | 'piano'>('guitar')
-  const [displayedChords, setDisplayedChords] = useState<string[]>([])
+  const [displayedChords, setDisplayedChords] = useState<ChordOption[]>(chordOptions);
   const navigate = useNavigate()
 
   const generatedChords = useMemo(() => {
@@ -86,7 +97,15 @@ const ClassroomMode: React.FC = () => {
         </div>
         <div>
           <button
-            onClick={() => setDisplayedChords(prev => [...prev, ...generatedChords])}
+            onClick={() => setDisplayedChords((prev: ChordOption[]) => [...prev, ...generatedChords.map(chord => {
+              const selectedChordName = chord;
+              const selectedChord: ChordOption = {
+                name: selectedChordName,
+                positions: [],
+                notes: []
+              };
+              return selectedChord;
+            })])}
             className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
           >
             Add to Display
@@ -104,17 +123,14 @@ const ClassroomMode: React.FC = () => {
       <div className="mt-6">
         <h4 className="font-bold text-gray-700 dark:text-gray-200">Generated Progression:</h4>
         <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-2`}>
-          {generatedChords.map((chord, index) => {
-            const data = chordData[chord] ?? { pianoNotes: [], guitarPositions: [] };
+          {generatedChords.map((chordName, index) => {
+            const data = chordOptions.find(c => c.name === chordName);
             return (
-              <div
-                key={index}
-                className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg text-center"
-              >
+              <div key={index} className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg text-center">
                 {instrument === 'guitar' ? (
-                  <GuitarDiagram chordName={chord} positions={data.guitarPositions} />
+                  <GuitarDiagram chordName={chordName} positions={safePositions(data?.positions)} />
                 ) : (
-                  <PianoDiagram chordName={chord} notes={data.pianoNotes} />
+                  <PianoDiagram chord={data || {name: chordName, positions: [], notes: []}} rootNoteColor={data?.notes[0]} />
                 )}
               </div>
             )
@@ -126,13 +142,21 @@ const ClassroomMode: React.FC = () => {
         <div className="flex justify-between items-center mb-4">
           <h4 className="font-bold text-gray-700 dark:text-gray-200">Displayed Chords:</h4>
           <button
-            onClick={() => setDisplayedChords([])}
+            onClick={() => setDisplayedChords((prev: ChordOption[]) => {
+              return prev.filter((chord): chord is ChordOption => {
+                return !!chord && 'name' in chord;
+              });
+            })}
             className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
           >
             Clear
           </button>
         </div>
-        <ClassroomDisplay displayedChords={displayedChords} instrument={instrument} chordData={chordData} />
+        <ClassroomDisplay 
+          displayedChords={displayedChords} 
+          instrument={instrument} 
+          rootNoteColor="#4CAF50"
+        />
       </div>
     </div>
   )

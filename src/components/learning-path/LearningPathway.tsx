@@ -30,7 +30,15 @@ const lessonComponents: Record<string, () => React.ReactElement> = {
       correctAnswer="E is the 6th note of the G major scale."
     />
   ),
-  '5-s1': () => <AdvancedTechniqueExercise />,
+  '5-s1': () => (
+    <AdvancedTechniqueExercise
+      chord={{
+        name: '',
+        positions: [],
+        notes: []
+      }}
+    />
+  ),
   '6-k1': () => <ClassroomMode />,
 }
 

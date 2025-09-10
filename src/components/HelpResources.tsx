@@ -1,4 +1,4 @@
-import helpLinks from '../data/helpLinks.json' assert { type: 'json' }
+import helpLinks from '../data/helpLinks.json'
 
 function formatTitle(key: string) {
   return key
